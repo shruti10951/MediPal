@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/forgot_password_screen.dart';
 import 'package:medipal/login_screen.dart';
+import 'package:medipal/user_selection_screen.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,9 +81,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    final user= FirebaseAuth.instance.currentUser;
     Timer(Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+      if(user != null){
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => ForgetPasswordPage()));
+      }else{
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => UserSelection()));
+      }
     });
   }
 }
