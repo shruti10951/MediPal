@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/dashboard_screen.dart';
 import 'package:medipal/forgot_password_screen.dart';
 import 'package:medipal/sign_up_screen.dart';
-import 'package:medipal/user_selection_screen.dart';
 
 class LoginPage extends StatelessWidget {
   TextEditingController _emailController = TextEditingController();
@@ -48,7 +48,7 @@ class LoginPage extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => UserSelection()))
+                                  builder: (context) => DashboardPage()))
                         });
               },
               child: Text('Login'),

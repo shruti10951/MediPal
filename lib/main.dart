@@ -4,8 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/forgot_password_screen.dart';
-import 'package:medipal/login_screen.dart';
+import 'package:medipal/dashboard_screen.dart';
 import 'package:medipal/user_selection_screen.dart';
 
 Future main() async {
@@ -85,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer(Duration(seconds: 2), () {
       if(user != null){
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => ForgetPasswordPage()));
+            context, MaterialPageRoute(builder: (context) => DashboardPage()));
       }else{
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => UserSelection()));
