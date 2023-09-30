@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/enter_otp_screen.dart';
+import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 
 class SignUpPage extends StatelessWidget {
   final emailController = TextEditingController();
@@ -93,7 +93,7 @@ class SignUpPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      OTPPage(verificationId: verificationId)));
+                      OTPForUserPage(verificationId: verificationId)));
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }
