@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 
 class SignUpPage extends StatelessWidget {
@@ -61,14 +62,14 @@ class SignUpPage extends StatelessWidget {
                 isSigningUp = true;
                 await auth
                     .createUserWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passwordController.text)
+                    email: emailController.text,
+                    password: passwordController.text)
                     .then((value) => verify(context, phoneController.text));
               },
               child: isSigningUp == true
                   ? CircularProgressIndicator(
-                      color: Colors.black,
-                    )
+                color: Colors.black,
+              )
                   : Text('Sign Up'),
               style: ButtonStyle(
                 fixedSize: MaterialStateProperty.all<Size>(Size(300, 50)),
@@ -89,11 +90,18 @@ class SignUpPage extends StatelessWidget {
         verificationCompleted: (PhoneAuthCredential credential) {},
         verificationFailed: (FirebaseAuthException e) {},
         codeSent: (String verificationId, int? resendToken) {
+          UserModel userModel = UserModel(userId: auth.currentUser!.uid,
+              email: emailController.text,
+              phoneNo: phoneNumber,
+              name: nameController.text,
+              role: 'Individual',
+              noOfDependents: 0,
+              dependents:[]);
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      OTPForUserPage(verificationId: verificationId)));
+                      OTPForUserPage(verificationId: verificationId, userModel: userModel)));
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }
