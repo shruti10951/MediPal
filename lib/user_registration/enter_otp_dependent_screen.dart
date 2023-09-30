@@ -3,10 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/dashboard_screen.dart';
 
-class OTPPage extends StatelessWidget {
+class OTPForDependentPage extends StatelessWidget {
   final String verificationId;
+  final String name;
 
-  OTPPage({required this.verificationId});
+  OTPForDependentPage({required this.verificationId, required this.name});
 
   final otpController = TextEditingController();
 
@@ -31,27 +32,27 @@ class OTPPage extends StatelessWidget {
           ElevatedButton(
               onPressed: () async {
                 // Create a PhoneAuthCredential with the code
-                try{
+                try {
                   PhoneAuthCredential credential = PhoneAuthProvider.credential(
                       verificationId: verificationId,
                       smsCode: otpController.text);
 
-                  User? user= FirebaseAuth.instance.currentUser;
+                  await auth.signInWithCredential(credential).then((value) => {
 
-                  await user?.linkWithCredential(credential).then((value) =>
-                  {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DashboardPage()))
-                  });
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DashboardPage()))
+                      });
 
-                }catch(e){
+
+                } catch (e) {
                   final scaffoldMessenger = ScaffoldMessenger.of(context);
                   scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text('Invalid OTP'),
-                      duration: Duration(seconds: 3), // Adjust the duration as needed
+                      duration:
+                          Duration(seconds: 3), // Adjust the duration as needed
                     ),
                   );
                 }
