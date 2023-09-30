@@ -1,16 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/dashboard_screen.dart';
+import 'package:medipal/models/UserModel.dart';
 
 class OTPForUserPage extends StatelessWidget {
   final String verificationId;
+  final UserModel userModel;
 
-  OTPForUserPage({required this.verificationId});
+  OTPForUserPage({required this.verificationId, required this.userModel});
 
   final otpController = TextEditingController();
 
   final auth = FirebaseAuth.instance;
+
+  CollectionReference collectionReference =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
@@ -31,27 +37,30 @@ class OTPForUserPage extends StatelessWidget {
           ElevatedButton(
               onPressed: () async {
                 // Create a PhoneAuthCredential with the code
-                try{
+                try {
                   PhoneAuthCredential credential = PhoneAuthProvider.credential(
                       verificationId: verificationId,
                       smsCode: otpController.text);
 
-                  User? user= FirebaseAuth.instance.currentUser;
+                  User? user = FirebaseAuth.instance.currentUser;
 
-                  await user?.linkWithCredential(credential).then((value) =>
-                  {
-                    Navigator.push(
+                  await user?.linkWithCredential(credential).then((value) async {
+                    Map<String, dynamic> userMap = userModel.toMap();
+                    await collectionReference.doc(auth.currentUser?.uid).set(userMap).then((value) => {
+                      Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => DashboardPage()))
+                        MaterialPageRoute(builder: (context) => DashboardPage()),
+                      ),
+                    });
                   });
 
-                }catch(e){
+                } catch (e) {
                   final scaffoldMessenger = ScaffoldMessenger.of(context);
                   scaffoldMessenger.showSnackBar(
                     SnackBar(
-                      content: Text('Invalid OTP'),
-                      duration: Duration(seconds: 3), // Adjust the duration as needed
+                      content: Text(e.toString()),
+                      duration:
+                          Duration(seconds: 3), // Adjust the duration as needed
                     ),
                   );
                 }
