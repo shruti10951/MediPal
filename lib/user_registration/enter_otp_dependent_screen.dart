@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/dashboard_screen.dart';
+import 'package:medipal/models/UserModel.dart';
 
 class OTPForDependentPage extends StatelessWidget {
   final String verificationId;
@@ -12,6 +14,9 @@ class OTPForDependentPage extends StatelessWidget {
   final otpController = TextEditingController();
 
   final auth = FirebaseAuth.instance;
+
+  CollectionReference collectionReference =
+  FirebaseFirestore.instance.collection('dependent');
 
   @override
   Widget build(BuildContext context) {
@@ -37,26 +42,61 @@ class OTPForDependentPage extends StatelessWidget {
                       verificationId: verificationId,
                       smsCode: otpController.text);
 
-                  await auth.signInWithCredential(credential).then((value) => {
-
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DashboardPage()))
-                      });
-
-
+                  await auth.signInWithCredential(credential).then((value) {
+                    User? user = FirebaseAuth.instance.currentUser;
+                    Map<String, dynamic> dependentMap = {'name': name, 'userId': user?.uid};
+                    collectionReference.doc(user?.uid).set(dependentMap).then((value) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DashboardPage()),
+                      );
+                    });
+                  });
                 } catch (e) {
                   final scaffoldMessenger = ScaffoldMessenger.of(context);
                   scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text('Invalid OTP'),
                       duration:
-                          Duration(seconds: 3), // Adjust the duration as needed
+                      Duration(seconds: 3), // Adjust the duration as needed
                     ),
                   );
                 }
               },
+
+              // onPressed: () async {
+              //   // Create a PhoneAuthCredential with the code
+              //   try {
+              //     PhoneAuthCredential credential = PhoneAuthProvider.credential(
+              //         verificationId: verificationId,
+              //         smsCode: otpController.text);
+              //
+              //     await auth.signInWithCredential(credential).then((value) => () {
+              //       User? user = FirebaseAuth.instance.currentUser;
+              //       Map<String, dynamic> dependentMap = {'name': name, 'userId': user?.uid};
+              //       collectionReference.doc(auth.currentUser?.uid).set(
+              //           dependentMap).then((value) =>
+              //       {
+              //         Navigator.push(
+              //           context,
+              //           MaterialPageRoute(
+              //               builder: (context) => DashboardPage()),
+              //         ),
+              //       });
+              //     });
+              //
+              //   } catch (e) {
+              //     final scaffoldMessenger = ScaffoldMessenger.of(context);
+              //     scaffoldMessenger.showSnackBar(
+              //       SnackBar(
+              //         content: Text('Invalid OTP'),
+              //         duration:
+              //             Duration(seconds: 3), // Adjust the duration as needed
+              //       ),
+              //     );
+              //   }
+              // },
               child: Text('Verify'))
         ],
       ),
