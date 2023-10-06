@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/user_registration/login_screen.dart';
 
 class ForgetPasswordPage extends StatelessWidget {
+  TextEditingController _emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,11 +19,19 @@ class ForgetPasswordPage extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Email',
               ),
+              controller: _emailController,
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async{
                 // Add your forgot password logic here
+                await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text)
+                    .then((value) => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginPage()))
+                });
               },
               child: Text('Reset Password'),
             ),
