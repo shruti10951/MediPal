@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/dependent_login.dart';
-import 'package:medipal/login_screen.dart';
+import 'package:medipal/user_registration/dependent_login.dart';
+import 'package:medipal/user_registration/login_screen.dart';
 
 class UserSelection extends StatelessWidget {
   @override
