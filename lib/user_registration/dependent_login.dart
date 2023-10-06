@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/enter_otp_screen.dart';
+import 'package:medipal/user_registration/enter_otp_dependent_screen.dart';
 
-class SignUpPage extends StatelessWidget {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+class DependentLogin extends StatelessWidget {
+
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
 
@@ -19,7 +18,7 @@ class SignUpPage extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Noo'),
+        title: Text('Hello'),
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
@@ -35,40 +34,21 @@ class SignUpPage extends StatelessWidget {
             SizedBox(height: 20.0),
             TextField(
               decoration: InputDecoration(
-                labelText: 'Email',
-              ),
-              controller: emailController,
-            ),
-            SizedBox(height: 20.0),
-            TextField(
-              decoration: InputDecoration(
                 labelText: 'Phone Number',
               ),
               controller: phoneController,
-            ),
-            SizedBox(height: 20.0),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Password',
-              ),
-              controller: passwordController,
-              obscureText: true,
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () async {
                 // Add your sign-up logic here
                 isSigningUp = true;
-                await auth
-                    .createUserWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passwordController.text)
-                    .then((value) => verify(context, phoneController.text));
+                verify(context, phoneController.text);
               },
               child: isSigningUp == true
                   ? CircularProgressIndicator(
-                      color: Colors.black,
-                    )
+                color: Colors.black,
+              )
                   : Text('Sign Up'),
               style: ButtonStyle(
                 fixedSize: MaterialStateProperty.all<Size>(Size(300, 50)),
@@ -93,7 +73,7 @@ class SignUpPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      OTPPage(verificationId: verificationId)));
+                      OTPForDependentPage(verificationId: verificationId, name: nameController.text)));
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }
