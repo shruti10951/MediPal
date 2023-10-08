@@ -1,29 +1,32 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/FirestoreCheck.dart';
 import 'package:medipal/dashboard_screen.dart';
 import 'package:medipal/user_selection_screen.dart';
 
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
+Future<void> checkFirestoreTask() async {
+  FireStoreCheck check = new FireStoreCheck();
+  await check.checkFirestore();
+}
+
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: "AIzaSyDcbHs9PIXgOwHLpOfcMu3B7h4gKrl8dNI",
-        authDomain: "medipal-61348.firebaseapp.com",
-        projectId: "medipal-61348",
-        storageBucket: "medipal-61348.appspot.com",
-        messagingSenderId: "507903652085",
-        appId: "1:507903652085:web:23e5c1a05cb570695fd5bc",
-        measurementId: "G-EMMXM8CBPH",
-      ),
-    );
-  } else{
-    await Firebase.initializeApp();
-  }
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  await AndroidAlarmManager.initialize();
+
+  const int helloAlarmID = 0;
+  await AndroidAlarmManager.periodic(
+      const Duration(minutes: 1), helloAlarmID, checkFirestoreTask);
+
   runApp(const MyApp());
 }
 
@@ -80,12 +83,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    final user= FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     Timer(Duration(seconds: 2), () {
-      if(user != null){
+      if (user != null) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => DashboardPage()));
-      }else{
+      } else {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => UserSelection()));
       }
