@@ -194,14 +194,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildCard(int index) {
-    // Implement your individual card widget here
-    // You can customize the card based on the data
-    return Card(
-      margin: const EdgeInsets.all(8),
-      child: ListTile(
-        title: Text('Card $index'), // Customize card content
-        // Add other card content here
-      ),
-    );
-  }
+  final List<String> times = ['Morning', 'Noon', 'Evening', 'Night']; // Replace with your times
+  final String time = times[index % 4]; // Example: Cycle through times
+
+  return Card(
+    margin: const EdgeInsets.all(8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            time,
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const Divider(height: 1, color: Colors.grey),
+        ListTile(
+          leading: const Icon(Icons.medical_services, size: 48.0, color: Colors.blue),
+          title: Text(
+            'Medicine Name $index', // Replace with actual medicine name
+            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text('Quantity: $index'), // Replace with actual quantity
+        ),
+      ],
+    ),
+  );
+}
 }
