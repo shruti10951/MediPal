@@ -49,7 +49,7 @@ class OTPForDependentPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DashboardPage()),
+                            builder: (context) => DashboardScreen()),
                       );
                     });
                   });

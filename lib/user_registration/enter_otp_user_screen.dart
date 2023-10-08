@@ -49,7 +49,7 @@ class OTPForUserPage extends StatelessWidget {
                     await collectionReference.doc(auth.currentUser?.uid).set(userMap).then((value) => {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => DashboardPage()),
+                        MaterialPageRoute(builder: (context) => DashboardScreen()),
                       ),
                     });
                   });
