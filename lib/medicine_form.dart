@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+
 
 class MedicineForm extends StatefulWidget {
   const MedicineForm({super.key});
@@ -19,10 +23,9 @@ class _MedicineFormState extends State<MedicineForm> {
   TimeOfDay? _morningTime;
   TimeOfDay? _noonTime;
   TimeOfDay? _eveningTime;
-  
-  CollectionReference collectionRef= FirebaseFirestore.instance
-      .collection('medications');
-  FirebaseAuth auth= FirebaseAuth.instance;
+
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   @override
   void dispose() {
@@ -54,6 +57,8 @@ class _MedicineFormState extends State<MedicineForm> {
 
   @override
   Widget build(BuildContext context) {
+    final dateFormat = DateFormat("yyyy-MM-dd");
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Medicine Form'),
@@ -107,6 +112,54 @@ class _MedicineFormState extends State<MedicineForm> {
                     decoration: const InputDecoration(
                       labelText: 'Reorder Level',
                     ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  const Text(
+                    'Medication Duration',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  DateTimeField(
+                    format: dateFormat,
+                    decoration: const InputDecoration(
+                      labelText: 'Start Date',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _startDate = value;
+                      });
+                    },
+                    onShowPicker: (context, currentValue) async {
+                      final date = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime(2000),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(2101),
+                      );
+                      return date;
+                    },
+                  ),
+                  DateTimeField(
+                    format: dateFormat,
+                    decoration: const InputDecoration(
+                      labelText: 'End Date',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _endDate = value;
+                      });
+                    },
+                    onShowPicker: (context, currentValue) async {
+                      final date = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime(2000),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(2101),
+                      );
+                      return date;
+                    },
                   ),
                   const SizedBox(height: 16.0),
                   const Text(
@@ -165,38 +218,38 @@ class _MedicineFormState extends State<MedicineForm> {
                         'Selected Evening Time: ${_eveningTime!.format(context)}'),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
-                    onPressed: () async {
-                      DocumentReference documentReference =
-                      collectionRef.doc();
-
-                      MedicationModel medication= MedicationModel(medicationId: documentReference.id,
-                          name: _nameController.text,
-                          dosage: _dosageController.text,
-                          schedule: {
-                            'morning': _morningTime != null
-                                ? _morningTime!.format(context)
-                                : '',
-                            'noon': _noonTime != null
-                                ? _noonTime!.format(context)
-                                : '',
-                            'evening': _eveningTime != null
-                                ? _eveningTime!.format(context)
-                                : '',
-                          },
-                          inventory: {
-                            'quantity':
-                            int.tryParse(_quantityController.text) ?? 0,
-                            'reorderLevel':
-                            int.tryParse(_reorderLevelController.text) ?? 0,
-                          },
-                          userId: auth.currentUser!.uid.toString());
-
-                      Map<String, dynamic> medicationModel = medication.toMap();
-
-                      await documentReference.set(medicationModel).then((value) => print('done'));
+                    onPressed: () {
+                      // Create a map to store the medication data
+                      final Map<String, dynamic> medicationData = {
+                        'name': _nameController.text,
+                        'dosage': _dosageController.text,
+                        'schedule': {
+                          'morning': _morningTime != null
+                              ? _morningTime!.format(context)
+                              : null,
+                          'noon': _noonTime != null
+                              ? _noonTime!.format(context)
+                              : null,
+                          'evening': _eveningTime != null
+                              ? _eveningTime!.format(context)
+                              : null,
+                        },
+                        'inventory': {
+                          'quantity':
+                              int.tryParse(_quantityController.text) ?? 0,
+                          'reorderLevel':
+                              int.tryParse(_reorderLevelController.text) ?? 0,
+                        },
+                        'startDate': _startDate != null
+                            ? dateFormat.format(_startDate!)
+                            : null,
+                        'endDate': _endDate != null
+                            ? dateFormat.format(_endDate!)
+                            : null,
+                      };
 
                       // Handle the form data as needed (e.g., save to Firestore)
-                      print('Medication Data: $medicationModel');
+                      print('Medication Data: $medicationData');
                     },
                     child: const Text('Submit'),
                   ),

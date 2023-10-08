@@ -15,6 +15,8 @@ class SignUpPage extends StatelessWidget {
   //show loading
   bool isSigningUp = false;
 
+  SignUpPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
