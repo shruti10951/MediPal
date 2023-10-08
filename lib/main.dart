@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer(Duration(seconds: 2), () {
       if (user != null) {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => DashboardPage()));
+            context, MaterialPageRoute(builder: (context) => DashboardScreen()));
       } else {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => UserSelection()));
