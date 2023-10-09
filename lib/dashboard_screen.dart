@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
+import 'bottom_navigation.dart';
 import 'medicine_form.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -11,12 +12,10 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 0; // Current selected tab index
-
   void _navigateToMedicineForm(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MedicineForm()),
+      MaterialPageRoute(builder: (context) => const MedicineForm()),
     );
   }
 
@@ -45,66 +44,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        color: Colors.lightBlue[100], // Set the background color
-        child: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory),
-              label: 'Inventory',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-          unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: _onTabTapped,
-        ),
-      ),
+      //bottomNavigation bar
+      bottomNavigationBar: const BottomNavigation(),
+
+      //add action button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _navigateToMedicineForm(context); // Call the navigation function
         },
-        backgroundColor: Color.fromARGB(255, 176, 219, 254),
+        backgroundColor: const Color.fromARGB(255, 71, 78, 84),
         child: const Icon(Icons.add), // Set the button background color
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
-  }
-
-  void _onTabTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // You can add navigation logic here to switch between tabs.
-    // For example, you can use a switch statement to navigate to different screens.
-
-    switch (index) {
-      case 0:
-      // Navigate to Dashboard
-        break;
-      case 1:
-      // Navigate to Inventory
-        break;
-      case 2:
-      // Navigate to Profile
-        break;
-      case 3:
-      // Navigate to Settings
-        break;
-    }
   }
 
   Widget _buildCalendar(BuildContext context) {
@@ -118,10 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               itemCount: 7, // One week calendar
               itemBuilder: (BuildContext context, int index) {
                 final currentDate = DateTime.now().add(Duration(days: index));
-
-                //attention required
-                // final dayName = DateFormat('E').format(currentDate);
-                final dayName = 'monday';
+                final dayName = DateFormat('E').format(currentDate);
                 final dayOfMonth = currentDate.day.toString();
 
                 return Container(
@@ -165,7 +114,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       initialDate: currentDate,
       firstDate:
-      currentDate.subtract(const Duration(days: 365)), // One year ago
+          currentDate.subtract(const Duration(days: 365)), // One year ago
       lastDate: currentDate.add(const Duration(days: 365)), // One year from now
     );
 
@@ -194,35 +143,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildCard(int index) {
-  final List<String> times = ['Morning', 'Noon', 'Evening', 'Night']; // Replace with your times
-  final String time = times[index % 4]; // Example: Cycle through times
+    final List<String> times = [
+      'Morning',
+      'Noon',
+      'Evening',
+      'Night'
+    ]; // Replace with your times
+    final String time = times[index % 4]; // Example: Cycle through times
 
-  return Card(
-    margin: const EdgeInsets.all(8),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            time,
-            style: const TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
+    return Card(
+      margin: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              time,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        const Divider(height: 1, color: Colors.grey),
-        ListTile(
-          leading: const Icon(Icons.medical_services, size: 48.0, color: Colors.blue),
-          title: Text(
-            'Medicine Name $index', // Replace with actual medicine name
-            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          const Divider(height: 1, color: Colors.grey),
+          ListTile(
+            leading: const Icon(Icons.medical_services,
+                size: 48.0, color: Colors.blue),
+            title: Text(
+              'Medicine Name $index', // Replace with actual medicine name
+              style:
+                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text('Quantity: $index'), // Replace with actual quantity
           ),
-          subtitle: Text('Quantity: $index'), // Replace with actual quantity
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }
