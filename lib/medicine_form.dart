@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-
 
 class MedicineForm extends StatefulWidget {
   const MedicineForm({super.key});
@@ -26,6 +26,12 @@ class _MedicineFormState extends State<MedicineForm> {
 
   DateTime? _startDate;
   DateTime? _endDate;
+
+  CollectionReference medicationCollectionRef =
+      FirebaseFirestore.instance.collection('medications');
+  CollectionReference alarmCollectionRef =
+      FirebaseFirestore.instance.collection('alarms');
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -218,38 +224,89 @@ class _MedicineFormState extends State<MedicineForm> {
                         'Selected Evening Time: ${_eveningTime!.format(context)}'),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
-                    onPressed: () {
-                      // Create a map to store the medication data
-                      final Map<String, dynamic> medicationData = {
-                        'name': _nameController.text,
-                        'dosage': _dosageController.text,
-                        'schedule': {
-                          'morning': _morningTime != null
-                              ? _morningTime!.format(context)
-                              : null,
-                          'noon': _noonTime != null
-                              ? _noonTime!.format(context)
-                              : null,
-                          'evening': _eveningTime != null
-                              ? _eveningTime!.format(context)
-                              : null,
-                        },
-                        'inventory': {
-                          'quantity':
-                              int.tryParse(_quantityController.text) ?? 0,
-                          'reorderLevel':
-                              int.tryParse(_reorderLevelController.text) ?? 0,
-                        },
-                        'startDate': _startDate != null
-                            ? dateFormat.format(_startDate!)
-                            : null,
-                        'endDate': _endDate != null
-                            ? dateFormat.format(_endDate!)
-                            : null,
-                      };
+                    onPressed: () async {
+                      DocumentReference medicationDocumentReference =
+                          medicationCollectionRef.doc();
 
-                      // Handle the form data as needed (e.g., save to Firestore)
-                      print('Medication Data: $medicationData');
+                      MedicationModel medication = MedicationModel(
+                          medicationId: medicationDocumentReference.id,
+                          name: _nameController.text,
+                          dosage: _dosageController.text,
+                          schedule: {
+                            'morning': _morningTime != null
+                                ? _morningTime!.format(context)
+                                : '',
+                            'noon': _noonTime != null
+                                ? _noonTime!.format(context)
+                                : '',
+                            'evening': _eveningTime != null
+                                ? _eveningTime!.format(context)
+                                : '',
+                          },
+                          inventory: {
+                            'quantity':
+                                int.tryParse(_quantityController.text) ?? 0,
+                            'reorderLevel':
+                                int.tryParse(_reorderLevelController.text) ?? 0,
+                          },
+                          startDate: _startDate != null
+                              ? dateFormat.format(_startDate!)
+                              : "",
+                          endDate: _endDate != null
+                              ? dateFormat.format(_endDate!)
+                              : "",
+                          userId: auth.currentUser!.uid.toString());
+
+                      Map<String, dynamic> medicationModel = medication.toMap();
+
+                      await medicationDocumentReference.set(medicationModel);
+
+                      //all dates from start to end
+                      if(medication.startDate!= null && medication.endDate!=null){
+                        for (var date = _startDate;
+                        date!.isBefore(_endDate!) ||
+                            date.isAtSameMomentAs(_endDate!);
+                        date = date.add(Duration(days: 1))) {
+
+                          //all timings for each day
+                          for (var timeKey in medication.schedule.keys) {
+
+                            final timeValue = medication.schedule[timeKey];
+
+                            if (timeValue!.isNotEmpty) {
+
+                              final timeParts = timeValue.split(':');
+                              final hr = int.tryParse(timeParts[0]);
+                              final min = int.tryParse(timeParts[1]);
+
+                              if(hr!=null && min!=null){
+                                DateTime dateTime = DateTime(
+                                    date.year, date.month, date.day, hr, min);
+                                DocumentReference alarmDocumentReference =
+                                alarmCollectionRef.doc();
+
+                                var message = 'It is time to take $medication.name';
+
+                                AlarmModel alarmModel = AlarmModel(
+                                    alarmDocumentReference.id,
+                                    message,
+                                    auth.currentUser!.uid.toString(),
+                                    dateTime.toString(),
+                                    'pending',
+                                    medicationDocumentReference.id);
+
+                                Map<String, dynamic> alarm = alarmModel.toMap();
+                                await alarmDocumentReference
+                                    .set(alarm)
+                                    .then((value) => 'print print');
+                              }
+                            }
+                          }
+                        }
+
+                        // Handle the form data as needed (e.g., save to Firestore)
+                        print('Medication Data: $medicationModel');
+                      }
                     },
                     child: const Text('Submit'),
                   ),

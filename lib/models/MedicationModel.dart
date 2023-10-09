@@ -4,6 +4,8 @@ class MedicationModel {
   final String dosage;
   final Map<String, String> schedule;
   final Map<String, int> inventory;
+  final String startDate;
+  final String endDate;
   final String userId;
 
   MedicationModel({
@@ -12,6 +14,8 @@ class MedicationModel {
     required this.dosage,
     required this.schedule,
     required this.inventory,
+    required this.startDate,
+    required this.endDate,
     required this.userId,
   });
 
@@ -22,6 +26,8 @@ class MedicationModel {
       'dosage': dosage,
       'schedule': schedule,
       'inventory': inventory,
+      'startDate': startDate,
+      'endDate': endDate,
       'userId': userId,
     };
   }

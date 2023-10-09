@@ -46,7 +46,7 @@ class OTPForDependentPage extends StatelessWidget {
                     User? user = FirebaseAuth.instance.currentUser;
                     Map<String, dynamic> dependentMap = {'name': name, 'userId': user?.uid};
                     collectionReference.doc(user?.uid).set(dependentMap).then((value) {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => DashboardScreen()),
