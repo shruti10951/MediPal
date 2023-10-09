@@ -47,7 +47,7 @@ class OTPForUserPage extends StatelessWidget {
                   await user?.linkWithCredential(credential).then((value) async {
                     Map<String, dynamic> userMap = userModel.toMap();
                     await collectionReference.doc(auth.currentUser?.uid).set(userMap).then((value) => {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => DashboardScreen()),
                       ),
