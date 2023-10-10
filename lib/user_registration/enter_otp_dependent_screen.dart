@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/dashboard_screen.dart';
-import 'package:medipal/models/UserModel.dart';
+import 'package:medipal/home_screens/dashboard_screen.dart';
 
 class OTPForDependentPage extends StatelessWidget {
   final String verificationId;

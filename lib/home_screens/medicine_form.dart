@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/dashboard_screen.dart';
+import 'package:medipal/home_screens/dashboard_screen.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:intl/intl.dart';
@@ -279,13 +279,13 @@ class _MedicineFormState extends State<MedicineForm> {
                               String medicineName= _nameController.text;
                               String message =
                                   'It is time to take $medicineName';
-                              AlarmModel alarmModel = AlarmModel(
-                                  alarmDocumentReference.id,
-                                  message,
-                                  auth.currentUser!.uid.toString(),
-                                  dateTime.toString(),
-                                  'pending',
-                                  medicationDocumentReference.id);
+                              AlarmModel alarmModel= AlarmModel(alarmId: alarmDocumentReference.id,
+                                  message: message,
+                                  userId: auth.currentUser!.uid.toString(),
+                                  time: dateTime.toString(),
+                                  status: 'pending',
+                                  medicationId: medicationDocumentReference.id);
+
                               Map<String, dynamic> alarm = alarmModel.toMap();
                               await alarmDocumentReference
                                   .set(alarm);

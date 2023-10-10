@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/dashboard_screen.dart';
+import 'package:medipal/home_screens/dashboard_screen.dart';
 import 'package:medipal/user_registration/forgot_password_screen.dart';
 import 'package:medipal/user_registration/sign_up_screen.dart';
 
