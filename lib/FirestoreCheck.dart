@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -7,12 +8,12 @@ class FireStoreCheck {
   Future<void> checkFirestore() async {
     await Firebase.initializeApp();
     final firestore = FirebaseFirestore.instance;
-    print('hello');
+    final user= FirebaseAuth.instance.currentUser;
 
     try {
       QuerySnapshot querySnapshot = await firestore
           .collection('alarms')
-          .where('userId', isEqualTo: 'avc')
+          .where('userId', isEqualTo: user?.uid)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
