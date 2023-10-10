@@ -22,7 +22,7 @@ class SignUpPage extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Noo'),
+        title: Text('Sign Up'),
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),

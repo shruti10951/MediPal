@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/dashboard_screen.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
@@ -261,52 +261,46 @@ class _MedicineFormState extends State<MedicineForm> {
 
                       await medicationDocumentReference.set(medicationModel);
 
-                      //all dates from start to end
-                      if(medication.startDate!= null && medication.endDate!=null){
-                        for (var date = _startDate;
-                        date!.isBefore(_endDate!) ||
-                            date.isAtSameMomentAs(_endDate!);
-                        date = date.add(Duration(days: 1))) {
-
-                          //all timings for each day
-                          for (var timeKey in medication.schedule.keys) {
-
-                            final timeValue = medication.schedule[timeKey];
-
-                            if (timeValue!.isNotEmpty) {
-
-                              final timeParts = timeValue.split(':');
-                              final hr = int.tryParse(timeParts[0]);
-                              final min = int.tryParse(timeParts[1]);
-
-                              if(hr!=null && min!=null){
-                                DateTime dateTime = DateTime(
-                                    date.year, date.month, date.day, hr, min);
-                                DocumentReference alarmDocumentReference =
-                                alarmCollectionRef.doc();
-
-                                var message = 'It is time to take $medication.name';
-
-                                AlarmModel alarmModel = AlarmModel(
-                                    alarmDocumentReference.id,
-                                    message,
-                                    auth.currentUser!.uid.toString(),
-                                    dateTime.toString(),
-                                    'pending',
-                                    medicationDocumentReference.id);
-
-                                Map<String, dynamic> alarm = alarmModel.toMap();
-                                await alarmDocumentReference
-                                    .set(alarm)
-                                    .then((value) => 'print print');
-                              }
+                      for (var date = _startDate;
+                          date!.isBefore(_endDate!.add(Duration(days: 1)));
+                          date = date.add(Duration(days: 1))) {
+                        for (var key in medication.schedule.keys) {
+                          final value = medication.schedule[key];
+                          if (value != null && value.isNotEmpty) {
+                            final hrMin = value.split(' ');
+                            final timeParts = hrMin[0].split(':');
+                            final hr = int.tryParse(timeParts[0]);
+                            final min = int.tryParse(timeParts[1]);
+                            if (hr != null && min != null) {
+                              DateTime dateTime = DateTime(
+                                  date.year, date.month, date.day, hr, min);
+                              DocumentReference alarmDocumentReference =
+                                  alarmCollectionRef.doc();
+                              String medicineName= _nameController.text;
+                              String message =
+                                  'It is time to take $medicineName';
+                              AlarmModel alarmModel = AlarmModel(
+                                  alarmDocumentReference.id,
+                                  message,
+                                  auth.currentUser!.uid.toString(),
+                                  dateTime.toString(),
+                                  'pending',
+                                  medicationDocumentReference.id);
+                              Map<String, dynamic> alarm = alarmModel.toMap();
+                              await alarmDocumentReference
+                                  .set(alarm);
                             }
                           }
                         }
-
-                        // Handle the form data as needed (e.g., save to Firestore)
-                        print('Medication Data: $medicationModel');
                       }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                      );
+
+                      // Handle the form data as needed (e.g., save to Firestore)
+                      // print('Medication Data: $medicationModel');
                     },
                     child: const Text('Submit'),
                   ),

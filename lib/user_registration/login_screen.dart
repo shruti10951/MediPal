@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome'),
+        title: Text('Login'),
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
