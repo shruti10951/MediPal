@@ -1,7 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/models/AlarmModel.dart';
+import 'package:medipal/models/MedicationModel.dart';
 import 'bottom_navigation.dart';
 import 'medicine_form.dart';
+
+FirebaseAuth auth= FirebaseAuth.instance;
+FirebaseFirestore firestore= FirebaseFirestore.instance;
+final userId= auth.currentUser?.uid;
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -125,24 +133,109 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildDynamicCards() {
-    // Implement your dynamic vertical cards here based on data
-    // You can use a ListView.builder to create a list of cards.
-    // Provide functions to fetch and handle the card data.
-    return ListView.builder(
-      itemCount: _getCardCount(), // Replace with the actual count of cards
-      itemBuilder: (BuildContext context, int index) {
-        return _buildCard(index); // Create individual cards
+    return FutureBuilder(
+      future: Future.wait([
+        firestore.collection('alarms').where('userId', isEqualTo: userId).get(),
+        firestore.collection('medications').where('userId', isEqualTo: userId).get(),
+      ]),
+      builder: (BuildContext context, AsyncSnapshot<List<QuerySnapshot>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // While waiting for the future to complete, you can show a loading indicator.
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // Handle error here.
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          // If there is no data, you can show a message or placeholder.
+          return Text('No data found.');
+        } else {
+          // When the futures are complete and have data, you can build your ListView.
+          final alarmQuerySnapshot = snapshot.data![0];
+          final medicineQuerySnapshot = snapshot.data![1];
+
+          // Build your widgets here using alarmQuerySnapshot and medicationQuerySnapshot
+          // Example: Loop through alarm data and build cards
+          return ListView.builder(
+            itemCount: alarmQuerySnapshot.size, // Replace with the actual count of cards
+            itemBuilder: (BuildContext context, int index) {
+              final QueryDocumentSnapshot alarmDocumentSnapshot = alarmQuerySnapshot.docs[index];
+              final AlarmModel alarmModel = AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+              final Map<String, dynamic> alarm = alarmModel.toMap();
+
+              // Find the corresponding medication document
+              final String medicationId = alarm['medicationId'];
+              final DocumentSnapshot? medicationDocumentSnapshot = medicineQuerySnapshot.docs
+                  .firstWhere((doc) => doc['medicationId'] == medicationId);
+
+              if (medicationDocumentSnapshot != null) {
+                final MedicationModel medicationModel = MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+                final Map<String, dynamic> medicine = medicationModel.toMap();
+
+                final String name = medicine['name'];
+                final String time = alarm['time'];
+                final String quantity= medicine['dosage'];
+
+                return Card(
+                  margin: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          time,
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const Divider(height: 1, color: Colors.grey),
+                      ListTile(
+                        leading: const Icon(Icons.medical_services, size: 48.0, color: Colors.blue),
+                        title: Text(
+                          name, // Display the medication name
+                          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text('Quantity: $quantity'), // Display the quantity from the alarm
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                // Medication not found for this alarm
+                return Card(
+                  margin: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Medication not found',
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          );
+        }
       },
     );
   }
 
-  int _getCardCount() {
-    // Implement a function to determine the number of cards based on data
-    // Return the actual count of cards
-    return 10; // Example count, replace with your logic
-  }
+
 
   Widget _buildCard(int index) {
+
+
+
     final List<String> times = [
       'Morning',
       'Noon',

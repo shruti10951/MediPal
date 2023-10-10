@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MedicationModel {
   final String medicationId;
   final String name;
   final String dosage;
-  final Map<String, String> schedule;
-  final Map<String, int> inventory;
+  final Map<String, dynamic> schedule;
+  final Map<String, dynamic> inventory;
   final String startDate;
   final String endDate;
   final String userId;
@@ -18,6 +20,20 @@ class MedicationModel {
     required this.endDate,
     required this.userId,
   });
+
+  factory MedicationModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    return MedicationModel(
+      medicationId: data['medicationId'],
+      name: data['name'],
+      dosage: data['dosage'],
+      schedule: data['schedule'],
+      inventory: data['inventory'],
+      startDate: data['startDate'],
+      endDate: data['endDate'],
+      userId: data['userId'],
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {

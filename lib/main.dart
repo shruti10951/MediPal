@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/FirestoreCheck.dart';
-import 'package:medipal/dashboard_screen.dart';
-import 'package:medipal/user_selection_screen.dart';
+import 'package:medipal/firebase/FirestoreCheck.dart';
+import 'package:medipal/home_screens/dashboard_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:medipal/user_registration/user_selection_screen.dart';
 
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();

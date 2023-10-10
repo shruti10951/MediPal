@@ -20,6 +20,8 @@ class InventoryScreen extends StatelessWidget {
       children: [
         _buildInventoryCard(),
         _buildInventoryCard(),
+        _buildInventoryCard(),
+        _buildInventoryCard(),
         // Add more inventory cards here
       ],
     );
