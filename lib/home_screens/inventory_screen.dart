@@ -46,7 +46,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
       ),
       body: Column(
         children: [
-          Expanded(child: FutureBuilder(
+          Expanded(
+              child: FutureBuilder(
             future: fetchData(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,77 +65,74 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-
-  Widget _buildInventoryList() {
-    // Replace this with your actual inventory data or use a ListView.builder
-    return ListView(
-      children: [
-        // _buildInventoryCard(),
-        // _buildInventoryCard(),
-        // _buildInventoryCard(),
-        // _buildInventoryCard(),
-        // Add more inventory cards here
-      ],
-    );
-  }
-
   Widget _buildInventoryCard(
       List<QueryDocumentSnapshot> medicationQuerySnapshot) {
     return ListView.builder(
-        itemCount: 4, itemBuilder: (BuildContext context, int index) {
-          final QueryDocumentSnapshot medicationDocumentSnapshot= medicationQuerySnapshot[index];
-          final MedicationModel medicationModel= MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+        itemCount: medicationQuerySnapshot.length,
+        itemBuilder: (BuildContext context, int index) {
+          final QueryDocumentSnapshot medicationDocumentSnapshot =
+              medicationQuerySnapshot[index];
+          final MedicationModel medicationModel =
+              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
-          final name= medication['name'];
-          final quantity= medication['inventory']['quantity'];
-          final recorder= medication['inventory']['recorderLevel'];
-    });
-    return Card(
-      margin: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            leading: Image.asset(
-                'assets/images/MediPal.png'), // Replace with your image asset
-            title: const Text(
-              'Medicine Name',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            subtitle: Column(
+          final name = medication['name'];
+          final quantity = medication['inventory']['quantity'];
+
+          //add this in ui
+          final recorder = medication['inventory']['recorderLevel'];
+
+          return Card(
+            margin: const EdgeInsets.all(8),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Divider(height: 1, color: Colors.grey), // Vertical line
-                const SizedBox(height: 8),
-                const Text('Type: Medicine Type'),
-                const Text('Quantity: X units'),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        // Implement edit functionality
-                      },
+                ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: Image.asset('assets/images/MediPal.png'),
+                  // Replace with your image asset
+                  title: Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        // Implement delete functionality
-                      },
-                    ),
-                  ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Divider(height: 1, color: Colors.grey),
+                      // Vertical line
+                      const SizedBox(height: 8),
+                      //for this make sure we have type in medicine form
+                      const Text('Type: Medicine Type'),
+                      Text('Quantity: $quantity'),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              // Implement edit functionality
+                              //here show a dialogue box or something to allow user to edit
+
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              // Implement delete functionality
+                              // again here show some warning message
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }
