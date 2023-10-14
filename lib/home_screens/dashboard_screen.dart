@@ -66,7 +66,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Row(
           children: [
             Image.asset(
-              'assets/images/MediPal.png',
+              'assets/images/medipal.png',
               width: 30,
               height: 30,
             ),
