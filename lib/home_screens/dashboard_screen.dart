@@ -23,7 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
     final alarmQuery =
-    firestore.collection('alarms').where('userId', isEqualTo: userId).get();
+        firestore.collection('alarms').where('userId', isEqualTo: userId).get();
     final medicationQuery = firestore
         .collection('medications')
         .where('userId', isEqualTo: userId)
@@ -84,8 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  //PLEASE DO SOMETHING ABOUT THIS.
-                  return CircularProgressIndicator();
+                  return _buildLoadingIndicator(); // Show loading indicator
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
@@ -114,6 +113,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              const Color.fromARGB(255, 71, 78, 84),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            'Loading...',
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCalendar(BuildContext context) {
     return FutureBuilder(
       future: fetchData(),
@@ -136,7 +159,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemCount: 7,
                     itemBuilder: (BuildContext context, int index) {
                       final currentDate =
-                      DateTime.now().add(Duration(days: index));
+                          DateTime.now().add(Duration(days: index));
                       final dayName = DateFormat('E').format(currentDate);
                       final dayOfMonth = currentDate.day.toString();
 
@@ -183,7 +206,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _openCalendar(BuildContext context, List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
+  void _openCalendar(BuildContext context,
+      List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
     final DateTime currentDate = DateTime.now();
     final DateTime? selectedDate = await showDatePicker(
       context: context,
@@ -202,8 +226,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
     // print(currentDate);
     final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
-    alarmQuerySnapshot.where((element) {
-      final Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
+        alarmQuerySnapshot.where((element) {
+      final Map<String, dynamic>? data =
+          element.data() as Map<String, dynamic>?;
       if (data != null) {
         final String? date = data['time']?.toString().split(' ')[0];
         // print(date);
@@ -219,33 +244,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  Widget _buildDynamicCards(
-      List<QueryDocumentSnapshot> alarmQuerySnapshot,
+  Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
         final QueryDocumentSnapshot alarmDocumentSnapshot =
-        alarmQuerySnapshot[index];
+            alarmQuerySnapshot[index];
 
         final AlarmModel alarmModel =
-        AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+            AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
         final Map<String, dynamic> alarm = alarmModel.toMap();
         final String medicationId = alarm['medicationId'];
 
         QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
             .firstWhere((element) => element['medicationId'] == medicationId,
-            orElse: null);
+                orElse: null);
 
         if (medicationDocument != null) {
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocument);
+              MedicationModel.fromDocumentSnapshot(medicationDocument);
           final Map<String, dynamic> medicine = medicationModel.toMap();
           final String name = medicine['name'];
           final String time = alarm['time'];
           final String quantity = medicine['dosage'];
 
-          DateTime dateTime= DateTime.parse(time);
+          DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
           String formattedTime = DateFormat.Hm().format(dateTime);
