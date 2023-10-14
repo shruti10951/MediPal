@@ -7,19 +7,51 @@ import 'package:medipal/models/MedicationModel.dart';
 import 'bottom_navigation.dart';
 import 'medicine_form.dart';
 
-FirebaseAuth auth= FirebaseAuth.instance;
-FirebaseFirestore firestore= FirebaseFirestore.instance;
-final userId= auth.currentUser?.uid;
+FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseFirestore firestore = FirebaseFirestore.instance;
+final userId = auth.currentUser?.uid;
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  List<QueryDocumentSnapshot> filteredAlarms = [];
+
+  Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
+    final alarmQuery =
+    firestore.collection('alarms').where('userId', isEqualTo: userId).get();
+    final medicationQuery = firestore
+        .collection('medications')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    List<QueryDocumentSnapshot> alarmDocumentList = [];
+    List<QueryDocumentSnapshot> medicationDocumentList = [];
+
+    try {
+      final results = await Future.wait([alarmQuery, medicationQuery]);
+      final alarmQuerySnapshot = results[0] as QuerySnapshot;
+      final medicationQuerySnapshot = results[1] as QuerySnapshot;
+
+      if (alarmQuerySnapshot.docs.isNotEmpty) {
+        alarmDocumentList = alarmQuerySnapshot.docs.toList();
+      }
+
+      if (medicationQuerySnapshot.docs.isNotEmpty) {
+        medicationDocumentList = medicationQuerySnapshot.docs.toList();
+      }
+
+      return [alarmDocumentList, medicationDocumentList];
+    } catch (error) {
+      print('Error retrieving documents: $error');
+      return null;
+    }
+  }
+
   void _navigateToMedicineForm(BuildContext context) {
     Navigator.push(
       context,
@@ -35,243 +67,241 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Image.asset(
               'assets/images/MediPal.png',
-              width: 30, // Adjust the width as needed
-              height: 30, // Adjust the height as needed
+              width: 30,
+              height: 30,
             ),
-            const SizedBox(width: 8), // Add spacing
-            const Text('MediPal'), // Title next to the image
+            const SizedBox(width: 8),
+            const Text('MediPal'),
           ],
         ),
       ),
       body: Column(
         children: [
-          _buildCalendar(context), // Horizontal scrollable calendar
-          const Divider(), // Horizontal line
+          _buildCalendar(context),
+          const Divider(),
           Expanded(
-            child: _buildDynamicCards(), // Dynamic vertical cards
+            child: FutureBuilder(
+              future: fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  //PLEASE DO SOMETHING ABOUT THIS.
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  final alarmQuerySnapshot = snapshot.data![0];
+                  final medicineQuerySnapshot = snapshot.data![1];
+                  return _buildDynamicCards(
+                      filteredAlarms.isEmpty
+                          ? alarmQuerySnapshot
+                          : filteredAlarms,
+                      medicineQuerySnapshot);
+                }
+              },
+            ),
           ),
         ],
       ),
-      //bottomNavigation bar
       bottomNavigationBar: const BottomNavigation(),
-
-      //add action button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _navigateToMedicineForm(context); // Call the navigation function
+          _navigateToMedicineForm(context);
         },
         backgroundColor: const Color.fromARGB(255, 71, 78, 84),
-        child: const Icon(Icons.add), // Set the button background color
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
   Widget _buildCalendar(BuildContext context) {
-    return SizedBox(
-      height: 100, // Adjust the height as needed
-      child: Row(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 7, // One week calendar
-              itemBuilder: (BuildContext context, int index) {
-                final currentDate = DateTime.now().add(Duration(days: index));
-                final dayName = DateFormat('E').format(currentDate);
-                final dayOfMonth = currentDate.day.toString();
-
-                return Container(
-                  width: 60, // Adjust the width as needed
-                  margin: const EdgeInsets.all(4),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        dayOfMonth,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(dayName),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            onPressed: () {
-              // Open the calendar when the button is clicked
-              _openCalendar(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _openCalendar(BuildContext context) async {
-    final DateTime currentDate = DateTime.now();
-
-    final DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: currentDate,
-      firstDate:
-          currentDate.subtract(const Duration(days: 365)), // One year ago
-      lastDate: currentDate.add(const Duration(days: 365)), // One year from now
-    );
-
-    if (selectedDate != null) {
-      // Handle the selected date here (e.g., update the UI with the selected date)
-      print('Selected date: $selectedDate');
-    }
-  }
-
-  Widget _buildDynamicCards() {
     return FutureBuilder(
-      future: Future.wait([
-        firestore.collection('alarms').where('userId', isEqualTo: userId).get(),
-        firestore.collection('medications').where('userId', isEqualTo: userId).get(),
-      ]),
-      builder: (BuildContext context, AsyncSnapshot<List<QuerySnapshot>> snapshot) {
+      future: fetchData(),
+      builder: (BuildContext context,
+          AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // While waiting for the future to complete, you can show a loading indicator.
+          //PLEASE DO SOMETHING ABOUT THIS.
           return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          // Handle error here.
+        } else if (snapshot.hasError || snapshot.data == null) {
           return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          // If there is no data, you can show a message or placeholder.
-          return Text('No data found.');
         } else {
-          // When the futures are complete and have data, you can build your ListView.
           final alarmQuerySnapshot = snapshot.data![0];
-          final medicineQuerySnapshot = snapshot.data![1];
+          return SizedBox(
+            height: 100,
+            child: Row(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 7,
+                    itemBuilder: (BuildContext context, int index) {
+                      final currentDate =
+                      DateTime.now().add(Duration(days: index));
+                      final dayName = DateFormat('E').format(currentDate);
+                      final dayOfMonth = currentDate.day.toString();
 
-          // Build your widgets here using alarmQuerySnapshot and medicationQuerySnapshot
-          // Example: Loop through alarm data and build cards
-          return ListView.builder(
-            itemCount: alarmQuerySnapshot.size, // Replace with the actual count of cards
-            itemBuilder: (BuildContext context, int index) {
-              final QueryDocumentSnapshot alarmDocumentSnapshot = alarmQuerySnapshot.docs[index];
-              final AlarmModel alarmModel = AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
-              final Map<String, dynamic> alarm = alarmModel.toMap();
-
-              // Find the corresponding medication document
-              final String medicationId = alarm['medicationId'];
-              final DocumentSnapshot? medicationDocumentSnapshot = medicineQuerySnapshot.docs
-                  .firstWhere((doc) => doc['medicationId'] == medicationId);
-
-              if (medicationDocumentSnapshot != null) {
-                final MedicationModel medicationModel = MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
-                final Map<String, dynamic> medicine = medicationModel.toMap();
-
-                final String name = medicine['name'];
-                final String time = alarm['time'];
-                final String quantity= medicine['dosage'];
-
-                return Card(
-                  margin: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          time,
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                      return GestureDetector(
+                        onTap: () {
+                          _onDateTapped(currentDate, alarmQuerySnapshot);
+                        },
+                        child: Container(
+                          width: 60,
+                          margin: const EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blue),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                dayOfMonth,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(dayName),
+                            ],
                           ),
                         ),
-                      ),
-                      const Divider(height: 1, color: Colors.grey),
-                      ListTile(
-                        leading: const Icon(Icons.medical_services, size: 48.0, color: Colors.blue),
-                        title: Text(
-                          name, // Display the medication name
-                          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text('Quantity: $quantity'), // Display the quantity from the alarm
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                );
-              } else {
-                // Medication not found for this alarm
-                return Card(
-                  margin: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Medication not found',
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () {
+                    _openCalendar(context, alarmQuerySnapshot);
+                  },
+                ),
+              ],
+            ),
           );
         }
       },
     );
   }
 
+  void _openCalendar(BuildContext context, List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
+    final DateTime currentDate = DateTime.now();
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: currentDate,
+      firstDate: currentDate.subtract(const Duration(days: 365)),
+      lastDate: currentDate.add(const Duration(days: 365)),
+    );
 
+    if (selectedDate != null) {
+      print('Selected date: $selectedDate');
+      _onDateTapped(selectedDate, alarmQuerySnapshot);
+    }
+  }
 
-  Widget _buildCard(int index) {
+  void _onDateTapped(
+      DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
+    // print(currentDate);
+    final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
+    alarmQuerySnapshot.where((element) {
+      final Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
+      if (data != null) {
+        final String? date = data['time']?.toString().split(' ')[0];
+        // print(date);
+        // return 'It is time to take sk' == data['message'].toString();
+        return date == currentDate.toString().split(' ')[0];
+      } else {
+        return false;
+      }
+    }).toList();
 
+    setState(() {
+      filteredAlarms = alarmFilteredSnapshot;
+    });
+  }
 
+  Widget _buildDynamicCards(
+      List<QueryDocumentSnapshot> alarmQuerySnapshot,
+      List<QueryDocumentSnapshot> medicineQuerySnapshot) {
+    return ListView.builder(
+      itemCount: alarmQuerySnapshot.length,
+      itemBuilder: (BuildContext context, int index) {
+        final QueryDocumentSnapshot alarmDocumentSnapshot =
+        alarmQuerySnapshot[index];
 
-    final List<String> times = [
-      'Morning',
-      'Noon',
-      'Evening',
-      'Night'
-    ]; // Replace with your times
-    final String time = times[index % 4]; // Example: Cycle through times
+        final AlarmModel alarmModel =
+        AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+        final Map<String, dynamic> alarm = alarmModel.toMap();
+        final String medicationId = alarm['medicationId'];
 
-    return Card(
-      margin: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              time,
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
+        QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
+            .firstWhere((element) => element['medicationId'] == medicationId,
+            orElse: null);
+
+        if (medicationDocument != null) {
+          final MedicationModel medicationModel =
+          MedicationModel.fromDocumentSnapshot(medicationDocument);
+          final Map<String, dynamic> medicine = medicationModel.toMap();
+          final String name = medicine['name'];
+          final String time = alarm['time'];
+          final String quantity = medicine['dosage'];
+
+          DateTime dateTime= DateTime.parse(time);
+
+          //check this once again for time and date
+          String formattedTime = DateFormat.Hm().format(dateTime);
+
+          return Card(
+            margin: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    formattedTime,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Divider(height: 1, color: Colors.grey),
+                ListTile(
+                  leading: const Icon(Icons.medical_services,
+                      size: 48.0, color: Colors.blue),
+                  title: Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text('Quantity: $quantity'),
+                ),
+              ],
             ),
-          ),
-          const Divider(height: 1, color: Colors.grey),
-          ListTile(
-            leading: const Icon(Icons.medical_services,
-                size: 48.0, color: Colors.blue),
-            title: Text(
-              'Medicine Name $index', // Replace with actual medicine name
-              style:
-                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          );
+        } else {
+          return const Card(
+            margin: EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Medication not found',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            subtitle: Text('Quantity: $index'), // Replace with actual quantity
-          ),
-        ],
-      ),
+          );
+        }
+      },
     );
   }
 }
