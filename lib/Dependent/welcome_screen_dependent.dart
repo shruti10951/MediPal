@@ -65,7 +65,7 @@ class WelcomeScreenDependent extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const LoginScreenDependent(),
+                        builder: (context) => LoginScreenDependent(),
                       ));
                 },
                 style: ElevatedButton.styleFrom(
