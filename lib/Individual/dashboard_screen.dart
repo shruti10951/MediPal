@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-import 'bottom_navigation.dart';
+import '../bottom_navigation.dart';
 import 'medicine_form.dart';
 
-
-//change it to ui wala screen
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
@@ -17,6 +15,7 @@ class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
@@ -53,7 +52,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return null;
     }
   }
-
   void _navigateToMedicineForm(BuildContext context) {
     Navigator.push(
       context,
@@ -69,11 +67,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Image.asset(
               'assets/images/medipal.png',
-              width: 30,
-              height: 30,
+              width: 30, // Adjust the width as needed
+              height: 30, // Adjust the height as needed
             ),
-            const SizedBox(width: 8),
-            const Text('MediPal'),
+            const SizedBox(width: 8), // Add spacing
+            const Text('MediPal'), // Title next to the image
           ],
         ),
       ),
@@ -104,13 +102,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
+      //bottomNavigation bar
       bottomNavigationBar: const BottomNavigation(),
+
+      //add action button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _navigateToMedicineForm(context);
+          _navigateToMedicineForm(context); // Call the navigation function
         },
         backgroundColor: const Color.fromARGB(255, 71, 78, 84),
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add), // Set the button background color
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -187,14 +188,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _openCalendar(BuildContext context, List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
     final DateTime currentDate = DateTime.now();
+
     final DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: currentDate,
-      firstDate: currentDate.subtract(const Duration(days: 365)),
-      lastDate: currentDate.add(const Duration(days: 365)),
+      firstDate:
+          currentDate.subtract(const Duration(days: 365)), // One year ago
+      lastDate: currentDate.add(const Duration(days: 365)), // One year from now
     );
 
     if (selectedDate != null) {
+      // Handle the selected date here (e.g., update the UI with the selected date)
       print('Selected date: $selectedDate');
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
@@ -221,9 +225,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  Widget _buildDynamicCards(
-      List<QueryDocumentSnapshot> alarmQuerySnapshot,
+  Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
+    // Implement your dynamic vertical cards here based on data
+    // You can use a ListView.builder to create a list of cards.
+    // Provide functions to fetch and handle the card data.
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
@@ -306,4 +312,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
     );
   }
+
 }

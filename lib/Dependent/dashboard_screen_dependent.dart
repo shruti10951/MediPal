@@ -4,28 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-import 'bottom_navigation.dart';
-import 'medicine_form.dart';
+import '../bottom_navigation.dart';
 
-
-//change it to ui wala screen
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
 
-class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+class DashboardScreenDependent extends StatefulWidget {
+  const DashboardScreenDependent({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreenDependent> {
   List<QueryDocumentSnapshot> filteredAlarms = [];
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
     final alarmQuery =
-    firestore.collection('alarms').where('userId', isEqualTo: userId).get();
+        firestore.collection('alarms').where('userId', isEqualTo: userId).get();
     final medicationQuery = firestore
         .collection('medications')
         .where('userId', isEqualTo: userId)
@@ -54,13 +52,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  void _navigateToMedicineForm(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const MedicineForm()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,11 +60,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Image.asset(
               'assets/images/medipal.png',
-              width: 30,
-              height: 30,
+              width: 30, // Adjust the width as needed
+              height: 30, // Adjust the height as needed
             ),
-            const SizedBox(width: 8),
-            const Text('MediPal'),
+            const SizedBox(width: 8), // Add spacing
+            const Text('MediPal'), // Title next to the image
           ],
         ),
       ),
@@ -104,15 +95,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
+      //bottomNavigation bar
       bottomNavigationBar: const BottomNavigation(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _navigateToMedicineForm(context);
-        },
-        backgroundColor: const Color.fromARGB(255, 71, 78, 84),
-        child: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -138,7 +122,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemCount: 7,
                     itemBuilder: (BuildContext context, int index) {
                       final currentDate =
-                      DateTime.now().add(Duration(days: index));
+                          DateTime.now().add(Duration(days: index));
                       final dayName = DateFormat('E').format(currentDate);
                       final dayOfMonth = currentDate.day.toString();
 
@@ -185,16 +169,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _openCalendar(BuildContext context, List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
+  void _openCalendar(BuildContext context,
+      List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
     final DateTime currentDate = DateTime.now();
+
     final DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: currentDate,
-      firstDate: currentDate.subtract(const Duration(days: 365)),
-      lastDate: currentDate.add(const Duration(days: 365)),
+      firstDate:
+          currentDate.subtract(const Duration(days: 365)), // One year ago
+      lastDate: currentDate.add(const Duration(days: 365)), // One year from now
     );
 
     if (selectedDate != null) {
+      // Handle the selected date here (e.g., update the UI with the selected date)
       print('Selected date: $selectedDate');
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
@@ -204,8 +192,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
     // print(currentDate);
     final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
-    alarmQuerySnapshot.where((element) {
-      final Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
+        alarmQuerySnapshot.where((element) {
+      final Map<String, dynamic>? data =
+          element.data() as Map<String, dynamic>?;
       if (data != null) {
         final String? date = data['time']?.toString().split(' ')[0];
         // print(date);
@@ -221,33 +210,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  Widget _buildDynamicCards(
-      List<QueryDocumentSnapshot> alarmQuerySnapshot,
+  Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
+    // Implement your dynamic vertical cards here based on data
+    // You can use a ListView.builder to create a list of cards.
+    // Provide functions to fetch and handle the card data.
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
         final QueryDocumentSnapshot alarmDocumentSnapshot =
-        alarmQuerySnapshot[index];
+            alarmQuerySnapshot[index];
 
         final AlarmModel alarmModel =
-        AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+            AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
         final Map<String, dynamic> alarm = alarmModel.toMap();
         final String medicationId = alarm['medicationId'];
 
         QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
             .firstWhere((element) => element['medicationId'] == medicationId,
-            orElse: null);
+                orElse: null);
 
         if (medicationDocument != null) {
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocument);
+              MedicationModel.fromDocumentSnapshot(medicationDocument);
           final Map<String, dynamic> medicine = medicationModel.toMap();
           final String name = medicine['name'];
           final String time = alarm['time'];
           final String quantity = medicine['dosage'];
 
-          DateTime dateTime= DateTime.parse(time);
+          DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
           String formattedTime = DateFormat.Hm().format(dateTime);

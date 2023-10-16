@@ -25,10 +25,8 @@ class NotificationBody {
             importance: Importance.max,
             priority: Priority.high,
             largeIcon: const DrawableResourceAndroidBitmap('medipal'),
-            styleInformation: BigPictureStyleInformation(
-              FilePathAndroidBitmap('/mipmap/medipal.png'),
-              hideExpandedLargeIcon: false,
-            ));
+          fullScreenIntent: true,
+            );
     var not = NotificationDetails(android: androidNotificationDetails);
     await fln.show(0, title, body, not);
   }
