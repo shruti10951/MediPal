@@ -116,13 +116,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(
-              const Color.fromARGB(255, 71, 78, 84),
+              Color.fromARGB(255, 71, 78, 84),
             ),
           ),
           SizedBox(height: 16.0),
@@ -146,7 +146,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           //PLEASE DO SOMETHING ABOUT THIS.
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         } else if (snapshot.hasError || snapshot.data == null) {
           return Text('Error: ${snapshot.error}');
         } else {
