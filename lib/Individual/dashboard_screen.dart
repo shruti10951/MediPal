@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/home_screens/bottom_navigation.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-import '../bottom_navigation.dart';
 import 'medicine_form.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -24,7 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
     final alarmQuery =
-    firestore.collection('alarms').where('userId', isEqualTo: userId).get();
+        firestore.collection('alarms').where('userId', isEqualTo: userId).get();
     final medicationQuery = firestore
         .collection('medications')
         .where('userId', isEqualTo: userId)
@@ -52,6 +52,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return null;
     }
   }
+
   void _navigateToMedicineForm(BuildContext context) {
     Navigator.push(
       context,
@@ -100,10 +101,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
             ),
           ),
+          const BottomNavigation(),
         ],
       ),
-      //bottomNavigation bar
-      bottomNavigationBar: const BottomNavigation(),
 
       //add action button
       floatingActionButton: FloatingActionButton(
@@ -139,7 +139,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemCount: 7,
                     itemBuilder: (BuildContext context, int index) {
                       final currentDate =
-                      DateTime.now().add(Duration(days: index));
+                          DateTime.now().add(Duration(days: index));
                       final dayName = DateFormat('E').format(currentDate);
                       final dayOfMonth = currentDate.day.toString();
 
@@ -186,7 +186,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _openCalendar(BuildContext context, List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
+  void _openCalendar(BuildContext context,
+      List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
     final DateTime currentDate = DateTime.now();
 
     final DateTime? selectedDate = await showDatePicker(
@@ -208,8 +209,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
     // print(currentDate);
     final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
-    alarmQuerySnapshot.where((element) {
-      final Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
+        alarmQuerySnapshot.where((element) {
+      final Map<String, dynamic>? data =
+          element.data() as Map<String, dynamic>?;
       if (data != null) {
         final String? date = data['time']?.toString().split(' ')[0];
         // print(date);
@@ -234,26 +236,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
         final QueryDocumentSnapshot alarmDocumentSnapshot =
-        alarmQuerySnapshot[index];
+            alarmQuerySnapshot[index];
 
         final AlarmModel alarmModel =
-        AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+            AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
         final Map<String, dynamic> alarm = alarmModel.toMap();
         final String medicationId = alarm['medicationId'];
 
         QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
             .firstWhere((element) => element['medicationId'] == medicationId,
-            orElse: null);
+                orElse: null);
 
         if (medicationDocument != null) {
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocument);
+              MedicationModel.fromDocumentSnapshot(medicationDocument);
           final Map<String, dynamic> medicine = medicationModel.toMap();
           final String name = medicine['name'];
           final String time = alarm['time'];
           final String quantity = medicine['dosage'];
 
-          DateTime dateTime= DateTime.parse(time);
+          DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
           String formattedTime = DateFormat.Hm().format(dateTime);
@@ -312,5 +314,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
     );
   }
-
 }
