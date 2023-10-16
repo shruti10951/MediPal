@@ -1,7 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/models/UserModel.dart';
+import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({super.key});
+  RegisterScreen({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+
+  final auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +92,13 @@ class RegisterScreen extends StatelessWidget {
                   _buildPasswordField(Icons.lock, 'Password'),
                   const SizedBox(height: 24.0),
                   ElevatedButton(
-                    onPressed: () {
-                      // Implement registration logic
+                    onPressed: () async {
+                      // Add your sign-up logic here
+                      await auth
+                          .createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text)
+                          .then((value) => verify(context, phoneController.text));
                     },
                     child: const Text('Register'),
                   ),
@@ -148,6 +163,28 @@ class RegisterScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  verify(context, phoneNumber) async {
+    await auth.verifyPhoneNumber(
+        phoneNumber: '+91' + phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) {},
+        verificationFailed: (FirebaseAuthException e) {},
+        codeSent: (String verificationId, int? resendToken) {
+          UserModel userModel = UserModel(userId: auth.currentUser!.uid,
+              email: emailController.text,
+              phoneNo: phoneNumber,
+              name: nameController.text,
+              role: 'Individual',
+              noOfDependents: 0,
+              dependents:[]);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      OTPForUserPage(verificationId: verificationId, userModel: userModel)));
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {});
   }
 }
 

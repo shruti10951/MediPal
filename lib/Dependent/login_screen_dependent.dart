@@ -1,12 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/user_registration/enter_otp_dependent_screen.dart';
 
 import 'dashboard_screen_dependent.dart';
 
 class LoginScreenDependent extends StatelessWidget {
-  const LoginScreenDependent({super.key});
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
+  LoginScreenDependent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Stack(
         children: [
@@ -42,6 +49,9 @@ class LoginScreenDependent extends StatelessWidget {
             ),
           ),
 
+          //NO WELCOME PLS!!!
+          //NO FORGOT PASSWORD
+          //NO PASSWORD INSTEAD NAME
           // Welcome Back Text
           Positioned(
             top: MediaQuery.of(context).size.height * 0.35,
@@ -72,7 +82,7 @@ class LoginScreenDependent extends StatelessWidget {
                           .withOpacity(0.6), // Light blue with opacity
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildInputField(Icons.person, 'Phone No'),
+                    child: _buildInputField(Icons.person, 'Name', _nameController),
                   ),
                   const SizedBox(height: 16.0),
                   Container(
@@ -81,7 +91,7 @@ class LoginScreenDependent extends StatelessWidget {
                           .withOpacity(0.6), // Light blue with opacity
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildPasswordField(Icons.lock, 'Password'),
+                    child: _buildPhoneNoField(Icons.lock, 'Phone Number', _phoneController),
                   ),
                   const SizedBox(height: 8.0),
                   Row(
@@ -114,7 +124,7 @@ class LoginScreenDependent extends StatelessWidget {
                   ),
                   const SizedBox(height: 120.0),
                   Container(
-                    child: _buildSignInButton(context),
+                    child: _buildSignInButton(context, _phoneController.text, _nameController.text),
                     
                   ),
                 ],
@@ -126,7 +136,7 @@ class LoginScreenDependent extends StatelessWidget {
     );
   }
 
-  Widget _buildInputField(IconData icon, String hintText) {
+  Widget _buildInputField(IconData icon, String hintText, TextEditingController _nameController) {
     return TextField(
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -138,14 +148,12 @@ class LoginScreenDependent extends StatelessWidget {
         ),
         border: InputBorder.none,
       ),
+      controller: _nameController,
     );
   }
 
-  Widget _buildPasswordField(IconData icon, String hintText) {
-    bool _isPasswordVisible = false;
-
+  Widget _buildPhoneNoField(IconData icon, String hintText, TextEditingController _phoneController) {
     return TextField(
-      obscureText: !_isPasswordVisible,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hintText,
@@ -154,31 +162,45 @@ class LoginScreenDependent extends StatelessWidget {
           icon,
           color: Colors.white,
         ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            _isPasswordVisible = !_isPasswordVisible;
-          },
-        ),
         border: InputBorder.none,
       ),
+      controller: _phoneController,
     );
   }
 
-  Widget _buildSignInButton(BuildContext context) {
+  // Widget _buildPasswordField(IconData icon, String hintText) {
+  //   bool _isPasswordVisible = false;
+  //
+  //   return TextField(
+  //     obscureText: !_isPasswordVisible,
+  //     style: const TextStyle(color: Colors.white),
+  //     decoration: InputDecoration(
+  //       hintText: hintText,
+  //       hintStyle: const TextStyle(color: Colors.white),
+  //       prefixIcon: Icon(
+  //         icon,
+  //         color: Colors.white,
+  //       ),
+  //       suffixIcon: IconButton(
+  //         icon: Icon(
+  //           _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+  //           color: Colors.white,
+  //         ),
+  //         onPressed: () {
+  //           _isPasswordVisible = !_isPasswordVisible;
+  //         },
+  //       ),
+  //       border: InputBorder.none,
+  //     ),
+  //   );
+  // }
+
+  Widget _buildSignInButton(BuildContext context, String number, String name) {
   return SizedBox(
     width: double.infinity, // Set width to match the parent
     child: ElevatedButton(
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const DashboardScreenDependent(),
-          ),
-        );
+        verify(context, number, name);
       },
       style: ElevatedButton.styleFrom(
         primary: const Color.fromARGB(255, 0, 0, 0), // Contrasting color
@@ -196,6 +218,21 @@ class LoginScreenDependent extends StatelessWidget {
     ),
   );
 }
+
+  void verify(BuildContext context, String phoneNumber, String name) async{
+    await auth.verifyPhoneNumber(
+        phoneNumber: '+91' + phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) {},
+        verificationFailed: (FirebaseAuthException e) {},
+        codeSent: (String verificationId, int? resendToken) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      OTPForDependentPage(verificationId: verificationId, name: name, phoneNo: phoneNumber)));
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {});
+  }
 
 }
 

@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 
 class LoginScreen extends StatelessWidget {
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,7 +115,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 120.0),
                   Container(
-                    child: _buildSignInButton(),
+                    child: _buildSignInButton(context),
                   ),
                 ],
               ),
@@ -134,6 +138,7 @@ class LoginScreen extends StatelessWidget {
         ),
         border: InputBorder.none,
       ),
+      controller: _emailController,
     );
   }
 
@@ -161,15 +166,23 @@ class LoginScreen extends StatelessWidget {
         ),
         border: InputBorder.none,
       ),
+      controller: _passwordController,
     );
   }
 
-  Widget _buildSignInButton() {
+  Widget _buildSignInButton(BuildContext context) {
     return Container(
       width: double.infinity, // Set width to match the parent
       child: ElevatedButton(
         onPressed: () {
-          // Implement sign-in action
+          final auth = FirebaseAuth.instance;
+          auth
+              .signInWithEmailAndPassword(
+              email: _emailController.text,
+              password: _passwordController.text)
+              .then((value) => {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardScreen()))
+          });
         },
         style: ElevatedButton.styleFrom(
           primary: Color.fromARGB(151, 255, 255, 255), // Contrasting color
