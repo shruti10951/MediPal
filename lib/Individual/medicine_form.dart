@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
+import 'package:medipal/models/AlarmModel.dart';
+import 'package:medipal/models/MedicationModel.dart';
 
 class MedicineForm extends StatefulWidget {
   const MedicineForm({super.key});
@@ -23,6 +28,12 @@ class _MedicineFormState extends State<MedicineForm> {
   DateTime? _endDate;
 
   String? _selectedDosageType; // Stores the selected dosage type
+
+  CollectionReference medicationCollectionRef =
+  FirebaseFirestore.instance.collection('medications');
+  CollectionReference alarmCollectionRef =
+  FirebaseFirestore.instance.collection('alarms');
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -137,7 +148,7 @@ class _MedicineFormState extends State<MedicineForm> {
                     items: dosageTypeItems,
                     onChanged: (value) {
                       setState(() {
-                        _selectedDosageType = value as String?;
+                        _selectedDosageType = value;
                       });
                     },
                   ),
@@ -263,39 +274,83 @@ class _MedicineFormState extends State<MedicineForm> {
                         'Selected Evening Time: ${_eveningTime!.format(context)}'),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
-                    onPressed: () {
-                      // Create a map to store the medication data
-                      final Map<String, dynamic> medicationData = {
-                        'name': _nameController.text,
-                        'dosageType': _selectedDosageType,
-                        'dosageDescription': _dosageController.text,
-                        'schedule': {
-                          'morning': _morningTime != null
-                              ? _morningTime!.format(context)
-                              : null,
-                          'noon': _noonTime != null
-                              ? _noonTime!.format(context)
-                              : null,
-                          'evening': _eveningTime != null
-                              ? _eveningTime!.format(context)
-                              : null,
-                        },
-                        'inventory': {
-                          'quantity':
-                              int.tryParse(_quantityController.text) ?? 0,
-                          'reorderLevel':
-                              int.tryParse(_reorderLevelController.text) ?? 0,
-                        },
-                        'startDate': _startDate != null
-                            ? dateFormat.format(_startDate!)
-                            : null,
-                        'endDate': _endDate != null
-                            ? dateFormat.format(_endDate!)
-                            : null,
-                      };
+                    onPressed: () async {
+                      DocumentReference medicationDocumentReference =
+                      medicationCollectionRef.doc();
+
+                      MedicationModel medication = MedicationModel(
+                          medicationId: medicationDocumentReference.id,
+                          name: _nameController.text,
+                          type: _selectedDosageType.toString(),
+                          dosage: _dosageController.text,
+                          schedule: {
+                            'morning': _morningTime != null
+                                ? _morningTime!.format(context)
+                                : '',
+                            'noon': _noonTime != null
+                                ? _noonTime!.format(context)
+                                : '',
+                            'evening': _eveningTime != null
+                                ? _eveningTime!.format(context)
+                                : '',
+                          },
+                          inventory: {
+                            'quantity':
+                            int.tryParse(_quantityController.text) ?? 0,
+                            'reorderLevel':
+                            int.tryParse(_reorderLevelController.text) ?? 0,
+                          },
+                          startDate: _startDate != null
+                              ? dateFormat.format(_startDate!)
+                              : "",
+                          endDate: _endDate != null
+                              ? dateFormat.format(_endDate!)
+                              : "",
+                          userId: auth.currentUser!.uid.toString());
+
+                      Map<String, dynamic> medicationModel = medication.toMap();
+
+                      await medicationDocumentReference.set(medicationModel);
+
+                      for (var date = _startDate;
+                      date!.isBefore(_endDate!.add(Duration(days: 1)));
+                      date = date.add(Duration(days: 1))) {
+                        for (var key in medication.schedule.keys) {
+                          final value = medication.schedule[key];
+                          if (value != null && value.isNotEmpty) {
+                            final hrMin = value.split(' ');
+                            final timeParts = hrMin[0].split(':');
+                            final hr = int.tryParse(timeParts[0]);
+                            final min = int.tryParse(timeParts[1]);
+                            if (hr != null && min != null) {
+                              DateTime dateTime = DateTime(
+                                  date.year, date.month, date.day, hr, min);
+                              DocumentReference alarmDocumentReference =
+                              alarmCollectionRef.doc();
+                              String medicineName= _nameController.text;
+                              String message = _dosageController.text;
+                              AlarmModel alarmModel= AlarmModel(alarmId: alarmDocumentReference.id,
+                                  message: message,
+                                  userId: auth.currentUser!.uid.toString(),
+                                  time: dateTime.toString(),
+                                  status: 'pending',
+                                  medicationId: medicationDocumentReference.id);
+
+                              Map<String, dynamic> alarm = alarmModel.toMap();
+                              await alarmDocumentReference
+                                  .set(alarm);
+                            }
+                          }
+                        }
+                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                      );
 
                       // Handle the form data as needed (e.g., save to Firestore)
-                      print('Medication Data: $medicationData');
+                      // print('Medication Data: $medicationModel');
                     },
                     child: const Text('Submit'),
                   ),
