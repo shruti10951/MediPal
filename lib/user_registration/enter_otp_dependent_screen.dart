@@ -2,13 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/home_screens/dashboard_screen.dart';
+import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/models/DependentModel.dart';
 
 class OTPForDependentPage extends StatelessWidget {
   final String verificationId;
   final String name;
+  final String phoneNo;
 
-  OTPForDependentPage({required this.verificationId, required this.name});
+  OTPForDependentPage({required this.verificationId, required this.name, required this.phoneNo});
 
   final otpController = TextEditingController();
 
@@ -34,69 +36,50 @@ class OTPForDependentPage extends StatelessWidget {
           ),
           SizedBox(height: 20.0),
           ElevatedButton(
-              onPressed: () async {
-                // Create a PhoneAuthCredential with the code
-                try {
-                  PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                      verificationId: verificationId,
-                      smsCode: otpController.text);
+            onPressed: () async {
+              try {
+                PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                    verificationId: verificationId,
+                    smsCode: otpController.text);
 
-                  await auth.signInWithCredential(credential).then((value) {
-                    User? user = FirebaseAuth.instance.currentUser;
-                    Map<String, dynamic> dependentMap = {'name': name, 'userId': user?.uid};
-                    collectionReference.doc(user?.uid).set(dependentMap).then((value) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DashboardScreen()),
-                      );
-                    });
-                  });
-                } catch (e) {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(
-                      content: Text('Invalid OTP'),
-                      duration:
-                      Duration(seconds: 3), // Adjust the duration as needed
+                await auth.signInWithCredential(credential).then((value) async {
+                  User? user = FirebaseAuth.instance.currentUser;
+
+                  // Check if the user already exists as a dependent
+                  final userDoc = await collectionReference.doc(user?.uid).get();
+                  if (!userDoc.exists) {
+                    // The user doesn't exist, create a new dependent
+
+                    DependentModel dependentModel= DependentModel(
+                      userId: user!.uid,
+                      name: name,
+                      phoneNo: phoneNo,
+                    );
+
+                    Map<String, dynamic> dependent= dependentModel.toMap();
+                    await collectionReference.doc(user?.uid).set(dependent);
+                  }
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DashboardScreenDependent(),
                     ),
                   );
-                }
-              },
+                });
+              } catch (e) {
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(
+                    content: Text('Invalid OTP'),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
+            },
+            child: Text('Verify'),
+          )
 
-              // onPressed: () async {
-              //   // Create a PhoneAuthCredential with the code
-              //   try {
-              //     PhoneAuthCredential credential = PhoneAuthProvider.credential(
-              //         verificationId: verificationId,
-              //         smsCode: otpController.text);
-              //
-              //     await auth.signInWithCredential(credential).then((value) => () {
-              //       User? user = FirebaseAuth.instance.currentUser;
-              //       Map<String, dynamic> dependentMap = {'name': name, 'userId': user?.uid};
-              //       collectionReference.doc(auth.currentUser?.uid).set(
-              //           dependentMap).then((value) =>
-              //       {
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(
-              //               builder: (context) => DashboardPage()),
-              //         ),
-              //       });
-              //     });
-              //
-              //   } catch (e) {
-              //     final scaffoldMessenger = ScaffoldMessenger.of(context);
-              //     scaffoldMessenger.showSnackBar(
-              //       SnackBar(
-              //         content: Text('Invalid OTP'),
-              //         duration:
-              //             Duration(seconds: 3), // Adjust the duration as needed
-              //       ),
-              //     );
-              //   }
-              // },
-              child: Text('Verify'))
         ],
       ),
     );
