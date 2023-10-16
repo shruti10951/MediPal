@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/dashboard_screen.dart';
+import 'package:medipal/home_screens/dashboard_screen.dart';
 import 'package:medipal/models/UserModel.dart';
 
 class OTPForUserPage extends StatelessWidget {
@@ -47,9 +47,9 @@ class OTPForUserPage extends StatelessWidget {
                   await user?.linkWithCredential(credential).then((value) async {
                     Map<String, dynamic> userMap = userModel.toMap();
                     await collectionReference.doc(auth.currentUser?.uid).set(userMap).then((value) => {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => DashboardPage()),
+                        MaterialPageRoute(builder: (context) => DashboardScreen()),
                       ),
                     });
                   });

@@ -15,12 +15,14 @@ class SignUpPage extends StatelessWidget {
   //show loading
   bool isSigningUp = false;
 
+  SignUpPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Noo'),
+        title: Text('Sign Up'),
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
