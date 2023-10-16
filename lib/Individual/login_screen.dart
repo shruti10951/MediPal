@@ -8,7 +8,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      //backgroundColor: Colors.black,
       body: Stack(
         children: [
           // Background Image with Curved Middle
@@ -17,6 +17,8 @@ class LoginScreen extends StatelessWidget {
               clipper: CustomShapeClipper(), // Custom clipper for curved shape
               child: Image.asset(
                 'assets/images/welcome_background.jpeg', // Replace with your image path
+                width: 850,
+                height: 900,
                 fit: BoxFit.cover,
               ),
             ),

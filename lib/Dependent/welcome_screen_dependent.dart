@@ -22,7 +22,7 @@ class WelcomeScreenDependent extends StatelessWidget {
               clipper: WaveClipper(), // Custom clipper for the wave shape
               child: Image.asset(
                 'assets/images/welcome_background.png', // Replace with your image path
-                width: 1105.0, // Set the width of the image
+                width: 900.0, // Set the width of the image
                 height: 700.0, // Set the height of the image
                 fit: BoxFit.cover,
               ),
@@ -99,7 +99,7 @@ class WelcomeScreenDependent extends StatelessWidget {
                   const SizedBox(height: 16.0),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 232, 244, 255)
+                      color: Color.fromARGB(96, 0, 0, 0)
                           .withOpacity(0.6), // Light blue with opacity
                       borderRadius: BorderRadius.circular(30.0),
                     ),
@@ -153,12 +153,13 @@ class WelcomeScreenDependent extends StatelessWidget {
 Widget _buildSignInButton(BuildContext context, String number, String name) {
   return SizedBox(
     width: double.infinity, // Set width to match the parent
+    height: 50.0,
     child: ElevatedButton(
       onPressed: () {
         verify(context, number, name);
       },
       style: ElevatedButton.styleFrom(
-        primary: const Color.fromARGB(255, 0, 0, 0), // Contrasting color
+        primary: Color.fromARGB(137, 0, 0, 0), // Contrasting color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -230,18 +231,18 @@ class WaveClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height - 100);
-    final firstControlPoint = Offset(size.width / 8, size.height);
+    final firstControlPoint = Offset(size.width / 4, size.height);
     final firstEndPoint = Offset(size.width / 2.25, size.height - 30);
     path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
         firstEndPoint.dx, firstEndPoint.dy);
 
     final secondControlPoint =
-        Offset(size.width - (size.width / 10.25), size.height - 65);
-    final secondEndPoint = Offset(size.width, size.height - 100);
+        Offset(size.width - (size.width / 3.25), size.height - 65);
+    final secondEndPoint = Offset(size.width, size.height - 40);
     path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
         secondEndPoint.dx, secondEndPoint.dy);
 
-    path.lineTo(size.width, size.height - 60);
+    path.lineTo(size.width, size.height - 40);
     path.lineTo(size.width, 0);
     path.close();
 
