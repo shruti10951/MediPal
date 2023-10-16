@@ -221,7 +221,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: Image.asset('assets/images/MediPal.png'),
+                  leading: Image.asset('assets/images/medipal.png'),
                   // Replace with your image asset
                   title: Text(
                     name,

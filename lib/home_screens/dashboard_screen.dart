@@ -7,6 +7,8 @@ import 'package:medipal/models/MedicationModel.dart';
 import 'bottom_navigation.dart';
 import 'medicine_form.dart';
 
+
+//change it to ui wala screen
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
@@ -66,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Row(
           children: [
             Image.asset(
-              'assets/images/MediPal.png',
+              'assets/images/medipal.png',
               width: 30,
               height: 30,
             ),
