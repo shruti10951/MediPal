@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/home_screens/dashboard_screen.dart';
+import 'package:medipal/models/AlarmModel.dart';
+import 'package:medipal/models/MedicationModel.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:medipal/models/MedicationModel.dart';
 
 class MedicineForm extends StatefulWidget {
-  const MedicineForm({Key? key}) : super(key: key);
+  const MedicineForm({super.key});
 
   @override
   _MedicineFormState createState() => _MedicineFormState();
@@ -25,7 +27,11 @@ class _MedicineFormState extends State<MedicineForm> {
   DateTime? _startDate;
   DateTime? _endDate;
 
-  String? _selectedDosageType;
+  CollectionReference medicationCollectionRef =
+      FirebaseFirestore.instance.collection('medications');
+  CollectionReference alarmCollectionRef =
+      FirebaseFirestore.instance.collection('alarms');
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -58,39 +64,6 @@ class _MedicineFormState extends State<MedicineForm> {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat("yyyy-MM-dd");
-
-    final List<DropdownMenuItem<String>> dosageTypeItems = [
-      const DropdownMenuItem(
-        value: 'Liquid',
-        child: Row(
-          children: [
-            Icon(Icons.liquor),
-            SizedBox(width: 8.0),
-            Text('Liquid'),
-          ],
-        ),
-      ),
-      const DropdownMenuItem(
-        value: 'Pills',
-        child: Row(
-          children: [
-            Icon(Icons.local_hospital),
-            SizedBox(width: 8.0),
-            Text('Pills'),
-          ],
-        ),
-      ),
-      const DropdownMenuItem(
-        value: 'Injection',
-        child: Row(
-          children: [
-            Icon(Icons.usb),
-            SizedBox(width: 8.0),
-            Text('Injection'),
-          ],
-        ),
-      ),
-    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -127,21 +100,8 @@ class _MedicineFormState extends State<MedicineForm> {
                   TextField(
                     controller: _dosageController,
                     decoration: const InputDecoration(
-                      labelText: 'Dosage Description',
+                      labelText: 'Dosage',
                     ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  DropdownButtonFormField(
-                    value: _selectedDosageType,
-                    decoration: const InputDecoration(
-                      labelText: 'Type of Dosage',
-                    ),
-                    items: dosageTypeItems,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedDosageType = value as String?;
-                      });
-                    },
                   ),
                   const SizedBox(height: 16.0),
                   TextField(
