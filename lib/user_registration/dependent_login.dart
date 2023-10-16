@@ -18,7 +18,7 @@ class DependentLogin extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hello'),
+        title: Text('Login'),
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
