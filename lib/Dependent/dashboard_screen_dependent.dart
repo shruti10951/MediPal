@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-import '../bottom_navigation.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -95,8 +94,6 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
           ),
         ],
       ),
-      //bottomNavigation bar
-      bottomNavigationBar: const BottomNavigation(),
     );
   }
 
