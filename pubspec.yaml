@@ -73,6 +73,8 @@ flutter:
   assets:
     - assets/images/welcome_background.jpeg
     - assets/images/medipal.png
+    - assets/images/medipalcircular.png
+    - assets/images/welcome_background.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

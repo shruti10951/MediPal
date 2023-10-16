@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/profile_screen.dart';
-import 'package:medipal/home_screens/dashboard_screen.dart';
+import 'package:medipal/individual/dashboard_screen.dart';
 
 import 'inventory_screen.dart';
 
