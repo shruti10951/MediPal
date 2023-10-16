@@ -22,7 +22,7 @@ class LoginScreenDependent extends StatelessWidget {
             child: ClipPath(
               clipper: CustomShapeClipper(), // Custom clipper for curved shape
               child: Image.asset(
-                'assets/images/welcome_background.jpeg', // Replace with your image path
+                'assets/images/welcome_background.jpg', // Replace with your image path
                 fit: BoxFit.cover,
               ),
             ),
@@ -130,7 +130,7 @@ class LoginScreenDependent extends StatelessWidget {
                 ],
               ),
             ),
-          ),
+          )
         ],
       ),
     );

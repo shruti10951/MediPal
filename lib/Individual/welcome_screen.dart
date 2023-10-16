@@ -4,6 +4,8 @@ import 'package:medipal/Individual/login_screen.dart';
 import 'register_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,8 @@ class WelcomeScreen extends StatelessWidget {
             left: 0.0,
             child: Image.asset(
               'assets/images/welcome_background.png', // Replace with your image path
-              fit: BoxFit.cover,
+               
+                fit: BoxFit.cover,
             ),
           ),
 
