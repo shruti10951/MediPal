@@ -19,11 +19,13 @@ class RegisterScreen extends StatelessWidget {
       body: Stack(
         children: [
           // Background Image with Curved Middle
-          Positioned.fill(
+          Positioned(
             child: ClipPath(
-              clipper: CustomShapeClipper(), // Custom clipper for curved shape
+              clipper: WaveClipper(), // Custom clipper for curved shape
               child: Image.asset(
-                'assets/images/welcome_background.jpeg', // Replace with your image path
+                'assets/images/welcome_background.png', // Replace with your image path
+                height: 800.0,
+                width: 500.0,
                 fit: BoxFit.cover,
               ),
             ),
@@ -188,25 +190,34 @@ class RegisterScreen extends StatelessWidget {
   }
 }
 
-class CustomShapeClipper extends CustomClipper<Path> {
+//Costom CLipper class with Path
+class WaveClipper extends CustomClipper<Path>{
   @override
   Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, 0); // Start from the top-left corner
-    path.lineTo(size.width, 0); // Move to the top-right corner
-    path.lineTo(size.width, size.height * 0.7); // Curve starting point
-    path.quadraticBezierTo(
-      size.width / 2,
-      size.height * 0.8,
-      0,
-      size.height * 0.7,
-    ); // Curve
-    path.close();
-    return path;
+    
+      var path = new Path();
+      path.lineTo(0, size.height); //start path with this if you are making at bottom
+      
+      var firstStart = Offset(size.width / 5, size.height); 
+      //fist point of quadratic bezier curve
+      var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
+      //second point of quadratic bezier curve
+      path.quadraticBezierTo(firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
+
+      var secondStart = Offset(size.width - (size.width / 3.24), size.height - 105); 
+      //third point of quadratic bezier curve
+      var secondEnd = Offset(size.width, size.height - 10);
+      //fourth point of quadratic bezier curve
+      path.quadraticBezierTo(secondStart.dx, secondStart.dy, secondEnd.dx, secondEnd.dy);
+
+      path.lineTo(size.width, 0); //end with this path if you are making wave at bottom
+      path.close();
+      return path; 
   }
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
+     return false; //if new instance have different instance than old instance 
+     //then you must return true;
   }
 }
