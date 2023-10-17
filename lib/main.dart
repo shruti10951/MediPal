@@ -73,8 +73,8 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home: 
-      RegisterScreen(),
-      // const MyHomePage(title: 'MediPal'),
+      // DashboardScreenDependent(),
+      const MyHomePage(title: 'MediPal'),
     );
   }
 }
