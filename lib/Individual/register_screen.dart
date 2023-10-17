@@ -1,27 +1,25 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/Individual/dashboard_screen.dart';
-import 'package:medipal/Individual/login_screen.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
-import 'package:medipal/user_registration/sign_up_screen.dart';
 
-import 'register_screen.dart';
+class RegisterScreen extends StatelessWidget {
+  RegisterScreen({super.key});
 
-class WelcomeScreen extends StatelessWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
+
+  final auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-        fit: StackFit.expand,
         children: [
           // Background Image with Curved Middle
           Positioned(
-            left: 0,
             child: ClipPath(
               clipper: WaveClipper(), // Custom clipper for curved shape
               child: Image.asset(
@@ -33,7 +31,7 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Back Button
+         // Back Button
           Positioned(
             top: 40.0,
             left: 17.0,
@@ -86,59 +84,49 @@ class WelcomeScreen extends StatelessWidget {
 
           // Registration Form (Positioned at the bottom)
           Positioned(
+            top: MediaQuery.of(context).size.height * 0.35,
             left: 16.0,
             right: 16.0,
-            bottom: 150.0,
-            child: SizedBox(
-              height: 50.0,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreen(),
-                      ));
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.transparent,
-                  side: const BorderSide(color: Colors.white, width: 2.0),
-                ),
-                child: const Text(
-                  'Sign In',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildInputField(Icons.person, 'Name'),
+                  const SizedBox(height: 16.0),
+                  _buildInputField(Icons.email, 'Email'),
+                  const SizedBox(height: 16.0),
+                  _buildInputField(Icons.phone, 'Phone Number'),
+                  const SizedBox(height: 16.0),
+                  _buildPasswordField(Icons.lock, 'Password'),
+                  const SizedBox(height: 24.0),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Add your sign-up logic here
+                      await auth
+                          .createUserWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passwordController.text)
+                          .then(
+                              (value) => verify(context, phoneController.text));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 0, 0, 0), // Background color
+                      onPrimary: Colors.white, // Text color
+                      elevation: 3, // Shadow elevation
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 16), // Button padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(30.0), // Rounded corners
+                      ),
+                    ),
+                    child: const Text(
+                      'Register',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
-
-          // Create Account Button (Transparent without Border)
-          Positioned(
-            left: 16.0,
-            right: 16.0,
-            bottom: 80.0,
-            child: SizedBox(
-              height: 50.0,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SignUpPage(),
-                      ));
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(72, 0, 0, 0),
-                ),
-                child: const Text(
-                  'Create an Account',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                  ),
-                ),
+                ],
               ),
             ),
           ),
@@ -227,26 +215,32 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
+//Costom CLipper class with Path
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, size.height - 100);
-    final firstControlPoint = Offset(size.width / 4, size.height);
-    final firstEndPoint = Offset(size.width / 2.25, size.height - 30);
-    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
-        firstEndPoint.dx, firstEndPoint.dy);
+    var path = new Path();
+    path.lineTo(
+        0, size.height); //start path with this if you are making at bottom
 
-    final secondControlPoint =
-        Offset(size.width - (size.width / 3.25), size.height - 65);
-    final secondEndPoint = Offset(size.width, size.height - 40);
-    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
-        secondEndPoint.dx, secondEndPoint.dy);
+    var firstStart = Offset(size.width / 5, size.height);
+    //fist point of quadratic bezier curve
+    var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
+    //second point of quadratic bezier curve
+    path.quadraticBezierTo(
+        firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
 
-    path.lineTo(size.width, size.height - 40);
-    path.lineTo(size.width, 0);
+    var secondStart =
+        Offset(size.width - (size.width / 3.24), size.height - 105);
+    //third point of quadratic bezier curve
+    var secondEnd = Offset(size.width, size.height - 10);
+    //fourth point of quadratic bezier curve
+    path.quadraticBezierTo(
+        secondStart.dx, secondStart.dy, secondEnd.dx, secondEnd.dy);
+
+    path.lineTo(
+        size.width, 0); //end with this path if you are making wave at bottom
     path.close();
-
     return path;
   }
 

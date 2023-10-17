@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/Individual/register_screen.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 
@@ -72,7 +73,7 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home: 
-      const BottomNavigation(),
+      RegisterScreen(),
       // const MyHomePage(title: 'MediPal'),
     );
   }
