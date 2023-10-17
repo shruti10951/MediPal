@@ -149,7 +149,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           //PLEASE DO SOMETHING ABOUT THIS.
-          return CircularProgressIndicator();
+          return _buildLoadingIndicator();
         } else if (snapshot.hasError || snapshot.data == null) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -229,6 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
   }
+  
 
   void _onDateTapped(
       DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
