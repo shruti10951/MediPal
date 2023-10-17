@@ -11,6 +11,8 @@ import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
 
+import 'home_screens/bottom_navigation.dart';
+
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
   await check.checkFirestore();
@@ -66,9 +68,11 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        //useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'MediPal'),
+      home: 
+      // const DashboardScreen(),
+      const MyHomePage(title: 'MediPal'),
     );
   }
 }

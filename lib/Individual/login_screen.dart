@@ -8,6 +8,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //backgroundColor: Colors.black,
       body: Stack(
         children: [
           // Background Image with Curved Middle
@@ -16,6 +17,8 @@ class LoginScreen extends StatelessWidget {
               clipper: CustomShapeClipper(), // Custom clipper for curved shape
               child: Image.asset(
                 'assets/images/welcome_background.jpeg', // Replace with your image path
+                width: 850,
+                height: 900,
                 fit: BoxFit.cover,
               ),
             ),
@@ -27,7 +30,7 @@ class LoginScreen extends StatelessWidget {
             left: 17.0,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white
+                color: const Color.fromARGB(255, 0, 0, 0)
                     .withOpacity(0.3), // Transparent white background
                 shape: BoxShape.circle, // Circular shape
               ),
@@ -184,7 +187,7 @@ class LoginScreen extends StatelessWidget {
           });
         },
         style: ElevatedButton.styleFrom(
-          primary: const Color.fromARGB(255, 0, 0, 0), // Contrasting color
+          primary: Color.fromARGB(151, 255, 255, 255), // Contrasting color
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
           ),
@@ -193,7 +196,7 @@ class LoginScreen extends StatelessWidget {
           'Sign In',
           style: TextStyle(
             fontSize: 18.0,
-            color: Colors.white,
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
         ),
       ),

@@ -16,6 +16,16 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
+  String initialType =
+      'Pills'; // Set the initial type to one of the values in the DropdownMenuItem list
+  String updatedType = 'Pills'; // Initialize with a default type
+
+  @override
+  void initState() {
+    super.initState();
+    updatedType = initialType;
+  }
+
   Future<List<QueryDocumentSnapshot>?> fetchData() async {
     final medicationQuery = firestore
         .collection('medications')
@@ -38,6 +48,129 @@ class _InventoryScreenState extends State<InventoryScreen> {
     }
   }
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+
+  // Function to open an edit dialog for a specific item
+  void _openEditDialog(String name, String type, int quantity) {
+    nameController.text = name;
+    quantityController.text = quantity.toString();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Edit Medication'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'Medication Name'),
+                  ),
+                  SizedBox(height: 16),
+                  DropdownButton<String>(
+                    value: updatedType,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        updatedType = newValue!;
+                      });
+                    },
+                    items: <String>['Pills', 'Liquid', 'Injection']
+                        .map((String value) {
+                      return DropdownMenuItem<String>(
+                        key: UniqueKey(),
+                        value: value,
+                        child: Row(
+                          children: [
+                            if (value == 'Pills') Icon(Icons.local_pharmacy),
+                            if (value == 'Liquid') Icon(Icons.opacity),
+                            if (value == 'Injection')
+                              Icon(Icons.local_hospital),
+                            SizedBox(width: 8),
+                            Text(value),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: quantityController,
+                    decoration: InputDecoration(labelText: 'Quantity'),
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      updatedType = initialType;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Text('Close'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    String updatedName = nameController.text;
+                    int updatedQuantity =
+                        int.tryParse(quantityController.text) ?? 0;
+                    // Use updatedType for the selected medicine type
+                    // Update the item in the database
+                    Navigator.pop(context);
+                  },
+                  child: Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Function to open a confirmation dialog for deleting a specific item
+  void _openDeleteDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Are you sure you want to delete this medication?'),
+              Text(
+                'Note: Deleting this medication will also delete all associated alarms.',
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Implement the deletion logic here
+                // Remove the item and associated alarms from the database
+                Navigator.pop(context);
+              },
+              child: const Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +184,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             future: fetchData(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
@@ -78,7 +211,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           final name = medication['name'];
           final quantity = medication['inventory']['quantity'];
 
-          //add this in ui
+          // Add this in UI
           final recorder = medication['inventory']['recorderLevel'];
 
           return Card(
@@ -103,8 +236,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       const Divider(height: 1, color: Colors.grey),
                       // Vertical line
                       const SizedBox(height: 8),
-                      //for this make sure we have type in medicine form
-                      const Text('Type: Medicine Type'),
+                      // For this, make sure we have type in medicine form
+                      Text('Type: $updatedType'),
                       Text('Quantity: $quantity'),
                       const SizedBox(height: 8),
                       Row(
@@ -113,16 +246,15 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              // Implement edit functionality
-                              //here show a dialogue box or something to allow user to edit
-
+                              // Open the edit dialog when the edit button is pressed
+                              _openEditDialog(name, updatedType, quantity);
                             },
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete),
                             onPressed: () {
-                              // Implement delete functionality
-                              // again here show some warning message
+                              // Open the delete confirmation dialog when the delete button is pressed
+                              _openDeleteDialog();
                             },
                           ),
                         ],
