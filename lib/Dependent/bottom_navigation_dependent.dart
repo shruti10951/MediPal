@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/profile_screen.dart';
 import 'package:medipal/individual/dashboard_screen.dart';
-
-import 'inventory_screen.dart';
+import 'package:medipal/Individual/inventory_screen.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({Key? key}) : super(key: key);
@@ -57,7 +56,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           DashboardScreenDependent(), // Replace with your Dashboard screen widget
           InventoryScreen(), // Replace with your Inventory screen widget
           ProfileScreen(), // Replace with your Profile screen widget
-          DashboardScreen(),
+
           // Add other screens as needed
         ],
         onPageChanged: (index) {
@@ -80,7 +79,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-          
         ],
         unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         currentIndex: _selectedIndex,

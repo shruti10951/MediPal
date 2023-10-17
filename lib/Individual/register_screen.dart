@@ -21,6 +21,7 @@ class WelcomeScreen extends StatelessWidget {
         children: [
           // Background Image with Curved Middle
           Positioned(
+            left: 0,
             child: ClipPath(
               clipper: WaveClipper(), // Custom clipper for curved shape
               child: Image.asset(
@@ -32,7 +33,7 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ),
 
-         // Back Button
+          // Back Button
           Positioned(
             top: 40.0,
             left: 17.0,
@@ -226,32 +227,26 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-//Costom CLipper class with Path
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    var path = new Path();
-    path.lineTo(
-        0, size.height); //start path with this if you are making at bottom
+    final path = Path();
+    path.lineTo(0, size.height - 100);
+    final firstControlPoint = Offset(size.width / 4, size.height);
+    final firstEndPoint = Offset(size.width / 2.25, size.height - 30);
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+        firstEndPoint.dx, firstEndPoint.dy);
 
-    var firstStart = Offset(size.width / 5, size.height);
-    //fist point of quadratic bezier curve
-    var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
-    //second point of quadratic bezier curve
-    path.quadraticBezierTo(
-        firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
+    final secondControlPoint =
+        Offset(size.width - (size.width / 3.25), size.height - 65);
+    final secondEndPoint = Offset(size.width, size.height - 40);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
 
-    var secondStart =
-        Offset(size.width - (size.width / 3.24), size.height - 105);
-    //third point of quadratic bezier curve
-    var secondEnd = Offset(size.width, size.height - 10);
-    //fourth point of quadratic bezier curve
-    path.quadraticBezierTo(
-        secondStart.dx, secondStart.dy, secondEnd.dx, secondEnd.dy);
-
-    path.lineTo(
-        size.width, 0); //end with this path if you are making wave at bottom
+    path.lineTo(size.width, size.height - 40);
+    path.lineTo(size.width, 0);
     path.close();
+
     return path;
   }
 
