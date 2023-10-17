@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/Individual/profile_screen.dart';
-import 'package:medipal/individual/dashboard_screen.dart';
+import 'package:medipal/Individual/inventory_screen.dart';
+import 'package:medipal/home_screens/dashboard_screen_old.dart';
 
-import 'inventory_screen.dart';
-
-class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({Key? key}) : super(key: key);
+class BottomNavigationIndividual extends StatefulWidget {
+  const BottomNavigationIndividual({Key? key}) : super(key: key);
 
   @override
   _BottomNavigationState createState() => _BottomNavigationState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
+class _BottomNavigationState extends State<BottomNavigationIndividual> {
   int _selectedIndex = 0; // Current selected tab index
   final PageController _pageController = PageController(initialPage: 0);
 
@@ -54,10 +54,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
         controller: _pageController,
         // ignore: prefer_const_literals_to_create_immutables
         children: <Widget>[
-          DashboardScreenDependent(), // Replace with your Dashboard screen widget
+          DashboardScreen(), // Replace with your Dashboard screen widget
           InventoryScreen(), // Replace with your Inventory screen widget
           ProfileScreen(), // Replace with your Profile screen widget
-          DashboardScreen(),
+
           // Add other screens as needed
         ],
         onPageChanged: (index) {
@@ -80,7 +80,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-          
         ],
         unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         currentIndex: _selectedIndex,

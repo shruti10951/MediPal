@@ -77,7 +77,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   //PLEASE DO SOMETHING ABOUT THIS.
-                  return CircularProgressIndicator();
+                  return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
@@ -90,6 +90,29 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
                       medicineQuerySnapshot);
                 }
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildLoadingIndicator() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color.fromARGB(255, 71, 78, 84),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            'Loading...',
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
             ),
           ),
         ],

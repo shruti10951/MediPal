@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
@@ -346,7 +347,7 @@ class _MedicineFormState extends State<MedicineForm> {
 
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                        MaterialPageRoute(builder: (context) => BottomNavigationIndividual()),
                       );
 
                       // Handle the form data as needed (e.g., save to Firestore)
