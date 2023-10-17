@@ -183,7 +183,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 future: fetchData(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                  return _buildLoadingIndicator();
+                    
+                    // return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -194,6 +196,29 @@ class _InventoryScreenState extends State<InventoryScreen> {
               ))
         ],
       ), // Create the inventory list view
+    );
+  }
+    Widget _buildLoadingIndicator() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color.fromARGB(255, 71, 78, 84),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            'Loading...',
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

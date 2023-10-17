@@ -5,10 +5,12 @@ import 'package:medipal/Individual/dashboard_screen.dart';
 class LoginScreen extends StatelessWidget {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  LoginScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.black,
+      backgroundColor: Color.fromARGB(234, 255, 255, 255),
       body: Stack(
         children: [
           // Background Image with Curved Middle
@@ -16,7 +18,7 @@ class LoginScreen extends StatelessWidget {
             child: ClipPath(
               clipper: CustomShapeClipper(), // Custom clipper for curved shape
               child: Image.asset(
-                'assets/images/welcome_background.jpeg', // Replace with your image path
+                'assets/images/welcome_background.png', // Replace with your image path
                 width: 850,
                 height: 900,
                 fit: BoxFit.cover,
@@ -26,21 +28,34 @@ class LoginScreen extends StatelessWidget {
 
           // Back Button
           Positioned(
-            top: 17.0,
+            top: 40.0,
             left: 17.0,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 0, 0, 0)
+                color: Colors.white
                     .withOpacity(0.3), // Transparent white background
                 shape: BoxShape.circle, // Circular shape
               ),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios,
-                    color: Colors.white), // Set icon color to white
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                ),
                 onPressed: () {
                   Navigator.of(context)
-                      .pop(); // Navigate back to the WelcomeScreen
+                      .pop(); // Navigate back to the previous screen
                 },
+              ),
+            ),
+          ),
+          Positioned(
+             top: 40.0,
+            left: 17.0,
+            child: SizedBox(
+              width: 350.0, // Set the width of the circular image
+              height: 350.0, // Set the height of the circular image
+              child: Image.asset(
+                'assets/images/medipalcircular.png', // Replace with your image path
               ),
             ),
           ),
@@ -56,8 +71,10 @@ class LoginScreen extends StatelessWidget {
                   const Text(
                     'Welcome Back',
                     style: TextStyle(
-                      fontSize: 28.0,
-                      color: Colors.white,
+                      fontSize: 22.0,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontWeight: FontWeight.bold, // Make the text bold
+                      fontStyle: FontStyle.italic, // Make the text italic
                     ),
                   ),
                   const SizedBox(height: 8.0),
@@ -65,13 +82,14 @@ class LoginScreen extends StatelessWidget {
                     'Medipal - A medicine reminder app',
                     style: TextStyle(
                       fontSize: 14.0,
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontWeight: FontWeight.bold, // Make the text bold
                     ),
                   ),
                   const SizedBox(height: 32.0),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 214, 236, 255)
+                      color: const Color.fromARGB(255, 255, 255, 255)
                           .withOpacity(0.6), // Light blue with opacity
                       borderRadius: BorderRadius.circular(30.0),
                     ),
@@ -80,7 +98,7 @@ class LoginScreen extends StatelessWidget {
                   const SizedBox(height: 16.0),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 232, 244, 255)
+                      color: const Color.fromARGB(255, 255, 255, 255)
                           .withOpacity(0.6), // Light blue with opacity
                       borderRadius: BorderRadius.circular(30.0),
                     ),
@@ -100,7 +118,8 @@ class LoginScreen extends StatelessWidget {
                           ),
                           const Text(
                             'Remember Me',
-                            style: TextStyle(color: Colors.white),
+                            style:
+                                TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
                           ),
                         ],
                       ),
@@ -110,7 +129,7 @@ class LoginScreen extends StatelessWidget {
                         },
                         child: const Text(
                           'Forgot Password?',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
                         ),
                       ),
                     ],
@@ -130,13 +149,13 @@ class LoginScreen extends StatelessWidget {
 
   Widget _buildInputField(IconData icon, String hintText) {
     return TextField(
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.white),
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
         prefixIcon: Icon(
           icon,
-          color: Colors.white,
+          color: const Color.fromARGB(255, 0, 0, 0),
         ),
         border: InputBorder.none,
       ),
@@ -149,18 +168,18 @@ class LoginScreen extends StatelessWidget {
 
     return TextField(
       obscureText: !_isPasswordVisible,
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.white),
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
         prefixIcon: Icon(
           icon,
-          color: Colors.white,
+          color: const Color.fromARGB(255, 0, 0, 0),
         ),
         suffixIcon: IconButton(
           icon: Icon(
             _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Colors.white,
+            color: const Color.fromARGB(255, 0, 0, 0),
           ),
           onPressed: () {
             _isPasswordVisible = !_isPasswordVisible;
@@ -180,23 +199,30 @@ class LoginScreen extends StatelessWidget {
           final auth = FirebaseAuth.instance;
           auth
               .signInWithEmailAndPassword(
-              email: _emailController.text,
-              password: _passwordController.text)
+                  email: _emailController.text,
+                  password: _passwordController.text)
               .then((value) => {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardScreen()))
-          });
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DashboardScreen()))
+                  });
         },
         style: ElevatedButton.styleFrom(
-          primary: Color.fromARGB(151, 255, 255, 255), // Contrasting color
+          primary: const Color.fromARGB(255, 0, 0, 0), // Background color
+          onPrimary: Colors.white, // Text color
+          elevation: 3, // Shadow elevation
+          padding: const EdgeInsets.symmetric(
+              horizontal: 40, vertical: 16), // Button padding
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(30.0), // Rounded corners
           ),
         ),
         child: const Text(
           'Sign In',
           style: TextStyle(
             fontSize: 18.0,
-            color: Color.fromARGB(255, 0, 0, 0),
+            color: Color.fromARGB(255, 255, 255, 255),
           ),
         ),
       ),

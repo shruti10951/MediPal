@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 
+
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
 
@@ -20,6 +21,7 @@ class RegisterScreen extends StatelessWidget {
         children: [
           // Background Image with Curved Middle
           Positioned(
+            left: 0,
             child: ClipPath(
               clipper: WaveClipper(), // Custom clipper for curved shape
               child: Image.asset(
@@ -143,7 +145,7 @@ class RegisterScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 255, 255, 255)
-            .withOpacity(0.6), // Light blue with opacity
+            .withOpacity(0.8), // Light blue with opacity
         borderRadius: BorderRadius.circular(30.0), // Rounded corners
       ),
       child: TextField(
@@ -168,7 +170,7 @@ class RegisterScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 255, 255, 255)
-            .withOpacity(0.6), // Light blue with opacity
+            .withOpacity(0.8), // Light blue with opacity
         borderRadius: BorderRadius.circular(30.0), // Rounded corners
       ),
       child: TextField(
@@ -221,21 +223,23 @@ class RegisterScreen extends StatelessWidget {
   }
 }
 
-//Costom CLipper class with Path
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    var path = new Path();
-    path.lineTo(
-        0, size.height); //start path with this if you are making at bottom
+    final path = Path();
+    path.lineTo(0, size.height - 100);
+    final firstControlPoint = Offset(size.width / 4, size.height);
+    final firstEndPoint = Offset(size.width / 2.25, size.height - 30);
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+        firstEndPoint.dx, firstEndPoint.dy);
 
-    var firstStart = Offset(size.width / 5, size.height);
-    //fist point of quadratic bezier curve
-    var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
-    //second point of quadratic bezier curve
-    path.quadraticBezierTo(
-        firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
+    final secondControlPoint =
+        Offset(size.width - (size.width / 3.25), size.height - 65);
+    final secondEndPoint = Offset(size.width, size.height - 40);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
 
+// <<<<<<< HEAD
     var secondStart =
     Offset(size.width - (size.width / 3.24), size.height - 105);
     //third point of quadratic bezier curve
@@ -246,7 +250,12 @@ class WaveClipper extends CustomClipper<Path> {
 
     path.lineTo(
         size.width, 0); //end with this path if you are making wave at bottom
+// =======
+//     path.lineTo(size.width, size.height - 40);
+//     path.lineTo(size.width, 0);
+// >>>>>>> 7f24f851722a8b00c12914649f090b225cc4645b
     path.close();
+
     return path;
   }
 
@@ -255,4 +264,5 @@ class WaveClipper extends CustomClipper<Path> {
     return false; //if new instance have different instance than old instance
     //then you must return true;
   }
+
 }

@@ -5,13 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
 
-import 'home_screens/bottom_navigation.dart';
+import 'Dependent/bottom_navigation_dependent.dart';
 
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
@@ -71,8 +72,8 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home: 
-      // const DashboardScreen(),
-      const MyHomePage(title: 'MediPal'),
+      const BottomNavigationIndividual(),
+      // const MyHomePage(title: 'MediPal'),
     );
   }
 }
@@ -121,15 +122,15 @@ class _MyHomePageState extends State<MyHomePage> {
       if (user != null) {
         if (userRole == 'Individual') {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => DashboardScreen()));
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
         } else if (userRole == 'Guardian') {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => DashboardScreen()));
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
         } else {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => DashboardScreenDependent()));
+                  builder: (context) => BottomNavigationDependent()));
         }
       } else {
         Navigator.pushReplacement(
