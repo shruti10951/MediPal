@@ -90,23 +90,27 @@ class RegisterScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildInputField(Icons.person, 'Name'),
+                  _buildInputField(Icons.person, 'Name', nameController),
                   const SizedBox(height: 16.0),
-                  _buildInputField(Icons.email, 'Email'),
+                  _buildInputField(Icons.email, 'Email', emailController),
                   const SizedBox(height: 16.0),
-                  _buildInputField(Icons.phone, 'Phone Number'),
+                  _buildInputField(Icons.phone, 'Phone Number', phoneController),
                   const SizedBox(height: 16.0),
-                  _buildPasswordField(Icons.lock, 'Password'),
+                  _buildPasswordField(Icons.lock, 'Password', passwordController),
                   const SizedBox(height: 24.0),
                   ElevatedButton(
                     onPressed: () async {
                       // Add your sign-up logic here
-                      await auth
-                          .createUserWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text)
-                          .then(
-                              (value) => verify(context, phoneController.text));
+                      try {
+                        await auth
+                            .createUserWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text)
+                            .then(
+                                (value) => verify(context, phoneController.text));
+                      }catch(e){
+                        print(e);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       primary: const Color.fromARGB(255, 0, 0, 0), // Background color
@@ -135,7 +139,7 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInputField(IconData icon, String hintText) {
+  Widget _buildInputField(IconData icon, String hintText, TextEditingController controller) {
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 255, 255, 255)
@@ -153,11 +157,12 @@ class RegisterScreen extends StatelessWidget {
           ),
           border: InputBorder.none,
         ),
+        controller: controller,
       ),
     );
   }
 
-  Widget _buildPasswordField(IconData icon, String hintText) {
+  Widget _buildPasswordField(IconData icon, String hintText, TextEditingController controller) {
     bool _isPasswordVisible = false;
 
     return Container(
@@ -187,6 +192,7 @@ class RegisterScreen extends StatelessWidget {
           ),
           border: InputBorder.none,
         ),
+        controller: passwordController,
       ),
     );
   }
