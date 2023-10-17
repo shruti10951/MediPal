@@ -117,7 +117,7 @@ class WelcomeScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => SignUpPage(),
-                        builder: (context) => RegisterScreen(),
+                       // builder: (context) => RegisterScreen(),
                       ));
                 },
                 style: TextButton.styleFrom(
