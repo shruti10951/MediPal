@@ -33,20 +33,22 @@ class RegisterScreen extends StatelessWidget {
 
           // Back Button
           Positioned(
-            top: 17.0,
+            top: 40.0,
             left: 17.0,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3), // Transparent white background
+                color: Colors.white
+                    .withOpacity(0.3), // Transparent white background
                 shape: BoxShape.circle, // Circular shape
               ),
               child: IconButton(
                 icon: const Icon(
                   Icons.arrow_back_ios,
                   color: Color.fromARGB(255, 0, 0, 0),
-                ), // Set icon color to white
+                ),
                 onPressed: () {
-                  Navigator.of(context).pop(); // Navigate back to the previous screen
+                  Navigator.of(context)
+                      .pop(); // Navigate back to the previous screen
                 },
               ),
             ),
