@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/login_screen.dart';
-
-import 'register_screen.dart';
+import 'package:medipal/user_registration/sign_up_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   @override
@@ -93,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const RegisterScreen(),
+                        builder: (context) => SignUpPage(),
                       ));
                 },
                 style: TextButton.styleFrom(
