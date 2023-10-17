@@ -68,8 +68,8 @@ class RegisterScreen extends StatelessWidget {
                     'assets/images/medipalcircular.png', // Replace with your image path
                   ),
                 ),
-                const SizedBox(
-                    height: 8.0), // Add some spacing between the image and text
+                // const SizedBox(
+                //     height: 8.0), // Add some spacing between the image and text
                 const Text(
                   'Register',
                   style: TextStyle(
@@ -108,7 +108,23 @@ class RegisterScreen extends StatelessWidget {
                           .then(
                               (value) => verify(context, phoneController.text));
                     },
-                    child: const Text('Register'),
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 0, 0, 0), // Background color
+                      onPrimary: Colors.white, // Text color
+                      elevation: 3, // Shadow elevation
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 16), // Button padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(30.0), // Rounded corners
+                      ),
+                    ),
+                    child: const Text(
+                      'Register',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                      ),
+                    ),
                   ),
                 ],
               ),
