@@ -123,15 +123,15 @@ class _MyHomePageState extends State<MyHomePage> {
       if (user != null) {
         if (userRole == 'Individual') {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => DashboardScreen()));
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
         } else if (userRole == 'Guardian') {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => DashboardScreen()));
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
         } else {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => DashboardScreenDependent()));
+                  builder: (context) => BottomNavigationDependent()));
         }
       } else {
         Navigator.pushReplacement(

@@ -4,14 +4,14 @@ import 'package:medipal/Individual/profile_screen.dart';
 import 'package:medipal/individual/dashboard_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
 
-class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({Key? key}) : super(key: key);
+class BottomNavigationDependent extends StatefulWidget {
+  const BottomNavigationDependent({Key? key}) : super(key: key);
 
   @override
-  _BottomNavigationState createState() => _BottomNavigationState();
+  _BottomNavigationDependentState createState() => _BottomNavigationDependentState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
+class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
   int _selectedIndex = 0; // Current selected tab index
   final PageController _pageController = PageController(initialPage: 0);
 

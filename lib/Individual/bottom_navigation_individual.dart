@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/Individual/profile_screen.dart';
-import 'package:medipal/individual/dashboard_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
+import 'package:medipal/home_screens/dashboard_screen_old.dart';
 
 class BottomNavigationIndividual extends StatefulWidget {
   const BottomNavigationIndividual({Key? key}) : super(key: key);

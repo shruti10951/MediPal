@@ -101,7 +101,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
             ),
           ),
-          const BottomNavigationIndividual(),
         ],
       ),
 
