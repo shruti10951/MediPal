@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/login_screen.dart';
-
-import 'register_screen.dart';
+import 'package:medipal/user_registration/sign_up_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -117,6 +116,7 @@ class WelcomeScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
+                        builder: (context) => SignUpPage(),
                         builder: (context) => RegisterScreen(),
                       ));
                 },
