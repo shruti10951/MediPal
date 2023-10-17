@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home: 
-      const BottomNavigationIndividual(),
+      const BottomNavigation(),
       // const MyHomePage(title: 'MediPal'),
     );
   }
