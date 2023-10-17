@@ -73,7 +73,7 @@ class DependentLogin extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      OTPForDependentPage(verificationId: verificationId, name: nameController.text)));
+                      OTPForDependentPage(verificationId: verificationId, name: nameController.text, phoneNo: phoneController.text,)));
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }

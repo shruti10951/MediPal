@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/home_screens/dashboard_screen.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
+
 import 'package:medipal/models/UserModel.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 
 class OTPForUserPage extends StatelessWidget {
   final String verificationId;
@@ -23,17 +25,17 @@ class OTPForUserPage extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('OTP'),
+        title: const Text('OTP'),
       ),
       body: Column(
         children: [
           TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'OTP',
             ),
             controller: otpController,
           ),
-          SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
           ElevatedButton(
               onPressed: () async {
                 // Create a PhoneAuthCredential with the code
@@ -49,7 +51,7 @@ class OTPForUserPage extends StatelessWidget {
                     await collectionReference.doc(auth.currentUser?.uid).set(userMap).then((value) => {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => DashboardScreen()),
+                        MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()),
                       ),
                     });
                   });
@@ -60,12 +62,12 @@ class OTPForUserPage extends StatelessWidget {
                     SnackBar(
                       content: Text(e.toString()),
                       duration:
-                          Duration(seconds: 3), // Adjust the duration as needed
+                          const Duration(seconds: 3), // Adjust the duration as needed
                     ),
                   );
                 }
               },
-              child: Text('Verify'))
+              child: const Text('Verify'))
         ],
       ),
     );

@@ -16,14 +16,10 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  String initialType =
-      'Pills'; // Set the initial type to one of the values in the DropdownMenuItem list
-  String updatedType = 'Pills'; // Initialize with a default type
 
   @override
   void initState() {
     super.initState();
-    updatedType = initialType;
   }
 
   Future<List<QueryDocumentSnapshot>?> fetchData() async {
@@ -50,11 +46,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   TextEditingController nameController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
+  TextEditingController typeController = TextEditingController();
 
   // Function to open an edit dialog for a specific item
   void _openEditDialog(String name, String type, int quantity) {
     nameController.text = name;
     quantityController.text = quantity.toString();
+    typeController.text = type;
 
     showDialog(
       context: context,
@@ -72,10 +70,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   ),
                   SizedBox(height: 16),
                   DropdownButton<String>(
-                    value: updatedType,
+                    value: type,
                     onChanged: (String? newValue) {
                       setState(() {
-                        updatedType = newValue!;
+                        type = newValue!;
                       });
                     },
                     items: <String>['Pills', 'Liquid', 'Injection']
@@ -108,7 +106,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 TextButton(
                   onPressed: () {
                     setState(() {
-                      updatedType = initialType;
+                      type = typeController.text;
                     });
                     Navigator.pop(context);
                   },
@@ -121,6 +119,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         int.tryParse(quantityController.text) ?? 0;
                     // Use updatedType for the selected medicine type
                     // Update the item in the database
+
                     Navigator.pop(context);
                   },
                   child: Text('Save'),
@@ -181,20 +180,45 @@ class _InventoryScreenState extends State<InventoryScreen> {
         children: [
           Expanded(
               child: FutureBuilder(
-            future: fetchData(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                final medicationQuery = snapshot.data;
-                return _buildInventoryCard(medicationQuery!);
-              }
-            },
-          ))
+                future: fetchData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  return _buildLoadingIndicator();
+                    
+                    // return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final medicationQuery = snapshot.data;
+                    return _buildInventoryCard(medicationQuery!);
+                  }
+                },
+              ))
         ],
       ), // Create the inventory list view
+    );
+  }
+    Widget _buildLoadingIndicator() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color.fromARGB(255, 71, 78, 84),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            'Loading...',
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -204,11 +228,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
         itemCount: medicationQuerySnapshot.length,
         itemBuilder: (BuildContext context, int index) {
           final QueryDocumentSnapshot medicationDocumentSnapshot =
-              medicationQuerySnapshot[index];
+          medicationQuerySnapshot[index];
           final MedicationModel medicationModel =
-              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+          MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
           final name = medication['name'];
+          final type = medication['type'];
           final quantity = medication['inventory']['quantity'];
 
           // Add this in UI
@@ -237,7 +262,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       // Vertical line
                       const SizedBox(height: 8),
                       // For this, make sure we have type in medicine form
-                      Text('Type: $updatedType'),
+                      Text('Type: $type'),
                       Text('Quantity: $quantity'),
                       const SizedBox(height: 8),
                       Row(
@@ -247,7 +272,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             icon: const Icon(Icons.edit),
                             onPressed: () {
                               // Open the edit dialog when the edit button is pressed
-                              _openEditDialog(name, updatedType, quantity);
+                              _openEditDialog(name, type, quantity);
                             },
                           ),
                           IconButton(

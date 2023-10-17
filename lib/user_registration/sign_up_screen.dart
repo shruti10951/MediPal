@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
