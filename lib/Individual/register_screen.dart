@@ -31,7 +31,7 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
 
-          // Back Button
+         // Back Button
           Positioned(
             top: 40.0,
             left: 17.0,
@@ -139,7 +139,7 @@ class RegisterScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 255, 255, 255)
-            .withOpacity(0.6), // Light blue with opacity
+            .withOpacity(0.8), // Light blue with opacity
         borderRadius: BorderRadius.circular(30.0), // Rounded corners
       ),
       child: TextField(
@@ -163,7 +163,7 @@ class RegisterScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 255, 255, 255)
-            .withOpacity(0.6), // Light blue with opacity
+            .withOpacity(0.8), // Light blue with opacity
         borderRadius: BorderRadius.circular(30.0), // Rounded corners
       ),
       child: TextField(
