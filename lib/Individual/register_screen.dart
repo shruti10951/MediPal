@@ -54,20 +54,23 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
 
-          // Register Text
+          // Register Text and Circular Medipal Image
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.1,
-            left: 16.0,
-            right: 16.0,
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            top: 0.0, // Align to the top
+            left: 0.0,
+            right: 0.0,
+            child: Column(
               children: [
-                Icon(
-                  Icons.person,
-                  size: 80.0,
-                  color: Color.fromARGB(255, 0, 0, 0),
+                SizedBox(
+                  width: 350.0, // Set the width of the circular image
+                  height: 350.0, // Set the height of the circular image
+                  child: Image.asset(
+                    'assets/images/medipalcircular.png', // Replace with your image path
+                  ),
                 ),
-                Text(
+                const SizedBox(
+                    height: 8.0), // Add some spacing between the image and text
+                const Text(
                   'Register',
                   style: TextStyle(
                     fontSize: 24.0,
@@ -79,7 +82,7 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
 
-          // Registration Form
+          // Registration Form (Positioned at the bottom)
           Positioned(
             top: MediaQuery.of(context).size.height * 0.35,
             left: 16.0,
@@ -100,9 +103,10 @@ class RegisterScreen extends StatelessWidget {
                       // Add your sign-up logic here
                       await auth
                           .createUserWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text)
-                          .then((value) => verify(context, phoneController.text));
+                              email: emailController.text,
+                              password: passwordController.text)
+                          .then(
+                              (value) => verify(context, phoneController.text));
                     },
                     child: const Text('Register'),
                   ),
@@ -118,17 +122,18 @@ class RegisterScreen extends StatelessWidget {
   Widget _buildInputField(IconData icon, String hintText) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6), // Light blue with opacity
-        borderRadius: BorderRadius.circular(10.0), // Rounded corners
+        color: const Color.fromARGB(255, 255, 255, 255)
+            .withOpacity(0.6), // Light blue with opacity
+        borderRadius: BorderRadius.circular(30.0), // Rounded corners
       ),
       child: TextField(
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(color: Colors.white),
+          hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
           prefixIcon: Icon(
             icon,
-            color: Colors.white,
+            color: const Color.fromARGB(255, 0, 0, 0),
           ),
           border: InputBorder.none,
         ),
@@ -141,23 +146,24 @@ class RegisterScreen extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6), // Light blue with opacity
-        borderRadius: BorderRadius.circular(10.0), // Rounded corners
+        color: const Color.fromARGB(255, 255, 255, 255)
+            .withOpacity(0.6), // Light blue with opacity
+        borderRadius: BorderRadius.circular(30.0), // Rounded corners
       ),
       child: TextField(
         obscureText: !_isPasswordVisible,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(color: Colors.white),
+          hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
           prefixIcon: Icon(
             icon,
-            color: Colors.white,
+            color: const Color.fromARGB(255, 0, 0, 0),
           ),
           suffixIcon: IconButton(
             icon: Icon(
               _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              color: Colors.white,
+              color: const Color.fromARGB(255, 0, 0, 0),
             ),
             onPressed: () {
               _isPasswordVisible = !_isPasswordVisible;
@@ -175,51 +181,56 @@ class RegisterScreen extends StatelessWidget {
         verificationCompleted: (PhoneAuthCredential credential) {},
         verificationFailed: (FirebaseAuthException e) {},
         codeSent: (String verificationId, int? resendToken) {
-          UserModel userModel = UserModel(userId: auth.currentUser!.uid,
+          UserModel userModel = UserModel(
+              userId: auth.currentUser!.uid,
               email: emailController.text,
               phoneNo: phoneNumber,
               name: nameController.text,
               role: 'Individual',
               noOfDependents: 0,
-              dependents:[]);
+              dependents: []);
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      OTPForUserPage(verificationId: verificationId, userModel: userModel)));
+                  builder: (context) => OTPForUserPage(
+                      verificationId: verificationId, userModel: userModel)));
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }
 }
 
 //Costom CLipper class with Path
-class WaveClipper extends CustomClipper<Path>{
+class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    
-      var path = new Path();
-      path.lineTo(0, size.height); //start path with this if you are making at bottom
-      
-      var firstStart = Offset(size.width / 5, size.height); 
-      //fist point of quadratic bezier curve
-      var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
-      //second point of quadratic bezier curve
-      path.quadraticBezierTo(firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
+    var path = new Path();
+    path.lineTo(
+        0, size.height); //start path with this if you are making at bottom
 
-      var secondStart = Offset(size.width - (size.width / 3.24), size.height - 105); 
-      //third point of quadratic bezier curve
-      var secondEnd = Offset(size.width, size.height - 10);
-      //fourth point of quadratic bezier curve
-      path.quadraticBezierTo(secondStart.dx, secondStart.dy, secondEnd.dx, secondEnd.dy);
+    var firstStart = Offset(size.width / 5, size.height);
+    //fist point of quadratic bezier curve
+    var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
+    //second point of quadratic bezier curve
+    path.quadraticBezierTo(
+        firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
 
-      path.lineTo(size.width, 0); //end with this path if you are making wave at bottom
-      path.close();
-      return path; 
+    var secondStart =
+        Offset(size.width - (size.width / 3.24), size.height - 105);
+    //third point of quadratic bezier curve
+    var secondEnd = Offset(size.width, size.height - 10);
+    //fourth point of quadratic bezier curve
+    path.quadraticBezierTo(
+        secondStart.dx, secondStart.dy, secondEnd.dx, secondEnd.dy);
+
+    path.lineTo(
+        size.width, 0); //end with this path if you are making wave at bottom
+    path.close();
+    return path;
   }
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
-     return false; //if new instance have different instance than old instance 
-     //then you must return true;
+    return false; //if new instance have different instance than old instance
+    //then you must return true;
   }
 }
