@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/home_screens/dashboard_screen_old.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
+
 import 'package:medipal/models/UserModel.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 
 class OTPForUserPage extends StatelessWidget {
   final String verificationId;
@@ -49,7 +51,7 @@ class OTPForUserPage extends StatelessWidget {
                     await collectionReference.doc(auth.currentUser?.uid).set(userMap).then((value) => {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                        MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()),
                       ),
                     });
                   });

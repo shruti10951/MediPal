@@ -296,7 +296,7 @@ class _MedicineFormState extends State<MedicineForm> {
 
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                        MaterialPageRoute(builder: (context) => const DashboardScreenOld()),
                       );
 
                       // Handle the form data as needed (e.g., save to Firestore)

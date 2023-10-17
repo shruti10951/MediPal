@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 
+
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
 
@@ -90,23 +91,27 @@ class RegisterScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildInputField(Icons.person, 'Name'),
+                  _buildInputField(Icons.person, 'Name', nameController),
                   const SizedBox(height: 16.0),
-                  _buildInputField(Icons.email, 'Email'),
+                  _buildInputField(Icons.email, 'Email', emailController),
                   const SizedBox(height: 16.0),
-                  _buildInputField(Icons.phone, 'Phone Number'),
+                  _buildInputField(Icons.phone, 'Phone Number', phoneController),
                   const SizedBox(height: 16.0),
-                  _buildPasswordField(Icons.lock, 'Password'),
+                  _buildPasswordField(Icons.lock, 'Password', passwordController),
                   const SizedBox(height: 24.0),
                   ElevatedButton(
                     onPressed: () async {
                       // Add your sign-up logic here
-                      await auth
-                          .createUserWithEmailAndPassword(
-                              email: emailController.text,
-                              password: passwordController.text)
-                          .then(
-                              (value) => verify(context, phoneController.text));
+                      try {
+                        await auth
+                            .createUserWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text)
+                            .then(
+                                (value) => verify(context, phoneController.text));
+                      }catch(e){
+                        print(e);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       primary: const Color.fromARGB(255, 0, 0, 0), // Background color
@@ -116,7 +121,7 @@ class RegisterScreen extends StatelessWidget {
                           horizontal: 40, vertical: 16), // Button padding
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                            BorderRadius.circular(30.0), // Rounded corners
+                        BorderRadius.circular(30.0), // Rounded corners
                       ),
                     ),
                     child: const Text(
@@ -135,7 +140,7 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInputField(IconData icon, String hintText) {
+  Widget _buildInputField(IconData icon, String hintText, TextEditingController controller) {
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 255, 255, 255)
@@ -153,11 +158,12 @@ class RegisterScreen extends StatelessWidget {
           ),
           border: InputBorder.none,
         ),
+        controller: controller,
       ),
     );
   }
 
-  Widget _buildPasswordField(IconData icon, String hintText) {
+  Widget _buildPasswordField(IconData icon, String hintText, TextEditingController controller) {
     bool _isPasswordVisible = false;
 
     return Container(
@@ -187,6 +193,7 @@ class RegisterScreen extends StatelessWidget {
           ),
           border: InputBorder.none,
         ),
+        controller: passwordController,
       ),
     );
   }
@@ -230,8 +237,9 @@ class WaveClipper extends CustomClipper<Path> {
     path.quadraticBezierTo(
         firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
 
+// <<<<<<< HEAD
     var secondStart =
-        Offset(size.width - (size.width / 3.24), size.height - 105);
+    Offset(size.width - (size.width / 3.24), size.height - 105);
     //third point of quadratic bezier curve
     var secondEnd = Offset(size.width, size.height - 10);
     //fourth point of quadratic bezier curve
@@ -240,6 +248,7 @@ class WaveClipper extends CustomClipper<Path> {
 
     path.lineTo(
         size.width, 0); //end with this path if you are making wave at bottom
+
     path.close();
     return path;
   }
@@ -249,4 +258,5 @@ class WaveClipper extends CustomClipper<Path> {
     return false; //if new instance have different instance than old instance
     //then you must return true;
   }
+
 }

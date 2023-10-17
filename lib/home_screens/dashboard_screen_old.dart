@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import '../Dependent/bottom_navigation_dependent.dart';
@@ -13,14 +14,14 @@ FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
 
-class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+class DashboardScreenOld extends StatefulWidget {
+  const DashboardScreenOld({super.key});
 
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  _DashboardScreenOldState createState() => _DashboardScreenOldState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenOldState extends State<DashboardScreenOld> {
   List<QueryDocumentSnapshot> filteredAlarms = [];
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
@@ -103,7 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomNavigation(),
+      bottomNavigationBar: const BottomNavigationIndividual(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _navigateToMedicineForm(context);

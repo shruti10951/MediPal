@@ -48,7 +48,7 @@ class LoginPage extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => DashboardScreen()))
+                                  builder: (context) => DashboardScreenOld()))
                         });
               },
               child: Text('Login'),
