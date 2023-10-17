@@ -1,17 +1,46 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/home_screens/dashboard_screen.dart';
+import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/user_registration/choose_screen.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
-import 'package:medipal/user_registration/user_selection_screen.dart';
+
+import 'Dependent/bottom_navigation_dependent.dart';
 
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
   await check.checkFirestore();
+}
+
+Future<List> getData() async {
+  final user = FirebaseAuth.instance.currentUser;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  QuerySnapshot dependentQuery = await firestore
+      .collection('dependents')
+      .where('userId', isEqualTo: user?.uid.toString())
+      .get();
+  QuerySnapshot userQuery = await firestore
+      .collection('users')
+      .where('userId', isEqualTo: user?.uid.toString())
+      .get();
+  var role;
+  if(dependentQuery.docs.isNotEmpty){
+    role= 'dependent';
+  }else{
+    for (QueryDocumentSnapshot document in userQuery.docs) {
+      Map<String, dynamic> userData =
+      document.data() as Map<String, dynamic>;
+      role = userData['role'];
+    }
+  }
+  return ([user, role]);
 }
 
 Future main() async {
@@ -40,9 +69,11 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-       useMaterial3: true,
+        //useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'MediPal'),
+      home: 
+      const BottomNavigationIndividual(),
+      // const MyHomePage(title: 'MediPal'),
     );
   }
 }
@@ -60,7 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -79,14 +109,32 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    final user = FirebaseAuth.instance.currentUser;
+
+    var userRole;
+    var user;
+
+    getData().then((value) {
+      user= value[0];
+      userRole = value[1];
+    });
+
     Timer(Duration(seconds: 2), () {
       if (user != null) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => DashboardScreen()));
+        if (userRole == 'Individual') {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
+        } else if (userRole == 'Guardian') {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
+        } else {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigationDependent()));
+        }
       } else {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => UserSelection()));
+            context, MaterialPageRoute(builder: (context) => ChooseScreen()));
       }
     });
   }
