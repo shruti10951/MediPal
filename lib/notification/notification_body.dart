@@ -1,33 +1,48 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+// import 'package:medipal/notification/FirestoreCheck.dart'
 
 class NotificationBody {
-  static Future initialize(
-      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
-    var androidInitialize =
-        new AndroidInitializationSettings('mipmap/ic_launcher');
-    var initializeNotificationSetting =
-        new InitializationSettings(android: androidInitialize);
-    await flutterLocalNotificationsPlugin
-        .initialize(initializeNotificationSetting);
+  int createUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch.remainder(100000);
   }
 
-  static Future showNotification(
-      {var id = 0,
-      required String title,
-      required String body,
-      var payload,
-      required FlutterLocalNotificationsPlugin fln}) async {
-    // const String imageUrl = 'android/app/src/main/res/drawable/medipal.png';
+  static Future<void> initialize() async {
+    AwesomeNotifications().initialize(
+      null,
+      // 'android/app/src/main/res/drawable/medipal.png',
+      [
+        NotificationChannel(
+          channelKey: 'basic_channel',
+          channelName: 'Basic Notifications',
+          channelDescription: '',
+          defaultColor: Colors.teal,
+          importance: NotificationImportance.Max,
+          channelShowBadge: true,
+          playSound: true,
+          enableVibration: true,
+          locked: true,
+        ),
+      ],
+      debug: true,
+    );
+  }
 
-    AndroidNotificationDetails androidNotificationDetails =
-        new AndroidNotificationDetails('channelId', 'channelName',
-            playSound: true,
-            importance: Importance.max,
-            priority: Priority.high,
-            largeIcon: const DrawableResourceAndroidBitmap('medipal'),
-          fullScreenIntent: true,
-            );
-    var not = NotificationDetails(android: androidNotificationDetails);
-    await fln.show(0, title, body, not);
+  Future<void> displayNotification({
+    required String title,
+    required String body,
+  }) async {
+    AwesomeNotifications().createNotification(
+        content: NotificationContent(
+      id: 0,
+      channelKey: 'basic_channel',
+      title: title,
+      body: body,
+      category: NotificationCategory.Alarm,
+      wakeUpScreen: true,
+      autoDismissible: false,
+      fullScreenIntent: true,
+    ));
   }
 }
