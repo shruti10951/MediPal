@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+
+FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseFirestore firestore = FirebaseFirestore.instance;
+final userId = auth.currentUser?.uid;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,6 +17,40 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+  List<QueryDocumentSnapshot> filteredAlarms = [];
+
+  Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
+    final alarmQuery =
+        firestore.collection('alarms').where('userId', isEqualTo: userId).get();
+    final medicationQuery = firestore
+        .collection('medications')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    List<QueryDocumentSnapshot> alarmDocumentList = [];
+    List<QueryDocumentSnapshot> medicationDocumentList = [];
+
+    try {
+      final results = await Future.wait([alarmQuery, medicationQuery]);
+      final alarmQuerySnapshot = results[0] as QuerySnapshot;
+      final medicationQuerySnapshot = results[1] as QuerySnapshot;
+
+      if (alarmQuerySnapshot.docs.isNotEmpty) {
+        alarmDocumentList = alarmQuerySnapshot.docs.toList();
+      }
+
+      if (medicationQuerySnapshot.docs.isNotEmpty) {
+        medicationDocumentList = medicationQuerySnapshot.docs.toList();
+      }
+
+      return [alarmDocumentList, medicationDocumentList];
+    } catch (error) {
+      print('Error retrieving documents: $error');
+      return null;
+    }
+  }
+
   ImagePicker _imagePicker = ImagePicker();
   XFile? _image;
 
