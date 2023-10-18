@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/bottom_navigation_dependent.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/models/DependentModel.dart';
 
@@ -24,17 +25,17 @@ class OTPForDependentPage extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('OTP'),
+        title: const Text('OTP'),
       ),
       body: Column(
         children: [
           TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'OTP',
             ),
             controller: otpController,
           ),
-          SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () async {
               try {
@@ -61,24 +62,25 @@ class OTPForDependentPage extends StatelessWidget {
                   }
 
                   //BACK BUTTON
+                  // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DashboardScreenDependent(),
+                      builder: (context) => const BottomNavigationDependent(),
                     ),
                   );
                 });
               } catch (e) {
                 final scaffoldMessenger = ScaffoldMessenger.of(context);
                 scaffoldMessenger.showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text('Invalid OTP'),
                     duration: Duration(seconds: 3),
                   ),
                 );
               }
             },
-            child: Text('Verify'),
+            child: const Text('Verify'),
           )
 
         ],

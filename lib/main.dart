@@ -29,12 +29,11 @@ Future<List> getData() async {
       .where('userId', isEqualTo: user?.uid.toString())
       .get();
   var role;
-  if(dependentQuery.docs.isNotEmpty){
-    role= 'dependent';
-  }else{
+  if (dependentQuery.docs.isNotEmpty) {
+    role = 'dependent';
+  } else {
     for (QueryDocumentSnapshot document in userQuery.docs) {
-      Map<String, dynamic> userData =
-      document.data() as Map<String, dynamic>;
+      Map<String, dynamic> userData = document.data() as Map<String, dynamic>;
       role = userData['role'];
     }
   }
@@ -78,7 +77,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -110,21 +108,31 @@ class _MyHomePageState extends State<MyHomePage> {
     var user;
 
     getData().then((value) {
-      user= value[0];
+      user = value[0];
       userRole = value[1];
       Timer(Duration(seconds: 2), () {
         if (user != null) {
           if (userRole == 'Individual') {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
-          } else if (userRole == 'Guardian') {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
-          } else {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => BottomNavigationDependent()));
+                    builder: (context) => BottomNavigationIndividual()));
+            print("Matti kahli bhendi tumhi");
+
+          } else if (userRole == 'Guardian') {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BottomNavigationIndividual()));
+            print("Matti kahli bhendi tumhi1");
+
+          } 
+          else {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BottomNavigationIndividual()));
+            print("Matti kahli bhendi tumhi2");
           }
         } else {
           Navigator.pushReplacement(
@@ -132,6 +140,5 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
     });
-
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
-import 'package:medipal/Individual/profile_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
+import 'package:medipal/Individual/profile_screen.dart';
 
 class BottomNavigationIndividual extends StatefulWidget {
   const BottomNavigationIndividual({Key? key}) : super(key: key);
@@ -47,60 +47,72 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        // ignore: prefer_const_literals_to_create_immutables
-        children: <Widget>[
-          DashboardScreen(), // Replace with your Dashboard screen widget
-          InventoryScreen(), // Replace with your Inventory screen widget
-          ProfileScreen(), // Replace with your Profile screen widget
+    return WillPopScope(
+      onWillPop: () async {
+        // Prevent back button when on the first page
+        if (_selectedIndex == 0) {
+          return false;
+        }
+        // Handle navigation when on other pages
+        _navigateToDashboard();
+        return true;
+      },
+      child: Scaffold(
+        appBar: null, // Set the AppBar to null to hide it
+        body: PageView(
+          controller: _pageController,
+          // ignore: prefer_const_literals_to_create_immutables
+          children: <Widget>[
+            DashboardScreen(), // Replace with your Dashboard screen widget
+            InventoryScreen(), // Replace with your Inventory screen widget
+            ProfileScreen(), // Replace with your Profile screen widget
 
-          // Add other screens as needed
-        ],
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inventory),
-            label: 'Inventory',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+            // Add other screens as needed
+          ],
+          onPageChanged: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.inventory),
+              label: 'Inventory',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
 
-          // Add logic to navigate to specific pages based on index
-          switch (index) {
-            case 0:
-              _navigateToDashboard();
-              break;
-            case 1:
-              _navigateToInventory();
-              break;
-            case 2:
-              _navigateToProfile();
-              break;
-            // Add other cases for additional tabs
-          }
-        },
+            // Add logic to navigate to specific pages based on index
+            switch (index) {
+              case 0:
+                _navigateToDashboard();
+                break;
+              case 1:
+                _navigateToInventory();
+                break;
+              case 2:
+                _navigateToProfile();
+                break;
+              // Add other cases for additional tabs
+            }
+          },
+        ),
       ),
     );
   }
