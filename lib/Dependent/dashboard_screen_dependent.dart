@@ -257,6 +257,17 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
           final String name = medicine['name'];
           final String time = alarm['time'];
           final String quantity = medicine['dosage'];
+          final String type = medicine['type'];
+
+          String img;
+
+          if(type=='Pills'){
+            img= 'assets/images/pill_icon.png';
+          }else if(type=='Liquid'){
+            img= 'assets/images/liquid_icon.png';
+          }else{
+            img= 'assets/images/injection_icon.png';
+          }
 
           DateTime dateTime = DateTime.parse(time);
 
@@ -280,8 +291,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
                 ),
                 const Divider(height: 1, color: Colors.grey),
                 ListTile(
-                  leading: const Icon(Icons.medical_services,
-                      size: 48.0, color: Colors.blue),
+                  leading: Image.asset(img),
                   title: Text(
                     name,
                     style: const TextStyle(
