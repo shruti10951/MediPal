@@ -248,7 +248,10 @@ class WaveClipper extends CustomClipper<Path> {
 
     path.lineTo(
         size.width, 0); //end with this path if you are making wave at bottom
-
+// =======
+//     path.lineTo(size.width, size.height - 40);
+//     path.lineTo(size.width, 0);
+// >>>>>>> 7f24f851722a8b00c12914649f090b225cc4645b
     path.close();
     return path;
   }

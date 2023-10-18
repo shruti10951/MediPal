@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
       const MyHomePage(title: 'MediPal'),
     );
   }
-}
+} 
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
