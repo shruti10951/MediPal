@@ -49,7 +49,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   TextEditingController typeController = TextEditingController();
 
   // Function to open an edit dialog for a specific item
-  void _openEditDialog(String name, String type, int quantity) {
+  void _openEditDialog(String id, String name, String type, int quantity) {
     nameController.text = name;
     quantityController.text = quantity.toString();
     typeController.text = type;
@@ -115,10 +115,20 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 TextButton(
                   onPressed: () {
                     String updatedName = nameController.text;
+                    String updatedType = typeController.text;
                     int updatedQuantity =
                         int.tryParse(quantityController.text) ?? 0;
                     // Use updatedType for the selected medicine type
                     // Update the item in the database
+
+                    Map<String, dynamic> medicine= {
+                      'name' : updatedName,
+                      'inventory.quantity' : updatedQuantity,
+                      'type' : type
+                    };
+
+                    firestore.collection('medications').doc(id).update(medicine).then((value) => print('data updated'));
+                    
 
                     Navigator.pop(context);
                   },
@@ -133,7 +143,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   // Function to open a confirmation dialog for deleting a specific item
-  void _openDeleteDialog() {
+  void _openDeleteDialog(String id) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -152,8 +162,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                // Implement the deletion logic here
-                // Remove the item and associated alarms from the database
+
+                firestore.collection('medications').doc(id).delete().then((value) async{
+                  final snapshots= await firestore.collection('alarms').where('medicationId', isEqualTo: id).get();
+                  for (final doc in snapshots.docs){
+                    await doc.reference.delete();
+                  }
+                });
+
                 Navigator.pop(context);
               },
               child: const Text('Delete'),
@@ -234,7 +250,18 @@ class _InventoryScreenState extends State<InventoryScreen> {
           final Map<String, dynamic> medication = medicationModel.toMap();
           final name = medication['name'];
           final type = medication['type'];
+          final medicationId = medication['medicationId'];
           final quantity = medication['inventory']['quantity'];
+
+          String img;
+
+          if(type=='Pills'){
+            img= 'assets/images/pill_icon.png';
+          }else if(type=='Liquid'){
+            img= 'assets/images/liquid_icon.png';
+          }else{
+            img= 'assets/images/injection_icon.png';
+          }
 
           // Add this in UI
           final recorder = medication['inventory']['recorderLevel'];
@@ -246,7 +273,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: Image.asset('assets/images/medipal.png'),
+                  leading: Image.asset(img),
                   // Replace with your image asset
                   title: Text(
                     name,
@@ -272,14 +299,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             icon: const Icon(Icons.edit),
                             onPressed: () {
                               // Open the edit dialog when the edit button is pressed
-                              _openEditDialog(name, type, quantity);
+                              _openEditDialog(medicationId, name, type, quantity);
                             },
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete),
                             onPressed: () {
                               // Open the delete confirmation dialog when the delete button is pressed
-                              _openDeleteDialog();
+                              _openDeleteDialog(medicationId);
                             },
                           ),
                         ],

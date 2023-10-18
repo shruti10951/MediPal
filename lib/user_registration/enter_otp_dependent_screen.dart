@@ -60,6 +60,7 @@ class OTPForDependentPage extends StatelessWidget {
                     await collectionReference.doc(user?.uid).set(dependent);
                   }
 
+                  //BACK BUTTON
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

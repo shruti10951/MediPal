@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'medicine_form.dart';
@@ -279,6 +278,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final String name = medicine['name'];
           final String time = alarm['time'];
           final String quantity = medicine['dosage'];
+          final String type = medicine['type'];
+          
+          String img;
+
+          if(type=='Pills'){
+            img= 'assets/images/pill_icon.png';
+          }else if(type=='Liquid'){
+            img= 'assets/images/liquid_icon.png';
+          }else{
+            img= 'assets/images/injection_icon.png';
+          }
 
           DateTime dateTime = DateTime.parse(time);
 
@@ -302,8 +312,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 const Divider(height: 1, color: Colors.grey),
                 ListTile(
-                  leading: const Icon(Icons.medical_services,
-                      size: 48.0, color: Colors.blue),
+                  leading: Image.asset(img),
                   title: Text(
                     name,
                     style: const TextStyle(

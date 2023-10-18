@@ -4,11 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/Individual/register_screen.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
-import 'package:medipal/Individual/dashboard_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
@@ -72,17 +70,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         //useMaterial3: true,
       ),
-      home: 
-      // DashboardScreenDependent(),
-      const MyHomePage(title: 'MediPal'),
+      home: const MyHomePage(),
+      // const MyHomePage(title: 'MediPal'),
     );
   }
 } 
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -117,26 +113,26 @@ class _MyHomePageState extends State<MyHomePage> {
     getData().then((value) {
       user= value[0];
       userRole = value[1];
-    });
-
-    Timer(Duration(seconds: 2), () {
-      if (user != null) {
-        if (userRole == 'Individual') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
-        } else if (userRole == 'Guardian') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
+      Timer(const Duration(seconds: 2), () {
+        if (user != null) {
+          if (userRole == 'Individual') {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()));
+          } else if (userRole == 'Guardian') {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()));
+          } else {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const BottomNavigationDependent()));
+          }
         } else {
           Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => BottomNavigationDependent()));
+              context, MaterialPageRoute(builder: (context) => const ChooseScreen()));
         }
-      } else {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => ChooseScreen()));
-      }
+      });
     });
+
   }
 }

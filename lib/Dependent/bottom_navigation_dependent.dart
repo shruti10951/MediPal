@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/profile_screen.dart';
-import 'package:medipal/individual/dashboard_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
 
 class BottomNavigationDependent extends StatefulWidget {
