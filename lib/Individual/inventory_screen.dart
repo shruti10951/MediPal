@@ -143,7 +143,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   // Function to open a confirmation dialog for deleting a specific item
-  void _openDeleteDialog() {
+  void _openDeleteDialog(String id) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -162,8 +162,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                // Implement the deletion logic here
-                // Remove the item and associated alarms from the database
+
+                firestore.collection('medications').doc(id).delete().then((value) async{
+                  final snapshots= await firestore.collection('alarms').where('medicationId', isEqualTo: id).get();
+                  for (final doc in snapshots.docs){
+                    await doc.reference.delete();
+                  }
+                });
+
                 Navigator.pop(context);
               },
               child: const Text('Delete'),
@@ -300,7 +306,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             icon: const Icon(Icons.delete),
                             onPressed: () {
                               // Open the delete confirmation dialog when the delete button is pressed
-                              _openDeleteDialog();
+                              _openDeleteDialog(medicationId);
                             },
                           ),
                         ],
