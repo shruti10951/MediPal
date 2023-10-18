@@ -84,7 +84,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  //PLEASE DO SOMETHING ABOUT THIS.
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
@@ -115,7 +114,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-   Widget _buildLoadingIndicator() {
+  Widget _buildLoadingIndicator() {
     return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -138,7 +137,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
 
   Widget _buildCalendar(BuildContext context) {
     return FutureBuilder(
@@ -227,7 +225,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
   }
-  
 
   void _onDateTapped(
       DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
@@ -279,21 +276,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final String time = alarm['time'];
           final String quantity = medicine['dosage'];
           final String type = medicine['type'];
-          
+
           String img;
 
-          if(type=='Pills'){
-            img= 'assets/images/pill_icon.png';
-          }else if(type=='Liquid'){
-            img= 'assets/images/liquid_icon.png';
-          }else{
-            img= 'assets/images/injection_icon.png';
+          if (type == 'Pills') {
+            img = 'assets/images/pill_icon.png';
+          } else if (type == 'Liquid') {
+            img = 'assets/images/liquid_icon.png';
+          } else {
+            img = 'assets/images/injection_icon.png';
           }
 
           DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
+          // String formattedTime = DateFormat.Hm().format(dateTime);
+          // DateTime dateTime = DateTime.parse(time);
+
+// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          String formattedDate = DateFormat('d MMM').format(dateTime);
+
+// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
+
+          String dateTimeText = '$formattedDate | $formattedTime';
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -303,7 +309,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    formattedTime,
+                    dateTimeText,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
