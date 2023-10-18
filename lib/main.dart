@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
-import 'package:medipal/Individual/register_screen.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -70,11 +69,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         //useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
       // const MyHomePage(title: 'MediPal'),
     );
   }
-} 
+}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -113,23 +112,23 @@ class _MyHomePageState extends State<MyHomePage> {
     getData().then((value) {
       user= value[0];
       userRole = value[1];
-      Timer(const Duration(seconds: 2), () {
+      Timer(Duration(seconds: 2), () {
         if (user != null) {
           if (userRole == 'Individual') {
             Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()));
+                MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
           } else if (userRole == 'Guardian') {
             Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()));
+                MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
           } else {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const BottomNavigationDependent()));
+                    builder: (context) => BottomNavigationDependent()));
           }
         } else {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => const ChooseScreen()));
+              context, MaterialPageRoute(builder: (context) => ChooseScreen()));
         }
       });
     });
