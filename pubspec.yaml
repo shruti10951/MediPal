@@ -38,8 +38,7 @@ dependencies:
   fluttertoast: ^8.2.2
   intl: ^0.17.0
   datetime_picker_formfield: ^2.0.0
-  # flutter_local_notifications: ^16.1.0
-  awesome_notifications: ^0.6.21
+  flutter_local_notifications: ^16.1.0
 
 
   # The following adds the Cupertino Icons font to your application.

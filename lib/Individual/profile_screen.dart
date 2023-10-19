@@ -3,11 +3,34 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:medipal/models/UserModel.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
+
+// Future<UserModel> getUserDetails(userId) async {
+//   final snapshot =
+//       await _db.c.where('userId', isEqualTo: userId).get();
+//   final userData =
+//       snapshot.docs.map((e) => UserModel.fromDocumentSnapshot(e)).single;
+//   return userData;
+// }
+Future<List<QueryDocumentSnapshot>?> fetchData() async {
+    final userQuery = firestore
+        .collection('medications')
+        .where('userId', isEqualTo: userId)
+        .get();
+    
+
+getUserInfo() {
+  final snapshot = FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .snapshots()
+                  .listen((event) {});
+snapshot.docs.map((e) => UserModel.fromDocumentSnapshot(e)).single;
+}
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,40 +40,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
-  List<QueryDocumentSnapshot> filteredAlarms = [];
-
-  Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
-    final alarmQuery =
-        firestore.collection('alarms').where('userId', isEqualTo: userId).get();
-    final medicationQuery = firestore
-        .collection('medications')
-        .where('userId', isEqualTo: userId)
-        .get();
-
-    List<QueryDocumentSnapshot> alarmDocumentList = [];
-    List<QueryDocumentSnapshot> medicationDocumentList = [];
-
-    try {
-      final results = await Future.wait([alarmQuery, medicationQuery]);
-      final alarmQuerySnapshot = results[0] as QuerySnapshot;
-      final medicationQuerySnapshot = results[1] as QuerySnapshot;
-
-      if (alarmQuerySnapshot.docs.isNotEmpty) {
-        alarmDocumentList = alarmQuerySnapshot.docs.toList();
-      }
-
-      if (medicationQuerySnapshot.docs.isNotEmpty) {
-        medicationDocumentList = medicationQuerySnapshot.docs.toList();
-      }
-
-      return [alarmDocumentList, medicationDocumentList];
-    } catch (error) {
-      print('Error retrieving documents: $error');
-      return null;
-    }
-  }
-
   ImagePicker _imagePicker = ImagePicker();
   XFile? _image;
 
@@ -229,8 +218,8 @@ class DependentBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: const Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: 0), // Adjust horizontal padding
+          padding:
+              EdgeInsets.symmetric(vertical: 0), // Adjust horizontal padding
           child: ListTile(
             title: Text('Dependent',
                 style: TextStyle(fontWeight: FontWeight.bold)),
