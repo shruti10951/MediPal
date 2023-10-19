@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:medipal/notification/notification_body.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
-
 
 class FireStoreCheck {
 
-  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin= FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin= FlutterLocalNotificationsPlugin();
 
   Future<void> checkFirestore() async {
     await Firebase.initializeApp();
     final firestore = FirebaseFirestore.instance;
     final user= FirebaseAuth.instance.currentUser;
 
-    // NotificationBody.initialize(flutterLocalNotificationsPlugin);
+    NotificationBody.initialize(flutterLocalNotificationsPlugin);
+
     try {
       QuerySnapshot querySnapshot = await firestore
           .collection('alarms')
@@ -34,7 +34,7 @@ class FireStoreCheck {
           DateTime timestamp2= DateTime.now();
           if(timestamp.isBefore(timestamp2) && status== 'pending'){
 
-          NotificationBody.displayNotification(title: 'Chala chala aushadh ghya', body: name);
+            NotificationBody.showNotification(title: 'Medication Reminder', body: name, fln: flutterLocalNotificationsPlugin);
 
           }
 
