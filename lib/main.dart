@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/notification/notification_service.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -46,6 +47,8 @@ Future main() async {
 
   // Initialize Firebase
   await Firebase.initializeApp();
+
+  await NotificationServic.initializeNotification();
 
   await AndroidAlarmManager.initialize();
 
