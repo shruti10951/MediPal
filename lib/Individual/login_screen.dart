@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
-import 'package:medipal/Individual/dashboard_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   TextEditingController _emailController = TextEditingController();
@@ -206,7 +205,7 @@ class LoginScreen extends StatelessWidget {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => BottomNavigationIndividual()))
+                            builder: (context) => const DashboardScreen()))
                   });
         },
         style: ElevatedButton.styleFrom(
