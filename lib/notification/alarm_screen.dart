@@ -45,10 +45,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
               height: 300, // Fixed height for the description container
               child: MedicineDescription(description: description),
             ),
-
-            // Space
-            // const SizedBox(height: 280.0),
-
             // Action Buttons
             ActionButtons(),
           ],
@@ -85,7 +81,8 @@ class MedicineTypeIcon extends StatelessWidget {
     } else if (medicineType == 'Injection') {
       imagePath = 'assets/images/injection_icon.png';
     } else {
-      imagePath = 'assets/images/default.png'; // Default image for unknown medicine type
+      imagePath =
+          'assets/images/default.png'; // Default image for unknown medicine type
     }
 
     return Image.asset(
@@ -129,7 +126,7 @@ class ActionButtons extends StatelessWidget {
           },
           color: Colors.red,
         ),
-        const SizedBox(width: 20), // Add space between icons
+        const SizedBox(width: 50), // Add space between icons
         CircularButton(
           icon: Icons.check,
           label: 'Take',
@@ -138,7 +135,7 @@ class ActionButtons extends StatelessWidget {
           },
           color: Colors.green,
         ),
-        const SizedBox(width: 20), // Add space between icons
+        const SizedBox(width: 50), // Add space between icons
         CircularButton(
           icon: Icons.snooze,
           label: 'Snooze',
