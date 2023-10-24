@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/notification/alarm_screen.dart';
 import 'package:medipal/notification/notification_service.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
@@ -78,8 +79,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         //useMaterial3: true,
       ),
-      home: const BottomNavigationIndividual(),
-      // const MyHomePage(title: 'MediPal'),
+      home: 
+      //const BottomNavigationIndividual(),
+      // const MyHomePage(),
+      AlarmScreen(),
     );
   }
 }
