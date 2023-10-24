@@ -43,7 +43,7 @@ class FireStoreCheck {
         // NotificationBody.showNotification(title: 'Medication Reminder', body: 'It is time to take your medicine!', fln: flutterLocalNotificationsPlugin);
         // print('object');
         print('Before calling');
-        await NotificationServic.showNotification(
+        await NotificationService.showNotification(
           title: 'Medipal',
           body: 'This is a reminder',
           payload: {

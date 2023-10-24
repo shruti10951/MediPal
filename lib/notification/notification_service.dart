@@ -5,7 +5,7 @@ import 'package:medipal/main.dart';
 
 import '../Individual/bottom_navigation_individual.dart';
 
-class NotificationServic {
+class NotificationService {
   static Future<void> initializeNotification() async {
     await AwesomeNotifications().initialize(
         null,
