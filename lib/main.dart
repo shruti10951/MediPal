@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
-import 'package:medipal/Individual/dependent_details_screen.dart';
+import 'package:medipal/notification/notification_service.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -41,12 +41,15 @@ Future<List> getData() async {
   }
   return ([user, role]);
 }
+final GlobalKey<NavigatorState> navigatorKey= GlobalKey<NavigatorState>();
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
   await Firebase.initializeApp();
+
+  await NotificationService.initializeNotification();
 
   await AndroidAlarmManager.initialize();
 
@@ -65,6 +68,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       routes: {
         '/dependent_dashboard': (context) => const DashboardScreenDependent(),
@@ -119,30 +123,20 @@ class _MyHomePageState extends State<MyHomePage> {
       Timer(const Duration(seconds: 2), () {
         if (user != null) {
           if (userRole == 'Individual') {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const BottomNavigationIndividual()));
-            print("Matti kahli bhendi tumhi");
-
+            navigatorKey.currentState?.pushReplacement(
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()),
+            );
           } else if (userRole == 'Guardian') {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const BottomNavigationIndividual()));
-            print("Matti kahli bhendi tumhi1");
-
-          } 
-          else {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const BottomNavigationDependent()));
-            print("Matti kahli bhendi tumhi2");
+            navigatorKey.currentState?.pushReplacement(
+                MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
+          } else {
+            navigatorKey.currentState?.pushReplacement(
+              MaterialPageRoute(builder: (context) => BottomNavigationDependent()),
+            );
           }
         } else {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => const ChooseScreen()));
+          navigatorKey.currentState?.pushReplacement(
+              MaterialPageRoute(builder: (context) => ChooseScreen()));
         }
       });
     });
