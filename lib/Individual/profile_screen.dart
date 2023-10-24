@@ -10,9 +10,11 @@ class ProfileScreen extends StatefulWidget {
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
+  
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  
   ImagePicker _imagePicker = ImagePicker();
   XFile? _image;
 

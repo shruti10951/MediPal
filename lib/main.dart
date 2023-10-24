@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/Individual/dependent_details_screen.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -64,11 +66,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
+      routes: {
+        '/dependent_dashboard': (context) => const DashboardScreenDependent(),
+        // Define other routes as needed
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         //useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: const BottomNavigationIndividual(),
       // const MyHomePage(title: 'MediPal'),
     );
   }
@@ -110,20 +116,20 @@ class _MyHomePageState extends State<MyHomePage> {
     getData().then((value) {
       user = value[0];
       userRole = value[1];
-      Timer(Duration(seconds: 2), () {
+      Timer(const Duration(seconds: 2), () {
         if (user != null) {
           if (userRole == 'Individual') {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => BottomNavigationIndividual()));
+                    builder: (context) => const BottomNavigationIndividual()));
             print("Matti kahli bhendi tumhi");
 
           } else if (userRole == 'Guardian') {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => BottomNavigationIndividual()));
+                    builder: (context) => const BottomNavigationIndividual()));
             print("Matti kahli bhendi tumhi1");
 
           } 
@@ -131,12 +137,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => BottomNavigationIndividual()));
+                    builder: (context) => const BottomNavigationDependent()));
             print("Matti kahli bhendi tumhi2");
           }
         } else {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ChooseScreen()));
+              context, MaterialPageRoute(builder: (context) => const ChooseScreen()));
         }
       });
     });
