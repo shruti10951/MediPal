@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 
 //DO SOMETHING ABOUT THIS
 //DON'T PUT USERNAME INSTEAD MAKE IT EMAIL
@@ -208,7 +209,7 @@ class LoginScreen extends StatelessWidget {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const BottomNavigationIndividual()))
+                            builder: (context) => const DashboardScreen()))
                   });
         },
         style: ElevatedButton.styleFrom(

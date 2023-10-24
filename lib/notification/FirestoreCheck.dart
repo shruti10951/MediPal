@@ -46,8 +46,6 @@ class FireStoreCheck {
         await NotificationServic.showNotification(
           title: 'Medipal',
           body: 'This is a reminder',
-          notificationLayout: NotificationLayout.BigPicture,
-          bigPicture: "https://nationaltoday.com/wp-content/uploads/2022/09/4568422-min-1200x834.jpg",
           payload: {
             "open" : "true"
           },
