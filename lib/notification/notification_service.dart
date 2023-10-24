@@ -63,28 +63,26 @@ class NotificationServic {
     debugPrint('On Notification displayed');
   }
 
-  static Future<void> showNotification(
-      {required final String title,
-      required final String body,
-      final Map<String, String>? payload,
-      final ActionType actionType = ActionType.Default,
-      final NotificationLayout notificationLayout = NotificationLayout.Default,
-      final List<NotificationActionButton>? actionButtons,
-      final String? bigPicture}) async {
+  static Future<void> showNotification({
+    required final String title,
+    required final String body,
+    final Map<String, String>? payload,
+    final ActionType actionType = ActionType.Default,
+    final NotificationLayout notificationLayout = NotificationLayout.Default,
+    final List<NotificationActionButton>? actionButtons,
+  }) async {
     await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        channelKey: 'MedipalChannel',
-        title: title,
-        body: body,
-        fullScreenIntent: true,
-        displayOnBackground: true,
-        displayOnForeground: true,
-        notificationLayout: notificationLayout,
-        bigPicture: bigPicture,
-        payload: payload,
-      ),
-      actionButtons: actionButtons
-    );
+        content: NotificationContent(
+          id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+          channelKey: 'MedipalChannel',
+          title: title,
+          body: body,
+          fullScreenIntent: true,
+          displayOnBackground: true,
+          displayOnForeground: true,
+          notificationLayout: notificationLayout,
+          payload: payload,
+        ),
+        actionButtons: actionButtons);
   }
 }
