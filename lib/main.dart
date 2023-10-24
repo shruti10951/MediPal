@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Dependent/gaurdian_view_screen.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/notification/alarm_screen_2.dart';
 import 'package:medipal/notification/notification_service.dart';
@@ -73,7 +74,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       routes: {
-        '/dependent_dashboard': (context) => const DashboardScreenDependent(),
+        '/dependent_dashboard': (context) => const GaurdianView(),
         // Define other routes as needed
       },
       theme: ThemeData(
@@ -82,8 +83,8 @@ class MyApp extends StatelessWidget {
       ),
       home: 
       //const BottomNavigationIndividual(),
-      // const MyHomePage(),
-      AlarmScreen(),
+     const MyHomePage(),
+      //AlarmScreen(),
     );
   }
 }
