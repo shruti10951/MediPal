@@ -49,7 +49,7 @@ Future main() async {
   // Initialize Firebase
   await Firebase.initializeApp();
 
-  await NotificationServic.initializeNotification();
+  await NotificationService.initializeNotification();
 
   await AndroidAlarmManager.initialize();
 
