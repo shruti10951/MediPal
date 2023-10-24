@@ -41,6 +41,7 @@ Future<List> getData() async {
   }
   return ([user, role]);
 }
+final GlobalKey<NavigatorState> navigatorKey= GlobalKey<NavigatorState>();
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +68,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -118,20 +120,20 @@ class _MyHomePageState extends State<MyHomePage> {
       Timer(Duration(seconds: 2), () {
         if (user != null) {
           if (userRole == 'Individual') {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
+            navigatorKey.currentState?.pushReplacement(
+              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()),
+            );
           } else if (userRole == 'Guardian') {
-            Navigator.pushReplacement(context,
+            navigatorKey.currentState?.pushReplacement(
                 MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
           } else {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => BottomNavigationDependent()));
+            navigatorKey.currentState?.pushReplacement(
+              MaterialPageRoute(builder: (context) => BottomNavigationDependent()),
+            );
           }
         } else {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ChooseScreen()));
+          navigatorKey.currentState?.pushReplacement(
+              MaterialPageRoute(builder: (context) => ChooseScreen()));
         }
       });
     });

@@ -1,5 +1,9 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Individual/profile_screen.dart';
+import 'package:medipal/main.dart';
+
+import '../Individual/bottom_navigation_individual.dart';
 
 class NotificationServic {
   static Future<void> initializeNotification() async {
@@ -38,8 +42,9 @@ class NotificationServic {
       ReceivedNotification receivedNotification) async {
     debugPrint('On Notification Received');
     final payload = receivedNotification.payload ?? {};
-    if (payload['open'] == 'true') {
-      print('we goo');
+    if (payload["open"] == "true") {
+      navigatorKey.currentState
+          ?.push(MaterialPageRoute(builder: (context) => ProfileScreen()));
     }
   }
 
@@ -58,22 +63,28 @@ class NotificationServic {
     debugPrint('On Notification displayed');
   }
 
-  static Future<void> showNotification({
-    required final String title,
-    required final String body,
-  }) async {
+  static Future<void> showNotification(
+      {required final String title,
+      required final String body,
+      final Map<String, String>? payload,
+      final ActionType actionType = ActionType.Default,
+      final NotificationLayout notificationLayout = NotificationLayout.Default,
+      final List<NotificationActionButton>? actionButtons,
+      final String? bigPicture}) async {
     await AwesomeNotifications().createNotification(
-        content: NotificationContent(
-      id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-      channelKey: 'MedipalChannel',
-      title: title,
-      body: body,
-      fullScreenIntent: true,
-      notificationLayout: NotificationLayout.BigPicture,
-      bigPicture: "assets/images/welcome_background.jpg",
-      displayOnBackground: true,
-      displayOnForeground: true,
-
-    ));
+      content: NotificationContent(
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        channelKey: 'MedipalChannel',
+        title: title,
+        body: body,
+        fullScreenIntent: true,
+        displayOnBackground: true,
+        displayOnForeground: true,
+        notificationLayout: notificationLayout,
+        bigPicture: bigPicture,
+        payload: payload,
+      ),
+      actionButtons: actionButtons
+    );
   }
 }

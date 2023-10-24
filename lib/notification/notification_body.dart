@@ -26,6 +26,7 @@ class NotificationBody {
             priority: Priority.high,
             largeIcon: const DrawableResourceAndroidBitmap('medipal'),
           fullScreenIntent: true,
+          enableVibration: true,
             );
     var not = NotificationDetails(android: androidNotificationDetails);
     await fln.show(0, title, body, not);
