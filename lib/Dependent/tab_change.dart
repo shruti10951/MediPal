@@ -17,7 +17,7 @@ class TabChange extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Top Navigation Demo'),
-          bottom: TabBar(
+          bottom: const TabBar(
             labelColor: Color.fromRGBO(41, 45, 92, 1.0),
             tabs: [
               Tab(
