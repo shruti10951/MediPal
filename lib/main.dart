@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Dependent/gaurdian_view_screen.dart';
+import 'package:medipal/Dependent/tab_change.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/credentials/twilio_cred.dart';
@@ -77,11 +78,25 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       routes: {
-        '/dependent_dashboard': (context) => const GaurdianView(),
+        '/dependent_dashboard': (context) => TabChange(),
         // Define other routes as needed
       },
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 0, 0, 0)),
+        appBarTheme: const AppBarTheme(
+          backgroundColor:
+              Color.fromARGB(255, 241, 239, 239), // Set the app bar background color to white
+          iconTheme:
+              IconThemeData(color: Colors.black), // Set the icon color to black
+          titleTextStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              ), // Set the title text color to black
+          //centerTitle: true, // Center the title within the app bar
+          toolbarHeight: 60, // Set the height of the app bar
+        ),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: const Color.fromARGB(255,41,45,92)),
         // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
@@ -104,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -133,19 +149,21 @@ class _MyHomePageState extends State<MyHomePage> {
         if (user != null) {
           if (userRole == 'Individual') {
             navigatorKey.currentState?.pushReplacement(
-              MaterialPageRoute(builder: (context) => BottomNavigationIndividual()),
+              MaterialPageRoute(
+                  builder: (context) => const BottomNavigationIndividual()),
             );
           } else if (userRole == 'Guardian') {
-            navigatorKey.currentState?.pushReplacement(
-                MaterialPageRoute(builder: (context) => BottomNavigationIndividual()));
+            navigatorKey.currentState?.pushReplacement(MaterialPageRoute(
+                builder: (context) => const BottomNavigationIndividual()));
           } else {
             navigatorKey.currentState?.pushReplacement(
-              MaterialPageRoute(builder: (context) => BottomNavigationDependent()),
+              MaterialPageRoute(
+                  builder: (context) => const BottomNavigationDependent()),
             );
           }
         } else {
           navigatorKey.currentState?.pushReplacement(
-              MaterialPageRoute(builder: (context) => ChooseScreen()));
+              MaterialPageRoute(builder: (context) => const ChooseScreen()));
         }
       });
     });
