@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:medipal/Individual/dependent_details_screen.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medipal/models/UserModel.dart';
@@ -38,14 +41,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ImagePicker _imagePicker = ImagePicker();
   XFile? _image;
 
-  void _selectImage() async {
-    final pickedFile =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = pickedFile;
-      });
-    }
+  bool isDependent = false; // Track Dependent status
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDependentStatus();
+    fetchUserData();
+  }
+
+  _loadDependentStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isDependent = prefs.getBool('isDependent') ?? false;
+    });
   }
 
   String guardianCode = '';
@@ -66,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: const InputDecoration(labelText: 'Code'),
                 onChanged: (value) {
                   setState(() {
-                    guardianCode = value;
+                    // Handle code input
                   });
                 },
               ),
@@ -74,9 +83,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () {
-                // Copy code logic
-                // You can use the guardianCode variable here
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setBool('isDependent', true); // Set Dependent status
+                setState(() {
+                  isDependent = true; // Update Dependent status
+                });
+                Navigator.of(context).pop();
               },
               child: const Text('Copy Code'),
             ),
@@ -92,12 +105,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchUserData();
+  _buildInfoRow(String title, String subtitle, IconData iconData) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+                offset: const Offset(0, 5),
+                color: const Color.fromARGB(255, 255, 255, 255).withOpacity(.2),
+                spreadRadius: 2,
+                blurRadius: 10)
+          ]),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(subtitle),
+        leading: Icon(iconData),
+        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
+        tileColor: Colors.white,
+      ),
+    );
   }
 
+  
   Future<void> fetchUserData() async {
     final userDoc = await firestore.collection('users').doc(userId).get();
     if (userDoc.exists) {
@@ -198,52 +228,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  _buildInfoRow(String title, String subtitle, IconData iconData) {
-    return Padding(padding:const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-      child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-              offset: const Offset(0, 5),
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 10,),
-        ],
-      ),
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        leading: Icon(iconData),
-        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
-        tileColor: Colors.white,
-      ),
-      ),
-    );
+  void _selectImage() async {
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = pickedFile;
+      });
+    }
+    _buildInfoRow(String title, String subtitle, IconData iconData) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                offset: const Offset(0, 5),
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          child: ListTile(
+            title: Text(title),
+            subtitle: Text(subtitle),
+            leading: Icon(iconData),
+            trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
+            tileColor: Colors.white,
+          ),
+        ),
+      );
+    }
   }
 }
 
 class DependentBox extends StatelessWidget {
-  const DependentBox({Key? key});
+  const DependentBox({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 400,
-      height: 60,
-      child: Card(
-        elevation: 1.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 0),
-          child: ListTile(
-            title: Text('Dependent',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.person,
-                size: 20, color: Color.fromARGB(255, 0, 0, 0)),
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the dependent details screen when tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                DependentDetailsScreen(), // Replace with your screen
+          ),
+        );
+      },
+      child: SizedBox(
+        width: 400,
+        height: 60,
+        child: Card(
+          elevation: 1.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: const Padding(
+            padding:
+                EdgeInsets.symmetric(vertical: 0), // Adjust horizontal padding
+            child: ListTile(
+              title: Text('Dependent',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              leading: Icon(Icons.person,
+                  size: 20, color: Color.fromARGB(255, 0, 0, 0)),
+            ),
           ),
         ),
       ),

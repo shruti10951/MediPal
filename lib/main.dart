@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Dependent/gaurdian_view_screen.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/credentials/twilio_cred.dart';
@@ -12,6 +14,7 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
 
 import 'Dependent/bottom_navigation_dependent.dart';
+import 'notification/alarm_screen.dart';
 
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
@@ -73,19 +76,25 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       title: 'Flutter Demo',
+      routes: {
+        '/dependent_dashboard': (context) => const GaurdianView(),
+        // Define other routes as needed
+      },
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 0, 0, 0)),
+        // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
-      home: MyHomePage(),
-      // const MyHomePage(title: 'MediPal'),
+      home:
+      //const BottomNavigationIndividual(),
+     const MyHomePage(),
+      //AlarmScreen(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -120,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
     FirebaseCred().getData().then((value) {
       user= value[0];
       userRole = value[1];
-      Timer(Duration(seconds: 2), () {
+      Timer(const Duration(seconds: 2), () {
         if (user != null) {
           if (userRole == 'Individual') {
             navigatorKey.currentState?.pushReplacement(
@@ -140,6 +149,5 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
     });
-
   }
 }
