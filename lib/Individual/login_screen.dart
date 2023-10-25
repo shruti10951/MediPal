@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 
+//DO SOMETHING ABOUT THIS
+//DON'T PUT USERNAME INSTEAD MAKE IT EMAIL
+//THAT SCREEN STILL GOES UP
 class LoginScreen extends StatelessWidget {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
