@@ -6,7 +6,6 @@ import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'medicine_form.dart';
 
-
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
@@ -63,6 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 30, 30, 30),
       appBar: AppBar(
         title: Row(
           children: [
@@ -173,7 +173,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           margin: const EdgeInsets.all(4),
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blue),
+                            border: Border.all(
+                                color:
+                                    const Color.fromARGB(255, 255, 255, 255)),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Column(
@@ -183,9 +185,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 dayOfMonth,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 255, 255, 255),
                                 ),
                               ),
-                              Text(dayName),
+                              Text(dayName,
+                              style: const TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                ),),
                             ],
                           ),
                         ),
@@ -253,105 +259,117 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // Implement your dynamic vertical cards here based on data
     // You can use a ListView.builder to create a list of cards.
     // Provide functions to fetch and handle the card data.
-    return ListView.builder(
-      itemCount: alarmQuerySnapshot.length,
-      itemBuilder: (BuildContext context, int index) {
-        final QueryDocumentSnapshot alarmDocumentSnapshot =
-            alarmQuerySnapshot[index];
+    return Container(
+      color: const Color.fromARGB(255, 0, 0, 0),
+      child: ListView.builder(
+        itemCount: alarmQuerySnapshot.length,
+        itemBuilder: (BuildContext context, int index) {
+          final QueryDocumentSnapshot alarmDocumentSnapshot =
+              alarmQuerySnapshot[index];
 
-        final AlarmModel alarmModel =
-            AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
-        final Map<String, dynamic> alarm = alarmModel.toMap();
-        final String medicationId = alarm['medicationId'];
+          final AlarmModel alarmModel =
+              AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+          final Map<String, dynamic> alarm = alarmModel.toMap();
+          final String medicationId = alarm['medicationId'];
 
-        QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
-            .firstWhere((element) => element['medicationId'] == medicationId,
-                orElse: null);
+          QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
+              .firstWhere((element) => element['medicationId'] == medicationId,
+                  orElse: null);
 
-        if (medicationDocument != null) {
-          final MedicationModel medicationModel =
-              MedicationModel.fromDocumentSnapshot(medicationDocument);
-          final Map<String, dynamic> medicine = medicationModel.toMap();
-          final String name = medicine['name'];
-          final String time = alarm['time'];
-          final String quantity = medicine['dosage'];
-          final String type = medicine['type'];
+          if (medicationDocument != null) {
+            final MedicationModel medicationModel =
+                MedicationModel.fromDocumentSnapshot(medicationDocument);
+            final Map<String, dynamic> medicine = medicationModel.toMap();
+            final String name = medicine['name'];
+            final String time = alarm['time'];
+            final String quantity = medicine['dosage'];
+            final String type = medicine['type'];
 
-          String img;
+            String img;
 
-          if (type == 'Pills') {
-            img = 'assets/images/pill_icon.png';
-          } else if (type == 'Liquid') {
-            img = 'assets/images/liquid_icon.png';
+            if (type == 'Pills') {
+              img = 'assets/images/pill_icon.png';
+            } else if (type == 'Liquid') {
+              img = 'assets/images/liquid_icon.png';
+            } else {
+              img = 'assets/images/injection_icon.png';
+            }
+
+            DateTime dateTime = DateTime.parse(time);
+
+            //check this once again for time and date
+            // String formattedTime = DateFormat.Hm().format(dateTime);
+            // DateTime dateTime = DateTime.parse(time);
+
+            // Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+            String formattedDate = DateFormat('d MMM').format(dateTime);
+
+            // Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
+            String formattedTime = DateFormat.Hm().format(dateTime);
+
+            String dateTimeText = '$formattedDate | $formattedTime';
+
+            return Card(
+              margin: const EdgeInsets.all(8),
+              color: const Color.fromARGB(255, 42, 42, 42),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      dateTimeText,
+                      style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 255, 255, 255)),
+                    ),
+                  ),
+                  const Divider(height: 1, color: Colors.grey),
+                  ListTile(
+                    leading: Image.asset(img),
+                    title: Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Quantity: $quantity',
+                      style: const TextStyle(
+                        color: Colors
+                            .white, // Set the text color of the subtitle to white
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
           } else {
-            img = 'assets/images/injection_icon.png';
+            return const Card(
+              margin: EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Medication not found',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
-
-          DateTime dateTime = DateTime.parse(time);
-
-          //check this once again for time and date
-          // String formattedTime = DateFormat.Hm().format(dateTime);
-          // DateTime dateTime = DateTime.parse(time);
-
-// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
-          String formattedDate = DateFormat('d MMM').format(dateTime);
-
-// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
-          String formattedTime = DateFormat.Hm().format(dateTime);
-
-          String dateTimeText = '$formattedDate | $formattedTime';
-
-          return Card(
-            margin: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    dateTimeText,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Divider(height: 1, color: Colors.grey),
-                ListTile(
-                  leading: Image.asset(img),
-                  title: Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text('Quantity: $quantity'),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return const Card(
-            margin: EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    'Medication not found',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-      },
+        },
+      ),
     );
   }
 }
