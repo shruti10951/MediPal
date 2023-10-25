@@ -2,6 +2,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/profile_screen.dart';
 import 'package:medipal/main.dart';
+import 'package:medipal/notification/alarm_screen.dart';
 
 import '../Individual/bottom_navigation_individual.dart';
 
@@ -44,7 +45,7 @@ class NotificationService {
     final payload = receivedNotification.payload ?? {};
     if (payload["open"] == "true") {
       navigatorKey.currentState
-          ?.push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen()));
     }
   }
 

@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Dependent/gaurdian_view_screen.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/notification/alarm_screen_2.dart';
 import 'package:medipal/notification/notification_service.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
@@ -12,6 +15,7 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
 
 import 'Dependent/bottom_navigation_dependent.dart';
+import 'notification/alarm_screen.dart';
 
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
@@ -30,12 +34,11 @@ Future<List> getData() async {
       .where('userId', isEqualTo: user?.uid.toString())
       .get();
   var role;
-  if(dependentQuery.docs.isNotEmpty){
-    role= 'dependent';
-  }else{
+  if (dependentQuery.docs.isNotEmpty) {
+    role = 'dependent';
+  } else {
     for (QueryDocumentSnapshot document in userQuery.docs) {
-      Map<String, dynamic> userData =
-      document.data() as Map<String, dynamic>;
+      Map<String, dynamic> userData = document.data() as Map<String, dynamic>;
       role = userData['role'];
     }
   }
@@ -70,19 +73,25 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       title: 'Flutter Demo',
+      routes: {
+        '/dependent_dashboard': (context) => const GaurdianView(),
+        // Define other routes as needed
+      },
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 0, 0, 0)),
+        // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
-      home: MyHomePage(),
-      // const MyHomePage(title: 'MediPal'),
+      home: 
+      //const BottomNavigationIndividual(),
+     const MyHomePage(),
+      //AlarmScreen(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -115,9 +124,9 @@ class _MyHomePageState extends State<MyHomePage> {
     var user;
 
     getData().then((value) {
-      user= value[0];
+      user = value[0];
       userRole = value[1];
-      Timer(Duration(seconds: 2), () {
+      Timer(const Duration(seconds: 2), () {
         if (user != null) {
           if (userRole == 'Individual') {
             navigatorKey.currentState?.pushReplacement(
@@ -137,6 +146,5 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
     });
-
   }
 }
