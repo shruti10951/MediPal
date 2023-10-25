@@ -55,29 +55,13 @@ class _GaurdianViewState extends State<GaurdianView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/medipal.png',
-              width: 30, // Adjust the width as needed
-              height: 30, // Adjust the height as needed
-            ),
-            const SizedBox(width: 8), // Add spacing
-            const Text('MediPal'), // Title next to the image
-          ],
-        ),
-      ),
       body: Column(
         children: [
-          _buildCalendar(context),
-          const Divider(),
           Expanded(
             child: FutureBuilder(
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  //PLEASE DO SOMETHING ABOUT THIS.
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
@@ -118,44 +102,6 @@ class _GaurdianViewState extends State<GaurdianView> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCalendar(BuildContext context) {
-    return FutureBuilder(
-      future: fetchData(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingIndicator();
-        } else if (snapshot.hasError || snapshot.data == null) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final alarmQuerySnapshot = snapshot.data![0];
-          return SizedBox(
-            height: 100,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 7,
-                    itemBuilder: (BuildContext context, int index) {
-                      final currentDate =
-                          DateTime.now().add(Duration(days: index));
-                      final dayName = DateFormat('E').format(currentDate);
-                      final dayOfMonth = currentDate.day.toString();
-
-                      
-                    },
-                  ),
-                ),
-                
-              ],
-            ),
-          );
-        }
-      },
     );
   }
 
@@ -204,7 +150,16 @@ class _GaurdianViewState extends State<GaurdianView> {
           DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
+          // String formattedTime = DateFormat.Hm().format(dateTime);
+          // DateTime dateTime = DateTime.parse(time);
+
+// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          String formattedDate = DateFormat('d MMM').format(dateTime);
+
+// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
+
+          String dateTimeText = '$formattedDate | $formattedTime';
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -214,7 +169,7 @@ class _GaurdianViewState extends State<GaurdianView> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    formattedTime,
+                    dateTimeText,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,

@@ -1,10 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/Individual/profile_screen.dart';
 import 'package:medipal/main.dart';
 import 'package:medipal/notification/alarm_screen.dart';
 
-import '../Individual/bottom_navigation_individual.dart';
 
 class NotificationService {
   static Future<void> initializeNotification() async {
@@ -43,9 +41,10 @@ class NotificationService {
       ReceivedNotification receivedNotification) async {
     debugPrint('On Notification Received');
     final payload = receivedNotification.payload ?? {};
+    var alarmId= payload['alarmId'];
     if (payload["open"] == "true") {
       navigatorKey.currentState
-          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen()));
+          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: alarmId ?? '')));
     }
   }
 

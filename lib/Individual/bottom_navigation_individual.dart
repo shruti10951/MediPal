@@ -90,9 +90,10 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
               label: 'Profile',
             ),
           ],
-          unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+         unselectedItemColor: Color.fromARGB(146, 170, 149, 247),
+          //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 163, 135, 255),
+          selectedItemColor: Color.fromARGB(255, 41,45,92),
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
