@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/bottom_navigation_dependent.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/models/DependentModel.dart';
 
@@ -64,7 +65,7 @@ class OTPForDependentPage extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DashboardScreenDependent(),
+                      builder: (context) => BottomNavigationDependent(),
                     ),
                   );
                 });
