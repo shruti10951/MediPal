@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
@@ -76,6 +77,9 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
           },
         ),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor:
+              Colors.black, // Set the background color of the Scaffold to black
+
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.dashboard),
@@ -90,9 +94,9 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
               label: 'Profile',
             ),
           ],
-          unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+          unselectedItemColor: Color.fromARGB(255, 255, 255, 255),
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 163, 135, 255),
+          selectedItemColor: Color.fromARGB(255, 226, 251, 255),
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
