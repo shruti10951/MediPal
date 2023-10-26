@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medipal/Individual/dependent_details_screen.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,10 +11,10 @@ import 'package:medipal/models/UserModel.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
-final userId = auth.currentUser?.uid;
+// final userId = auth.currentUser?.uid;
 
 Future<UserModel?> fetchData() async {
-  final userInfoQuery = firestore.collection('users').doc(userId).get();
+  final userInfoQuery = firestore.collection('users').doc(auth.currentUser?.uid).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -47,16 +47,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadDependentStatus();
-    fetchUserData();
+    // _loadDependentStatus();
+    fetchData();
   }
 
-  _loadDependentStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isDependent = prefs.getBool('isDependent') ?? false;
-    });
-  }
+  // _loadDependentStatus() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     isDependent = prefs.getBool('isDependent') ?? false;
+  //   });
+  // }
 
   String guardianCode = '';
 
@@ -64,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   UserModel? userData; // Add user data
 
   void _openGuardianDialog() {
-    String code = userId ?? ''; // Use the user's ID as the code
+    String code = userData?.uid ?? ''; // Use the user's ID as the code
     TextEditingController codeController = TextEditingController(text: code);
 
     showDialog(
@@ -132,15 +132,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   
-  Future<void> fetchUserData() async {
-    final userDoc = await firestore.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      final userData = UserModel.fromDocumentSnapshot(userDoc);
-      setState(() {
-        this.userData = userData;
-      });
-    }
-  }
+  // Future<void> fetchUserData() async {
+  //   final userDoc = await firestore.collection('users').doc(user.uid).get();
+  //   if (userDoc.exists) {
+  //     final userData = UserModel.fromDocumentSnapshot(userDoc);
+  //     setState(() {
+  //       this.userData = userData;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
