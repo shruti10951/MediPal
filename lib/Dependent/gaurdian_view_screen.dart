@@ -180,7 +180,18 @@ class _GaurdianViewState extends State<GaurdianView> {
           }
 
           DateTime dateTime = DateTime.parse(time);
+
+          //check this once again for time and date
+          // String formattedTime = DateFormat.Hm().format(dateTime);
+          // DateTime dateTime = DateTime.parse(time);
+
+// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          String formattedDate = DateFormat('d MMM').format(dateTime);
+
+// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
+
+          String dateTimeText = '$formattedDate | $formattedTime';
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -190,7 +201,7 @@ class _GaurdianViewState extends State<GaurdianView> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    formattedTime,
+                    dateTimeText,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
