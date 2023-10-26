@@ -44,7 +44,7 @@ class NotificationService {
     var alarmId= payload['alarmId'];
     if (payload["open"] == "true") {
       navigatorKey.currentState
-          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: alarmId ?? '')));
+          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: 'VsDw5rOIRV7oe5cFAj6J')));
     }
   }
 

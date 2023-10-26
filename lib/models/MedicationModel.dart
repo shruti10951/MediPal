@@ -10,6 +10,7 @@ class MedicationModel {
   final String startDate;
   final String endDate;
   final String userId;
+  final String description;
 
   MedicationModel({
     required this.medicationId,
@@ -21,6 +22,7 @@ class MedicationModel {
     required this.startDate,
     required this.endDate,
     required this.userId,
+    required this.description,
   });
 
   factory MedicationModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
@@ -35,6 +37,7 @@ class MedicationModel {
       startDate: data['startDate'],
       endDate: data['endDate'],
       userId: data['userId'],
+      description: data['description'],
     );
   }
 
@@ -49,6 +52,7 @@ class MedicationModel {
       'startDate': startDate,
       'endDate': endDate,
       'userId': userId,
+      'description': description,
     };
   }
 }
