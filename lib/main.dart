@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Dependent/gaurdian_view_screen.dart';
 import 'package:medipal/Dependent/tab_change.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
-import 'package:medipal/notification/alarm_screen_2.dart';
+import 'package:medipal/credentials/firebase_cred.dart';
+import 'package:medipal/credentials/twilio_cred.dart';
 import 'package:medipal/notification/notification_service.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
@@ -23,30 +22,31 @@ Future<void> checkFirestoreTask() async {
   await check.checkFirestore();
 }
 
-Future<List> getData() async {
-  final user = FirebaseAuth.instance.currentUser;
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  QuerySnapshot dependentQuery = await firestore
-      .collection('dependents')
-      .where('userId', isEqualTo: user?.uid.toString())
-      .get();
-  QuerySnapshot userQuery = await firestore
-      .collection('users')
-      .where('userId', isEqualTo: user?.uid.toString())
-      .get();
-  var role;
-  if (dependentQuery.docs.isNotEmpty) {
-    role = 'dependent';
-  } else {
-    for (QueryDocumentSnapshot document in userQuery.docs) {
-      Map<String, dynamic> userData = document.data() as Map<String, dynamic>;
-      role = userData['role'];
-    }
-  }
-  return ([user, role]);
-}
+// Future<List> getData() async {
+//   final user = FirebaseAuth.instance.currentUser;
+//   FirebaseFirestore firestore = FirebaseFirestore.instance;
+//   QuerySnapshot dependentQuery = await firestore
+//       .collection('dependents')
+//       .where('userId', isEqualTo: user?.uid.toString())
+//       .get();
+//   QuerySnapshot userQuery = await firestore
+//       .collection('users')
+//       .where('userId', isEqualTo: user?.uid.toString())
+//       .get();
+//   var role;
+//   if(dependentQuery.docs.isNotEmpty){
+//     role= 'dependent';
+//   }else{
+//     for (QueryDocumentSnapshot document in userQuery.docs) {
+//       Map<String, dynamic> userData =
+//       document.data() as Map<String, dynamic>;
+//       role = userData['role'];
+//     }
+//   }
+//   return ([user, role]);
+// }
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey= GlobalKey<NavigatorState>();
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +61,8 @@ Future main() async {
   const int helloAlarmID = 0;
   await AndroidAlarmManager.periodic(
       const Duration(minutes: 1), helloAlarmID, checkFirestoreTask);
+
+  TwilioCred().writeCred();
 
   runApp(const MyApp());
 }
@@ -99,8 +101,8 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home:
-          //const BottomNavigationIndividual(),
-          const MyHomePage(),
+      //const BottomNavigationIndividual(),
+     const MyHomePage(),
       //AlarmScreen(),
     );
   }
@@ -140,8 +142,8 @@ class _MyHomePageState extends State<MyHomePage> {
     var userRole;
     var user;
 
-    getData().then((value) {
-      user = value[0];
+    FirebaseCred().getData().then((value) {
+      user= value[0];
       userRole = value[1];
       Timer(const Duration(seconds: 2), () {
         if (user != null) {

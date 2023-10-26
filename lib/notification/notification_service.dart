@@ -41,9 +41,10 @@ class NotificationService {
       ReceivedNotification receivedNotification) async {
     debugPrint('On Notification Received');
     final payload = receivedNotification.payload ?? {};
+    var alarmId= payload['alarmId'];
     if (payload["open"] == "true") {
       navigatorKey.currentState
-          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen()));
+          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: alarmId ?? '')));
     }
   }
 

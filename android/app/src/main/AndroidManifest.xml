@@ -9,9 +9,9 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:label="medipal"
+        android:label="MediPal"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/medipal">
         <service
             android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmService"
             android:permission="android.permission.BIND_JOB_SERVICE"

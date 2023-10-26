@@ -66,7 +66,7 @@ class OTPForDependentPage extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const BottomNavigationDependent(),
+                      builder: (context) => BottomNavigationDependent(),
                     ),
                   );
                 });
