@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/main.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AlarmModel.dart';
+
+import '../main.dart';
 
 class AlarmScreen extends StatefulWidget {
   final String alarmId;
@@ -19,7 +22,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   late AlarmModel alarm;
   Map<String, dynamic> alarmMap={};
-
+  final user= FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
@@ -163,7 +166,7 @@ class ActionButtons extends StatelessWidget {
           onPressed: () async{
             alarmMap['status']= 'taken';
             await FirebaseFirestore.instance.collection('alarms').doc(alarmId).update(alarmMap).then((value){
-              navigatorKey.currentState?.pushReplacement(MaterialPageRoute(builder: (context)=> const MyApp()));
+              navigatorKey.currentState?.pushReplacement(MaterialPageRoute(builder: (context)=> BottomNavigationIndividual()));
             });
           },
           color: Colors.green,
