@@ -14,10 +14,10 @@ class DashboardScreenDependent extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _DashboardScreenState createState() => _DashboardScreenState();
+  _DashboardScreenDependentState createState() => _DashboardScreenDependentState();
 }
 
-class _DashboardScreenState extends State<DashboardScreenDependent> {
+class _DashboardScreenDependentState extends State<DashboardScreenDependent> {
   List<QueryDocumentSnapshot> filteredAlarms = [];
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
@@ -51,9 +51,12 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(224, 249, 249, 249),
       appBar: AppBar(
         title: Row(
           children: [
@@ -67,35 +70,38 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          _buildCalendar(context),
-          const Divider(),
-          Expanded(
-            child: FutureBuilder(
-              future: fetchData(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  //PLEASE DO SOMETHING ABOUT THIS.
-                  return _buildLoadingIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  final alarmQuerySnapshot = snapshot.data![0];
-                  final medicineQuerySnapshot = snapshot.data![1];
-                  return _buildDynamicCards(
-                      filteredAlarms.isEmpty
-                          ? alarmQuerySnapshot
-                          : filteredAlarms,
-                      medicineQuerySnapshot);
-                }
-              },
+      body: Padding(
+        padding: const EdgeInsets.only(top: 15.0), // Set the top padding here
+        child: Column(
+          children: [
+            _buildCalendar(context),
+            const Divider(),
+            Expanded(
+              child: FutureBuilder(
+                future: fetchData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _buildLoadingIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final alarmQuerySnapshot = snapshot.data![0];
+                    final medicineQuerySnapshot = snapshot.data![1];
+                    return _buildDynamicCards(
+                        filteredAlarms.isEmpty
+                            ? alarmQuerySnapshot
+                            : filteredAlarms,
+                        medicineQuerySnapshot);
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+
   Widget _buildLoadingIndicator() {
     return const Center(
       child: Column(
@@ -154,7 +160,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
                           margin: const EdgeInsets.all(4),
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blue),
+                            border: Border.all(color: const Color.fromARGB(255, 41,45,92),),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Column(
@@ -260,18 +266,27 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
           String img;
 
-          if(type=='Pills'){
-            img= 'assets/images/pill_icon.png';
-          }else if(type=='Liquid'){
-            img= 'assets/images/liquid_icon.png';
-          }else{
-            img= 'assets/images/injection_icon.png';
+          if (type == 'Pills') {
+            img = 'assets/images/pill_icon.png';
+          } else if (type == 'Liquid') {
+            img = 'assets/images/liquid_icon.png';
+          } else {
+            img = 'assets/images/injection_icon.png';
           }
 
           DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
+          // String formattedTime = DateFormat.Hm().format(dateTime);
+          // DateTime dateTime = DateTime.parse(time);
+
+// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          String formattedDate = DateFormat('d MMM').format(dateTime);
+
+// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
+
+          String dateTimeText = '$formattedDate | $formattedTime';
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -281,7 +296,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    formattedTime,
+                    dateTimeText,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -327,28 +342,3 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
     );
   }
 }
-
-  Widget _buildLoadingIndicator() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Color.fromARGB(255, 71, 78, 84),
-            ),
-          ),
-          SizedBox(height: 16.0),
-          Text(
-            'Loading...',
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
