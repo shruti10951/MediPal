@@ -10,12 +10,12 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
     {
       'title': 'Dependent Name 1',
       'subtitle': 'Phone: 123-456-7890',
-      'imageUrl': 'https://example.com/dependent_profile_1.jpg',
+      'imageUrl': 'https://i.pinimg.com/564x/fe/d3/53/fed353b15194e7dbf29d402ee4ebaa0f.jpg',
     },
     {
       'title': 'Dependent Name 2',
       'subtitle': 'Phone: 123-456-7891',
-      'imageUrl': 'https://example.com/dependent_profile_2.jpg',
+      'imageUrl': 'https://i.pinimg.com/564x/b5/9e/42/b59e4297dbe4f53e4b158ff3d66b8407.jpg',
     },
     // Add more dependent data as needed
   ];
