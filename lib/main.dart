@@ -77,10 +77,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       title: 'Flutter Demo',
-      routes: {
-        '/dependent_dashboard': (context) => TabChange(),
-        // Define other routes as needed
-      },
+      // routes: {
+      //   '/dependent_dashboard': (context) => TabChange(),
+      //   // Define other routes as needed
+      // },
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           backgroundColor:
