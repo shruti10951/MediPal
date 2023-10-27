@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreenDependent extends StatefulWidget {
   const ProfileScreenDependent({super.key});

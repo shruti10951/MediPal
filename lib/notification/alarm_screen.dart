@@ -2,14 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
 
-import '../credentials/firebase_cred.dart';
 import '../credentials/twilio_cred.dart';
-import '../main.dart';
 
 class AlarmScreen extends StatefulWidget {
   final String alarmId;
@@ -18,18 +16,18 @@ class AlarmScreen extends StatefulWidget {
 
   @override
   _AlarmScreenState createState() => _AlarmScreenState();
-
 }
 
 class _AlarmScreenState extends State<AlarmScreen> {
-
   late AlarmModel alarm;
   late MedicationModel medication;
 
-  Map<String, dynamic> alarmMap={};
-  Map<String, dynamic> medicationMap= {};
+  Map<String, dynamic> alarmMap = {};
+  Map<String, dynamic> medicationMap = {};
+  Map<String, dynamic> userMap = {};
 
-  final user= FirebaseAuth.instance.currentUser;
+  var user;
+  var role='';
 
   @override
   Widget build(BuildContext context) {
@@ -38,37 +36,46 @@ class _AlarmScreenState extends State<AlarmScreen> {
       body: FutureBuilder<void>(
         future: loadData(),
         builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
-          }else if(snapshot.hasError){
-            return Text('Error: ${snapshot.error}');
-          }else{
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error.toString()}');
+          } else {
             return buildUI();
           }
         },
-      )
+      ),
     );
   }
 
-  Future<void> loadData() async{
-    alarmMap= await loadAlarmData();
-    medicationMap= await loadMedicationData();
+  Future<void> loadData() async {
+    alarmMap = await loadAlarmData();
+    medicationMap = await loadMedicationData();
+    var userList = await FirebaseCred().getData();
+    role = userList[1];
+    user= userList[0];
   }
 
-  Future<Map<String, dynamic>> loadMedicationData() async{
-    QuerySnapshot medicationSnapshot= await FirebaseFirestore.instance.collection('medications').where('medicationId', isEqualTo: alarmMap['medicationId']).get();
-    for(QueryDocumentSnapshot s in medicationSnapshot.docs){
-      medication= MedicationModel.fromDocumentSnapshot(s);
-      medicationMap= medication.toMap();
+  Future<Map<String, dynamic>> loadMedicationData() async {
+    QuerySnapshot medicationSnapshot = await FirebaseFirestore.instance
+        .collection('medications')
+        .where('medicationId', isEqualTo: alarmMap['medicationId'])
+        .get();
+    for (QueryDocumentSnapshot s in medicationSnapshot.docs) {
+      medication = MedicationModel.fromDocumentSnapshot(s);
+      medicationMap = medication.toMap();
     }
     return medicationMap;
   }
 
-  Future<Map<String, dynamic>> loadAlarmData()async {
-    QuerySnapshot alarmSnapshot= await FirebaseFirestore.instance.collection('alarms').where('alarmId', isEqualTo: widget.alarmId).get();
-    for(QueryDocumentSnapshot s in alarmSnapshot.docs){
-      alarm= AlarmModel.fromDocumentSnapshot(s);
-      alarmMap= alarm.toMap();
+  Future<Map<String, dynamic>> loadAlarmData() async {
+    QuerySnapshot alarmSnapshot = await FirebaseFirestore.instance
+        .collection('alarms')
+        .where('alarmId', isEqualTo: widget.alarmId)
+        .get();
+    for (QueryDocumentSnapshot s in alarmSnapshot.docs) {
+      alarm = AlarmModel.fromDocumentSnapshot(s);
+      alarmMap = alarm.toMap();
     }
     return alarmMap;
   }
@@ -81,9 +88,15 @@ class _AlarmScreenState extends State<AlarmScreen> {
           // Large Alarm Icon
           AlarmIcon(),
           const SizedBox(height: 10),
-          // Dynamic Time
           Text(
-            alarmMap['time'] ?? 'No time available',
+            alarmMap['time']
+                    .toString()
+                    .split(' ')
+                    .last
+                    .split(':')
+                    .sublist(0, 2)
+                    .join(':') ??
+                'No time available',
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -96,14 +109,53 @@ class _AlarmScreenState extends State<AlarmScreen> {
           MedicineTypeIcon(medicineType: medicationMap['type'] ?? 'Pills'),
           const SizedBox(height: 10),
 
-          // Medicine Description
-          Container(
-            height: 300, // Fixed height for the description container
-            child: MedicineDescription(description: medicationMap['description'] ?? 'No description available'),
+          // Medicine Name
+          Text(
+            medicationMap['name'] ?? 'No medication name available',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
+          // Add some space below the Medicine Name
+          const SizedBox(height: 10),
+          // Medicine Description
+          MedicineDescription(
+              description:
+                  medicationMap['description'] ?? 'No description available'),
+          // Add some space below the Medicine Description
+          const SizedBox(height: 10),
+          // Quantity of Medicine
+          Text(
+            'Quantity: ${medicationMap['inventory']['quantity'] ?? 0}',
+            style: const TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 200),
           // Action Buttons
-          ActionButtons(alarmId: widget.alarmId, alarmMap: alarmMap),
+          ActionButtons(alarmId: widget.alarmId, alarmMap: alarmMap, userId: user.uid, role: role),
         ],
+      ),
+    );
+  }
+}
+
+class MedicineDescription extends StatelessWidget {
+  final String description;
+
+  MedicineDescription({required this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        description,
+        style: const TextStyle(fontSize: 16, color: Colors.black),
+        textAlign: TextAlign.center,
       ),
     );
   }
@@ -148,29 +200,13 @@ class MedicineTypeIcon extends StatelessWidget {
   }
 }
 
-class MedicineDescription extends StatelessWidget {
-  final String description;
-
-  MedicineDescription({required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Text(
-        description,
-        style: const TextStyle(fontSize: 16, color: Colors.black),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-}
-
 class ActionButtons extends StatelessWidget {
   final String alarmId;
-  Map<String,dynamic> alarmMap;
+  final String userId;
+  final String role;
+  Map<String, dynamic> alarmMap;
 
-  ActionButtons({required this.alarmId, required this.alarmMap});
+  ActionButtons({required this.alarmId, required this.alarmMap, required this.userId, required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -186,33 +222,26 @@ class ActionButtons extends StatelessWidget {
           },
           color: Colors.red,
         ),
-        const SizedBox(width: 50), // Add space between icons
+        const SizedBox(width: 80), // Add space between icons
         CircularButton(
           icon: Icons.check,
           label: 'Take',
-          onPressed: () async{
-            alarmMap['status']= 'taken';
-            await FirebaseFirestore.instance.collection('alarms').doc(alarmId).update(alarmMap).then((value){
-              navigatorKey.currentState?.pushReplacement(MaterialPageRoute(builder: (context)=> BottomNavigationIndividual()));
-            });
+          onPressed: () async {
+            alarmMap['status'] = 'taken';
+            await FirebaseFirestore.instance
+                .collection('alarms')
+                .doc(alarmId)
+                .update(alarmMap)
+                .then((value) => Navigator.of(context).pop());
           },
           color: Colors.green,
-        ),
-        const SizedBox(width: 50), // Add space between icons
-        CircularButton(
-          icon: Icons.snooze,
-          label: 'Snooze',
-          onPressed: () {
-            // Handle snooze
-          },
-          color: Colors.blue,
         ),
       ],
     );
   }
 
   void _showCancelDialog(BuildContext context) {
-    TextEditingController reasonController= TextEditingController();
+    TextEditingController reasonController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) {
@@ -240,30 +269,38 @@ class ActionButtons extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                  final data = await FirebaseCred().getData();
-                  final user = data[0];
-                  final cred = await TwilioCred().readCred();
-                  final guardian = await FirebaseCred().getGuardianData(user.uid.toString());
-                  TwilioFlutter twilioFlutter;
+                var reason= reasonController.text;
+                alarmMap['skipReason'] = reason;
+                alarmMap['status'] = 'Skipped';
+                await FirebaseFirestore.instance
+                    .collection('alarms')
+                    .doc(alarmId)
+                    .update(alarmMap)
+                    .then((value) async {
+                      if(role=='dependent'){
+                        final cred = await TwilioCred().readCred();
+                        final guardian = await FirebaseCred().getGuardianData(userId);
+                        TwilioFlutter twilioFlutter;
+                        if (guardian != null) {
+                          twilioFlutter = TwilioFlutter(
+                            accountSid: cred[0],
+                            authToken: cred[1],
+                            twilioNumber: cred[2],
+                          );
 
-                  if (guardian != null) {
-                    twilioFlutter = TwilioFlutter(
-                      accountSid: cred[0],
-                      authToken: cred[1],
-                      twilioNumber: cred[2],
-                    );
-
-                    twilioFlutter.sendSMS(
-                      toNumber: '+91' + guardian['phoneNo'],
-                      messageBody: 'Your dependent did not take the medicine! \nReason: $reasonController.text',
-                    );
-                    navigatorKey.currentState?.pushReplacement(MaterialPageRoute(builder: (context)=> BottomNavigationIndividual()));
-                  } else {
-                    // Handle the case where guardian is null (e.g., show an error message).
-                    print('Guardian data is not available.');
-                  }
-
-                Navigator.of(context).pop();
+                          twilioFlutter.sendSMS(
+                            toNumber: '+91' + guardian['phoneNo'],
+                            messageBody: "Your dependent did not take the medicine! \nReason: $reason",
+                          );
+                          print('done');
+                        } else {
+                          // Handle the case where guardian is null (e.g., show an error message).
+                          print('Guardian data is not available.');
+                        }
+                      }
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                });
               },
               child: const Text('Submit'),
             ),
