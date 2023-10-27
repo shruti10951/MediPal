@@ -9,15 +9,16 @@ FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
 
-class DashboardScreenDependent extends StatefulWidget {
-  const DashboardScreenDependent({super.key});
+class GaurdianView extends StatefulWidget {
+  const GaurdianView({super.key});
+
 
   @override
   // ignore: library_private_types_in_public_api
-  _DashboardScreenState createState() => _DashboardScreenState();
+  _GaurdianViewState createState() => _GaurdianViewState();
 }
 
-class _DashboardScreenState extends State<DashboardScreenDependent> {
+class _GaurdianViewState extends State<GaurdianView> {
   List<QueryDocumentSnapshot> filteredAlarms = [];
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
@@ -54,29 +55,13 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/medipal.png',
-              width: 30, // Adjust the width as needed
-              height: 30, // Adjust the height as needed
-            ),
-            const SizedBox(width: 8), // Add spacing
-            const Text('MediPal'), // Title next to the image
-          ],
-        ),
-      ),
       body: Column(
         children: [
-          _buildCalendar(context),
-          const Divider(),
           Expanded(
             child: FutureBuilder(
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  //PLEASE DO SOMETHING ABOUT THIS.
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
@@ -120,114 +105,8 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
     );
   }
 
-  Widget _buildCalendar(BuildContext context) {
-    return FutureBuilder(
-      future: fetchData(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingIndicator();
-        } else if (snapshot.hasError || snapshot.data == null) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final alarmQuerySnapshot = snapshot.data![0];
-          return SizedBox(
-            height: 100,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 7,
-                    itemBuilder: (BuildContext context, int index) {
-                      final currentDate =
-                          DateTime.now().add(Duration(days: index));
-                      final dayName = DateFormat('E').format(currentDate);
-                      final dayOfMonth = currentDate.day.toString();
 
-                      return GestureDetector(
-                        onTap: () {
-                          _onDateTapped(currentDate, alarmQuerySnapshot);
-                        },
-                        child: Container(
-                          width: 60,
-                          margin: const EdgeInsets.all(4),
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blue),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(
-                                dayOfMonth,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(dayName),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () {
-                    _openCalendar(context, alarmQuerySnapshot);
-                  },
-                ),
-              ],
-            ),
-          );
-        }
-      },
-    );
-  }
 
-  void _openCalendar(BuildContext context,
-      List<QueryDocumentSnapshot> alarmQuerySnapshot) async {
-    final DateTime currentDate = DateTime.now();
-
-    final DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: currentDate,
-      firstDate:
-          currentDate.subtract(const Duration(days: 365)), // One year ago
-      lastDate: currentDate.add(const Duration(days: 365)), // One year from now
-    );
-
-    if (selectedDate != null) {
-      // Handle the selected date here (e.g., update the UI with the selected date)
-      print('Selected date: $selectedDate');
-      _onDateTapped(selectedDate, alarmQuerySnapshot);
-    }
-  }
-
-  void _onDateTapped(
-      DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
-    // print(currentDate);
-    final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
-        alarmQuerySnapshot.where((element) {
-      final Map<String, dynamic>? data =
-          element.data() as Map<String, dynamic>?;
-      if (data != null) {
-        final String? date = data['time']?.toString().split(' ')[0];
-        // print(date);
-        // return 'It is time to take sk' == data['message'].toString();
-        return date == currentDate.toString().split(' ')[0];
-      } else {
-        return false;
-      }
-    }).toList();
-
-    setState(() {
-      filteredAlarms = alarmFilteredSnapshot;
-    });
-  }
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
@@ -271,7 +150,16 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
           DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
+          // String formattedTime = DateFormat.Hm().format(dateTime);
+          // DateTime dateTime = DateTime.parse(time);
+
+// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          String formattedDate = DateFormat('d MMM').format(dateTime);
+
+// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
+
+          String dateTimeText = '$formattedDate | $formattedTime';
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -281,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    formattedTime,
+                    dateTimeText,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medipal/models/UserModel.dart';
+import 'package:medipal/Individual/dependent_details_screen.dart'; // Replace with your screen for Dependent details
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -18,7 +19,6 @@ Future<UserModel?> fetchData() async {
       final userData = UserModel.fromDocumentSnapshot(userDoc);
       return userData;
     } else {
-      // Return null or handle the case when the document doesn't exist
       return null;
     }
   } catch (error) {
@@ -38,20 +38,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ImagePicker _imagePicker = ImagePicker();
   XFile? _image;
 
-  void _selectImage() async {
-    final pickedFile =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = pickedFile;
-      });
-    }
+  bool isDependent = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDependentStatus();
   }
 
-  String guardianCode = '';
+  _loadDependentStatus() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // setState(() {
+    //   isDependent = prefs.getBool('isDependent') ?? false;
+    // });
+  }
 
-  DependentBox? dependent;
-  UserModel? userData; // Add user data
+  UserModel? userData;
 
   void _openGuardianDialog() {
     showDialog(
@@ -66,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: const InputDecoration(labelText: 'Code'),
                 onChanged: (value) {
                   setState(() {
-                    guardianCode = value;
+                    // Handle code input
                   });
                 },
               ),
@@ -74,10 +76,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () {
-                // Copy code logic
-                // You can use the guardianCode variable here
+              onPressed: () async {
+                // final prefs = await SharedPreferences.getInstance();
+                // prefs.setBool('isDependent', true);
+                // setState(() {
+                //   isDependent = true;
+                // });
+                Navigator.of(context).pop();
               },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              ),
               child: const Text('Copy Code'),
             ),
             TextButton(
@@ -92,10 +103,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchUserData();
+  Widget _buildInfoRow(String title, String subtitle, IconData iconData) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: ListTile(
+        leading: Icon(iconData),
+        title: Text(title),
+        subtitle: Text(subtitle),
+      ),
+    );
   }
 
   Future<void> fetchUserData() async {
@@ -118,44 +138,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: _selectImage,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 80,
-                    backgroundImage:
-                        _image != null ? FileImage(File(_image!.path)) : null,
-                    child: _image == null
-                        ? const Icon(
-                            Icons.add,
-                            size: 36,
-                          )
-                        : null,
-                  ),
-                  if (_image != null)
-                    const Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.add,
-                          size: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+            // Replace the GestureDetector with an Image.asset widget
+            Image.asset(
+              'assets/images/medipal.png',
+              width: 160, // Adjust the width as needed
+              height: 160, // Adjust the height as needed
             ),
             const SizedBox(height: 16),
             FutureBuilder<UserModel?>(
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.hasError || !snapshot.hasData) {
-                  return Text('Error: Unable to load user data');
+                  return const Text('Error: Unable to load user data');
                 }
 
                 final user = snapshot.data!;
@@ -164,7 +158,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildInfoRow('Name', user.name, Icons.person),
                     _buildInfoRow('Phone', user.phoneNo, Icons.phone),
                     _buildInfoRow('Email', user.email, Icons.email),
-                    if (dependent != null) dependent!,
+                    if (isDependent)
+                      Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        elevation: 2,
+                        child: InkWell(
+                          onTap: () {
+                            // Navigate to Dependent Details Screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DependentDetailsScreen(),
+                              ),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.person, // Your desired grey icon
+                                  color:
+                                      Colors.grey, // Set the icon color to grey
+                                ),
+                                SizedBox(
+                                    width:
+                                        16), // Add spacing between icon and text
+                                Text(
+                                  'Dependent Details',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Spacer(), // Add a spacer to push the icon to the end
+                                Icon(
+                                  Icons
+                                      .arrow_forward, // Your desired arrow icon
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
                   ],
                 );
               },
@@ -176,10 +215,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   onPressed: () {
                     _openGuardianDialog();
-                    setState(() {
-                      dependent = const DependentBox();
-                    });
                   },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
                   child: const Text('Be Guardian'),
                 ),
                 const SizedBox(width: 16),
@@ -187,64 +228,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () {
                     // Handle the "Edit" button press
                   },
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
                   icon: const Icon(Icons.edit),
                   label: const Text('Edit'),
                 ),
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  _buildInfoRow(String title, String subtitle, IconData iconData) {
-    return Padding(padding:const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-      child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-              offset: const Offset(0, 5),
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 10,),
-        ],
-      ),
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        leading: Icon(iconData),
-        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
-        tileColor: Colors.white,
-      ),
-      ),
-    );
-  }
-}
-
-class DependentBox extends StatelessWidget {
-  const DependentBox({Key? key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 400,
-      height: 60,
-      child: Card(
-        elevation: 1.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 0),
-          child: ListTile(
-            title: Text('Dependent',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.person,
-                size: 20, color: Color.fromARGB(255, 0, 0, 0)),
-          ),
         ),
       ),
     );
