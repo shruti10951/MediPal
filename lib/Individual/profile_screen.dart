@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medipal/models/UserModel.dart';
@@ -48,10 +47,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   _loadDependentStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isDependent = prefs.getBool('isDependent') ?? false;
-    });
+    // final prefs = await SharedPreferences.getInstance();
+    // setState(() {
+    //   isDependent = prefs.getBool('isDependent') ?? false;
+    // });
   }
 
   UserModel? userData;
@@ -78,11 +77,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             ElevatedButton(
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setBool('isDependent', true);
-                setState(() {
-                  isDependent = true;
-                });
+                // final prefs = await SharedPreferences.getInstance();
+                // prefs.setBool('isDependent', true);
+                // setState(() {
+                //   isDependent = true;
+                // });
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
