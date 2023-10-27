@@ -8,7 +8,8 @@ class BottomNavigationDependent extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _BottomNavigationDependentState createState() => _BottomNavigationDependentState();
+  _BottomNavigationDependentState createState() =>
+      _BottomNavigationDependentState();
 }
 
 class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
@@ -80,9 +81,10 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
             label: 'Profile',
           ),
         ],
-        unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: Color.fromARGB(146, 170, 149, 247),
+        //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Color.fromARGB(255, 41, 45, 92),
         onTap: (index) {
           setState(() {
             _selectedIndex = index;

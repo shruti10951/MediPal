@@ -1,3 +1,9 @@
+import 'dart:math' as math;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:medipal/models/AlarmModel.dart';
+import 'package:medipal/models/MedicationModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,35 +11,29 @@ import 'package:intl/intl.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 
-FirebaseAuth auth = FirebaseAuth.instance;
-FirebaseFirestore firestore = FirebaseFirestore.instance;
-final userId = auth.currentUser?.uid;
+import '../Individual/dashboard_screen.dart';
+
 
 class GaurdianView extends StatefulWidget {
-  const GaurdianView({super.key});
-
+  const GaurdianView({Key? key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _GaurdianViewState createState() => _GaurdianViewState();
 }
 
 class _GaurdianViewState extends State<GaurdianView> {
   List<QueryDocumentSnapshot> filteredAlarms = [];
+  bool isExpanded = false;
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
-    final alarmQuery =
-        firestore.collection('alarms').where('userId', isEqualTo: userId).get();
-    final medicationQuery = firestore
-        .collection('medications')
-        .where('userId', isEqualTo: userId)
-        .get();
+    final alarmQuery = firestore.collection('alarms').where('userId', isEqualTo: userId).get();
+    final medicationQuery = firestore.collection('medications').where('userId', isEqualTo: userId).get();
 
     List<QueryDocumentSnapshot> alarmDocumentList = [];
     List<QueryDocumentSnapshot> medicationDocumentList = [];
 
     try {
-      final results = await Future.wait([alarmQuery, medicationQuery]);
+      final results = await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
       final alarmQuerySnapshot = results[0] as QuerySnapshot;
       final medicationQuerySnapshot = results[1] as QuerySnapshot;
 
@@ -55,29 +55,13 @@ class _GaurdianViewState extends State<GaurdianView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/medipal.png',
-              width: 30, // Adjust the width as needed
-              height: 30, // Adjust the height as needed
-            ),
-            const SizedBox(width: 8), // Add spacing
-            const Text('MediPal'), // Title next to the image
-          ],
-        ),
-      ),
       body: Column(
         children: [
-          _buildCalendar(context),
-          const Divider(),
           Expanded(
             child: FutureBuilder(
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  //PLEASE DO SOMETHING ABOUT THIS.
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
@@ -95,8 +79,43 @@ class _GaurdianViewState extends State<GaurdianView> {
           ),
         ],
       ),
+      floatingActionButton: ExpandableFab(
+        distance: 112,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.format_size),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.insert_photo),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 2),
+            icon: const Icon(Icons.videocam),
+          ),
+        ],
+      ),
     );
   }
+
+  void _showAction(BuildContext context, int index) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          //content: Text(_actionTitles[index]),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('CLOSE'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildLoadingIndicator() {
     return const Center(
       child: Column(
@@ -120,47 +139,6 @@ class _GaurdianViewState extends State<GaurdianView> {
       ),
     );
   }
-
-  Widget _buildCalendar(BuildContext context) {
-    return FutureBuilder(
-      future: fetchData(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingIndicator();
-        } else if (snapshot.hasError || snapshot.data == null) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final alarmQuerySnapshot = snapshot.data![0];
-          return SizedBox(
-            height: 100,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 7,
-                    itemBuilder: (BuildContext context, int index) {
-                      final currentDate =
-                          DateTime.now().add(Duration(days: index));
-                      final dayName = DateFormat('E').format(currentDate);
-                      final dayOfMonth = currentDate.day.toString();
-
-                      
-                    },
-                  ),
-                ),
-                
-              ],
-            ),
-          );
-        }
-      },
-    );
-  }
-
-
-
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
@@ -204,7 +182,16 @@ class _GaurdianViewState extends State<GaurdianView> {
           DateTime dateTime = DateTime.parse(time);
 
           //check this once again for time and date
+          // String formattedTime = DateFormat.Hm().format(dateTime);
+          // DateTime dateTime = DateTime.parse(time);
+
+// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          String formattedDate = DateFormat('d MMM').format(dateTime);
+
+// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
+
+          String dateTimeText = '$formattedDate | $formattedTime';
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -214,7 +201,7 @@ class _GaurdianViewState extends State<GaurdianView> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    formattedTime,
+                    dateTimeText,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -261,27 +248,228 @@ class _GaurdianViewState extends State<GaurdianView> {
   }
 }
 
-  Widget _buildLoadingIndicator() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+class ExpandableFab extends StatefulWidget {
+  const ExpandableFab({
+    Key? key,
+    this.initialOpen,
+    required this.distance,
+    required this.children,
+  });
+
+  final bool? initialOpen;
+  final double distance;
+  final List<Widget> children;
+
+  @override
+  State<ExpandableFab> createState() => _ExpandableFabState();
+}
+
+class _ExpandableFabState extends State<ExpandableFab>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _expandAnimation;
+  bool _open = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _open = widget.initialOpen ?? false;
+    _controller = AnimationController(
+      value: _open ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+    _expandAnimation = CurvedAnimation(
+      curve: Curves.fastOutSlowIn,
+      reverseCurve: Curves.easeOutQuad,
+      parent: _controller,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() {
+      _open = !_open;
+      if (_open) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.expand(
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        clipBehavior: Clip.none,
         children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Color.fromARGB(255, 71, 78, 84),
-            ),
-          ),
-          SizedBox(height: 16.0),
-          Text(
-            'Loading...',
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
+          _buildTapToCloseFab(),
+          ..._buildExpandingActionButtons(),
+          _buildTapToOpenFab(),
         ],
       ),
     );
   }
 
+  Widget _buildTapToCloseFab() {
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: Center(
+        child: Material(
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          elevation: 4,
+          child: InkWell(
+            onTap: _toggle,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Icon(
+                Icons.close,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildExpandingActionButtons() {
+    final children = <Widget>[];
+    final count = widget.children.length;
+    final step = 90.0 / (count - 1);
+    for (var i = 0, angleInDegrees = 0.0;
+        i < count;
+        i++, angleInDegrees += step) {
+      children.add(
+        _ExpandingActionButton(
+          directionInDegrees: angleInDegrees,
+          maxDistance: widget.distance,
+          progress: _expandAnimation,
+          child: widget.children[i],
+        ),
+      );
+    }
+    return children;
+  }
+
+  Widget _buildTapToOpenFab() {
+    return IgnorePointer(
+      ignoring: _open,
+      child: AnimatedContainer(
+        transformAlignment: Alignment.center,
+        transform: Matrix4.diagonal3Values(
+          _open ? 0.7 : 1.0,
+          _open ? 0.7 : 1.0,
+          1.0,
+        ),
+        duration: const Duration(milliseconds: 250),
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+        child: AnimatedOpacity(
+          opacity: _open ? 0.0 : 1.0,
+          curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
+          duration: const Duration(milliseconds: 250),
+          child: FloatingActionButton(
+            onPressed: _toggle,
+            child: const Icon(Icons.create),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExpandingActionButton extends StatelessWidget {
+  const _ExpandingActionButton({
+    required this.directionInDegrees,
+    required this.maxDistance,
+    required this.progress,
+    required this.child,
+  });
+
+  final double directionInDegrees;
+  final double maxDistance;
+  final Animation<double> progress;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: progress,
+      builder: (context, child) {
+        final offset = Offset.fromDirection(
+          directionInDegrees * (math.pi / 180.0),
+          progress.value * maxDistance,
+        );
+        return Positioned(
+          right: 4.0 + offset.dx,
+          bottom: 4.0 + offset.dy,
+          child: Transform.rotate(
+            angle: (1.0 - progress.value) * math.pi / 2,
+            child: child!,
+          ),
+        );
+      },
+      child: FadeTransition(
+        opacity: progress,
+        child: child,
+      ),
+    );
+  }
+}
+
+class ActionButton extends StatelessWidget {
+  const ActionButton({
+    Key? key,
+    this.onPressed,
+    required this.icon,
+  });
+
+  final VoidCallback? onPressed;
+  final Widget icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      color: theme.colorScheme.secondary,
+      elevation: 4,
+      child: IconButton(
+        onPressed: onPressed,
+        icon: icon,
+        color: theme.colorScheme.onSecondary,
+      ),
+    );
+  }
+}
+
+class FakeItem extends StatelessWidget {
+  const FakeItem({
+    Key? key,
+    required this.isBig,
+  });
+
+  final bool isBig;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+      height: isBig ? 128 : 36,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        color: Colors.grey.shade300,
+      ),
+    );
+  }
+}

@@ -1,17 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medipal/models/UserModel.dart';
+
+FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseFirestore firestore = FirebaseFirestore.instance;
+final userId = auth.currentUser?.uid;
+
+Future<UserModel?> fetchData() async {
+  final userInfoQuery = firestore.collection('users').doc(userId).get();
+
+  try {
+    final userDoc = await userInfoQuery;
+    if (userDoc.exists) {
+      final userData = UserModel.fromDocumentSnapshot(userDoc);
+      return userData;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    print('Error retrieving document: $error');
+    return null;
+  }
+}
 
 class ProfileScreenDependent extends StatefulWidget {
   const ProfileScreenDependent({Key? key}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _ProfileScreenDependentState createState() => _ProfileScreenDependentState();
 }
 
-class _ProfileScreenState extends State<ProfileScreenDependent> {
+class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
   ImagePicker _imagePicker = ImagePicker();
   XFile? _image;
 
@@ -61,25 +84,47 @@ class _ProfileScreenState extends State<ProfileScreenDependent> {
         ],
       ),
       child: ListTile(
+        leading: Icon(iconData),
         title: Text(title),
         subtitle: Text(subtitle),
-        leading: Icon(iconData),
-        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
-        tileColor: Colors.white,
       ),
     );
+  }
+
+  Future<void> fetchUserData() async {
+    final userDoc = await firestore.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      final userData = UserModel.fromDocumentSnapshot(userDoc);
+      setState(() {
+        this.userData = userData;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+                    // Handle the "Edit" button press
+                  },
+          ),
+        ],
         title: const Text('Profile (Dependent)'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Replace the GestureDetector with an Image.asset widget
+            Image.asset(
+              'assets/images/medipal.png',
+              width: 160, // Adjust the width as needed
+              height: 160, // Adjust the height as needed
             GestureDetector(
               onTap: _selectImage,
               child: Stack(
@@ -122,29 +167,24 @@ class _ProfileScreenState extends State<ProfileScreenDependent> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  // Guardian code input field
-                  TextField(
-                    controller: guardianCodeController,
-                    decoration: InputDecoration(labelText: 'Enter Guardian code'),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(width: 16),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    // Handle the "Edit" button press
+                  },
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  // Submit button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle the "Submit" button press
-                      final guardianCode = guardianCodeController.text;
-                      // Process the entered guardian code
-                      print('Entered Guardian Code: $guardianCode');
-                    },
-                    child: const Text('Submit'),
-                  ),
-                ],
-              ),
+                  icon: const Icon(Icons.edit),
+                  label: const Text('Edit'),
+                ),
+              ],
             ),
           ],
         ),

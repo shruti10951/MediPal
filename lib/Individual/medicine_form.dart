@@ -135,7 +135,7 @@ class _MedicineFormState extends State<MedicineForm> {
                   ),
                   const SizedBox(height: 16.0),
                   TextField(
-                    controller: _dosageController,
+                    //controller: _dosageController,
                     decoration: const InputDecoration(
                       labelText: 'Dosage Description',
                     ),
@@ -152,6 +152,13 @@ class _MedicineFormState extends State<MedicineForm> {
                         _selectedDosageType = value;
                       });
                     },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextField(
+                    controller: _dosageController,
+                    decoration: const InputDecoration(
+                      labelText: 'Quatity Per Dose',
+                    ),
                   ),
                   
                   const SizedBox(height: 16.0),

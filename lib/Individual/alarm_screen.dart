@@ -1,17 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
+import 'package:medipal/models/AlarmModel.dart';
+
+import '../main.dart';
 
 class AlarmScreen extends StatefulWidget {
+  final String alarmId;
+
+  AlarmScreen({required this.alarmId});
+
   @override
   _AlarmScreenState createState() => _AlarmScreenState();
 }
 
 class _AlarmScreenState extends State<AlarmScreen> {
-  // Dynamic data
+  late AlarmModel alarm;
+  Map<String, dynamic> alarmMap = {};
+  final user = FirebaseAuth.instance.currentUser;
+  @override
+  void initState() {
+    super.initState();
+    loadAlarmData();
+  } // Dynamic data
+
   String time = '10:00 AM'; // Replace with your time
   String medicineType = 'Liquid'; // Replace with your medicine type
   String description =
-      'Your medias you want without affecting the layout.'; // Replace with your description
+      'Hello take you medicine'; // Replace with your description
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +64,22 @@ class _AlarmScreenState extends State<AlarmScreen> {
               child: MedicineDescription(description: description),
             ),
             // Action Buttons
-            ActionButtons(),
+            ActionButtons(alarmId: widget.alarmId, alarmMap: alarmMap),
           ],
         ),
       ),
     );
+  }
+
+  void loadAlarmData() async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('alarms')
+        .where('alarmId', isEqualTo: widget.alarmId)
+        .get();
+    for (QueryDocumentSnapshot s in snapshot.docs) {
+      alarm = AlarmModel.fromDocumentSnapshot(s);
+      alarmMap = alarm.toMap();
+    }
   }
 }
 
@@ -112,6 +141,11 @@ class MedicineDescription extends StatelessWidget {
 }
 
 class ActionButtons extends StatelessWidget {
+  final String alarmId;
+  Map<String, dynamic> alarmMap;
+
+  ActionButtons({required this.alarmId, required this.alarmMap});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -126,45 +160,49 @@ class ActionButtons extends StatelessWidget {
           },
           color: Colors.red,
         ),
-        const SizedBox(width: 50), // Add space between icons
+        const SizedBox(width: 80), // Add space between icons
         CircularButton(
           icon: Icons.check,
           label: 'Take',
-          onPressed: () {
-            // Handle medication taken
+          onPressed: () async {
+            alarmMap['status'] = 'taken';
+            await FirebaseFirestore.instance
+                .collection('alarms')
+                .doc(alarmId)
+                .update(alarmMap)
+                .then((value) {
+              navigatorKey.currentState?.pushReplacement(MaterialPageRoute(
+                  builder: (context) => BottomNavigationIndividual()));
+            });
           },
           color: Colors.green,
-        ),
-        const SizedBox(width: 50), // Add space between icons
-        CircularButton(
-          icon: Icons.snooze,
-          label: 'Snooze',
-          onPressed: () {
-            // Handle snooze
-          },
-          color: Colors.blue,
         ),
       ],
     );
   }
 
   void _showCancelDialog(BuildContext context) {
+    TextEditingController reasonController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Cancel Medication'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Why are you canceling this medication?'),
-              TextFormField(
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: 'Enter reason here',
+          content: SingleChildScrollView(
+            // Wrap the content with SingleChildScrollView
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Why are you canceling this medication?'),
+                TextFormField(
+                  maxLines: 2,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter reason here',
+                  ),
+                  controller: reasonController,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
