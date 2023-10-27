@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/user_registration/dependent_login.dart';
 import 'package:medipal/user_registration/login_screen.dart';
 
 class ForgetPasswordPage extends StatelessWidget {
@@ -30,7 +31,7 @@ class ForgetPasswordPage extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => LoginPage()))
+                          builder: (context) => DependentLogin()))
                 });
               },
               child: Text('Reset Password'),
