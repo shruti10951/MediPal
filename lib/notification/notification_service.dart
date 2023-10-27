@@ -1,9 +1,9 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/main.dart';
-import 'package:medipal/notification/send_sms.dart';
 
-import '../Individual/bottom_navigation_individual.dart';
+import 'alarm_screen.dart';
+
 
 class NotificationService {
   static Future<void> initializeNotification() async {
@@ -42,9 +42,12 @@ class NotificationService {
       ReceivedNotification receivedNotification) async {
     debugPrint('On Notification Received');
     final payload = receivedNotification.payload ?? {};
+    var alarmId= payload['alarmId'];
     if (payload["open"] == "true") {
-      navigatorKey.currentState
-          ?.push(MaterialPageRoute(builder: (context) => SendSms()));
+      if(alarmId!=null){
+        navigatorKey.currentState
+            ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: alarmId)));
+      }
     }
   }
 
@@ -74,7 +77,7 @@ class NotificationService {
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-          channelKey: 'MedipalChannel',
+          channelKey: 'MediPal',
           title: title,
           body: body,
           fullScreenIntent: true,
