@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [
                       Color.fromARGB(214, 152, 191, 255),
-                  Color.fromARGB(255, 223, 238, 255),
+                      Color.fromARGB(255, 223, 238, 255),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -90,14 +90,15 @@ class LoginScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 32.0),
+                  const SizedBox(height: 40.0),
                   Container(
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 255, 255, 255)
                           .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildInputField(Icons.mark_email_read_outlined, 'Email Address'),
+                    child: _buildInputField(
+                        Icons.mark_email_read_outlined, 'Email Address'),
                   ),
                   const SizedBox(height: 16.0),
                   Container(
@@ -106,13 +107,16 @@ class LoginScreen extends StatelessWidget {
                           .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildPasswordField(Icons.password_outlined, 'Password'),
+                    child: _buildPasswordField(
+                        Icons.password_outlined, 'Password'),
                   ),
                   const SizedBox(height: 8.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                     SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       TextButton(
                         onPressed: () {
                           navigatorKey.currentState?.push(MaterialPageRoute(
@@ -120,8 +124,8 @@ class LoginScreen extends StatelessWidget {
                         },
                         child: const Text(
                           'Forgot Password?',
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 41, 45, 92)),
+                          style:
+                              TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
                         ),
                       ),
                     ],
@@ -168,7 +172,6 @@ class LoginScreen extends StatelessWidget {
           icon,
           color: const Color.fromARGB(218, 41, 45, 92),
         ),
-        
         border: InputBorder.none,
       ),
       controller: _passwordController,
