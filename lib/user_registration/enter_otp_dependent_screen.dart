@@ -25,17 +25,17 @@ class OTPForDependentPage extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OTP'),
+        title: Text('OTP'),
       ),
       body: Column(
         children: [
           TextField(
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'OTP',
             ),
             controller: otpController,
           ),
-          const SizedBox(height: 20.0),
+          SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () async {
               try {
@@ -62,7 +62,6 @@ class OTPForDependentPage extends StatelessWidget {
                   }
 
                   //BACK BUTTON
-                  // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -73,14 +72,14 @@ class OTPForDependentPage extends StatelessWidget {
               } catch (e) {
                 final scaffoldMessenger = ScaffoldMessenger.of(context);
                 scaffoldMessenger.showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text('Invalid OTP'),
                     duration: Duration(seconds: 3),
                   ),
                 );
               }
             },
-            child: const Text('Verify'),
+            child: Text('Verify'),
           )
 
         ],

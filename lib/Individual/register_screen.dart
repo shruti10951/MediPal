@@ -21,6 +21,7 @@ class RegisterScreen extends StatelessWidget {
         children: [
           // Background Image with Curved Middle
           Positioned(
+            left: 0,
             child: ClipPath(
               clipper: WaveClipper(), // Custom clipper for curved shape
               child: Image.asset(
@@ -32,7 +33,7 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
 
-         // Back Button
+          // Back Button
           Positioned(
             top: 40.0,
             left: 17.0,
@@ -222,20 +223,21 @@ class RegisterScreen extends StatelessWidget {
   }
 }
 
-//Costom CLipper class with Path
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    var path = new Path();
-    path.lineTo(
-        0, size.height); //start path with this if you are making at bottom
+    final path = Path();
+    path.lineTo(0, size.height - 100);
+    final firstControlPoint = Offset(size.width / 4, size.height);
+    final firstEndPoint = Offset(size.width / 2.25, size.height - 30);
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+        firstEndPoint.dx, firstEndPoint.dy);
 
-    var firstStart = Offset(size.width / 5, size.height);
-    //fist point of quadratic bezier curve
-    var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
-    //second point of quadratic bezier curve
-    path.quadraticBezierTo(
-        firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
+    final secondControlPoint =
+        Offset(size.width - (size.width / 3.25), size.height - 65);
+    final secondEndPoint = Offset(size.width, size.height - 40);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
 
 // <<<<<<< HEAD
     var secondStart =
@@ -253,6 +255,7 @@ class WaveClipper extends CustomClipper<Path> {
 //     path.lineTo(size.width, 0);
 // >>>>>>> 7f24f851722a8b00c12914649f090b225cc4645b
     path.close();
+
     return path;
   }
 

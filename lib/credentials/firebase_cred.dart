@@ -5,17 +5,17 @@ import 'package:medipal/models/UserModel.dart';
 
 class FirebaseCred{
   Future<List> getData() async {
-    String role="";
     final user = FirebaseAuth.instance.currentUser;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     QuerySnapshot dependentQuery = await firestore
-        .collection('dependent')
+        .collection('dependents')
         .where('userId', isEqualTo: user?.uid.toString())
         .get();
     QuerySnapshot userQuery = await firestore
         .collection('users')
         .where('userId', isEqualTo: user?.uid.toString())
         .get();
+    var role;
     if(dependentQuery.docs.isNotEmpty){
       role= 'dependent';
     }else{
@@ -25,8 +25,6 @@ class FirebaseCred{
         role = userData['role'];
       }
     }
-    print(user);
-    print(role);
     return ([user, role]);
   }
   

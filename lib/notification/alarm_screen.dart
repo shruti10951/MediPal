@@ -39,7 +39,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error.toString()}');
+            return Text('Error: ${snapshot.error}');
           } else {
             return buildUI();
           }
@@ -269,17 +269,16 @@ class ActionButtons extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                var reason= reasonController.text;
-                alarmMap['skipReason'] = reason;
+                alarmMap['skipReason'] = reasonController.text;
                 alarmMap['status'] = 'Skipped';
                 await FirebaseFirestore.instance
                     .collection('alarms')
                     .doc(alarmId)
                     .update(alarmMap)
-                    .then((value) async {
+                    .then((value) {
                       if(role=='dependent'){
-                        final cred = await TwilioCred().readCred();
-                        final guardian = await FirebaseCred().getGuardianData(userId);
+                        final cred = TwilioCred().readCred();
+                        final guardian = FirebaseCred().getGuardianData(userId);
                         TwilioFlutter twilioFlutter;
                         if (guardian != null) {
                           twilioFlutter = TwilioFlutter(
@@ -290,9 +289,8 @@ class ActionButtons extends StatelessWidget {
 
                           twilioFlutter.sendSMS(
                             toNumber: '+91' + guardian['phoneNo'],
-                            messageBody: "Your dependent did not take the medicine! \nReason: $reason",
+                            messageBody: 'Your dependent did not take the medicine!',
                           );
-                          print('done');
                         } else {
                           // Handle the case where guardian is null (e.g., show an error message).
                           print('Guardian data is not available.');

@@ -126,7 +126,8 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
       builder: (BuildContext context,
           AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingIndicator();
+          //PLEASE DO SOMETHING ABOUT THIS.
+          return CircularProgressIndicator();
         } else if (snapshot.hasError || snapshot.data == null) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -327,28 +328,3 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
     );
   }
 }
-
-  Widget _buildLoadingIndicator() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Color.fromARGB(255, 71, 78, 84),
-            ),
-          ),
-          SizedBox(height: 16.0),
-          Text(
-            'Loading...',
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
