@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/Individual/medicine_form_dependent.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,9 +24,11 @@ class GaurdianView extends StatefulWidget {
 }
 
 class _GaurdianViewState extends State<GaurdianView> {
-  List<QueryDocumentSnapshot> filteredAlarms = [];
 
-  // bool isExpanded = false;
+  List<QueryDocumentSnapshot> filteredAlarms = [];
+  // List<QueryDocumentSnapshot> alarmQuerySnapshot = [];
+
+  late QuerySnapshot<Object?> alarmQuerySnapshot;
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
     final alarmQuery = firestore
@@ -43,7 +46,7 @@ class _GaurdianViewState extends State<GaurdianView> {
     try {
       final results =
           await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
-      final alarmQuerySnapshot = results[0] as QuerySnapshot;
+      alarmQuerySnapshot = results[0] as QuerySnapshot;
       final medicationQuerySnapshot = results[1] as QuerySnapshot;
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
@@ -99,10 +102,6 @@ class _GaurdianViewState extends State<GaurdianView> {
             onPressed: () => _showAction(context, 1),
             icon: const Icon(Icons.pending_actions_rounded),
           ),
-          // ActionButton(
-          //   onPressed: () => _showAction(context, 2),
-          //   icon: const Icon(Icons.videocam),
-          // ),
         ],
       ),
     );
@@ -110,16 +109,13 @@ class _GaurdianViewState extends State<GaurdianView> {
 
   void _showAction(BuildContext context, int index) {
     if (index == 0) {
-      // Open calendar here
-      // You can replace this with your own code to open a calendar screen
-      // For example, you can use Navigator to navigate to a calendar screen
       _openCalendar(context);
     } else if (index == 1) {
       // Open Medicine Form screen here
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const DashboardScreen(),
+          builder: (context) => MedicineFormDependent(dependentId: widget.dependentId,),
         ),
       );
     }
@@ -136,6 +132,32 @@ class _GaurdianViewState extends State<GaurdianView> {
       currentDate.subtract(const Duration(days: 365)), // One year ago
       lastDate: currentDate.add(const Duration(days: 365)), // One year from now
     );
+
+    if(selectedDate != null){
+      _onDateTapped(selectedDate, alarmQuerySnapshot);
+    }
+  }
+
+  void _onDateTapped(
+      DateTime currentDate, QuerySnapshot<Object?> alarmQuerySnapshot) {
+    // print(currentDate);
+    final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
+    alarmQuerySnapshot.docs.where((element) {
+      final Map<String, dynamic>? data =
+      element.data() as Map<String, dynamic>?;
+      if (data != null) {
+        final String? date = data['time']?.toString().split(' ')[0];
+        // print(date);
+        // return 'It is time to take sk' == data['message'].toString();
+        return date == currentDate.toString().split(' ')[0];
+      } else {
+        return false;
+      }
+    }).toList();
+
+    setState(() {
+      filteredAlarms = alarmFilteredSnapshot;
+    });
   }
 
   Widget _buildLoadingIndicator() {
@@ -322,6 +344,7 @@ class _ExpandableFabState extends State<ExpandableFab>
       } else {
         _controller.reverse();
       }
+
     });
   }
 
