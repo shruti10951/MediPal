@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
+import 'package:medipal/main.dart';
+import 'package:medipal/user_registration/forgot_password_screen.dart';
 
 //DO SOMETHING ABOUT THIS
 //DON'T PUT USERNAME INSTEAD MAKE IT EMAIL
@@ -129,7 +131,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Implement forgot password action
+                          navigatorKey.currentState?.push(MaterialPageRoute(builder: (context)=> ForgetPasswordPage()));
                         },
                         child: const Text(
                           'Forgot Password?',
