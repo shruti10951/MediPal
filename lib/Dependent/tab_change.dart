@@ -1,14 +1,34 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/Dependent/gaurdian_view_screen.dart';
+import 'package:medipal/Individual/gaurdian_view_screen.dart';
+import 'package:medipal/Individual/inventory_dependet_guardian.dart';
 import 'inventory_screen_dependent.dart';
 
-class TabChange extends StatelessWidget {
+class TabChange extends StatefulWidget {
   int _currentIndex = 0;
 
-  final List<Widget> _tabs = [const GaurdianView(), const InventoryScreenDependent()];
+  final dependentId;
 
-  TabChange({super.key});
+  TabChange({required this.dependentId});
+
+  @override
+  _TabChangeState createState() => _TabChangeState();
+
+}
+
+class _TabChangeState extends State<TabChange> {
+
+  late final List<Widget> _tabs;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _tabs = [
+      GaurdianView(dependentId: widget.dependentId),
+      InventoryDependentGuardian(dependentId: widget.dependentId),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,3 +64,8 @@ class TabChange extends StatelessWidget {
     );
   }
 }
+
+  // [const GaurdianView(dependent: dependentId), const InventoryScreenDependent()];
+
+
+

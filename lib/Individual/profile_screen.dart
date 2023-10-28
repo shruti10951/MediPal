@@ -232,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     // Handle the "Edit" button press
-                    // navigatorKey.currentState?.push(MaterialPageRoute(builder: (builder)=> AddGuardian()));
+                    navigatorKey.currentState?.push(MaterialPageRoute(builder: (builder)=> DependentDetailsScreen()));
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(

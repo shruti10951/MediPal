@@ -11,11 +11,14 @@ import 'package:intl/intl.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 
-import '../Individual/dashboard_screen.dart';
+import 'dashboard_screen.dart';
 
 
 class GaurdianView extends StatefulWidget {
-  const GaurdianView({Key? key});
+
+  final dependentId;
+
+  const GaurdianView({required this.dependentId});
 
   @override
   _GaurdianViewState createState() => _GaurdianViewState();
@@ -26,8 +29,8 @@ class _GaurdianViewState extends State<GaurdianView> {
   bool isExpanded = false;
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
-    final alarmQuery = firestore.collection('alarms').where('userId', isEqualTo: userId).get();
-    final medicationQuery = firestore.collection('medications').where('userId', isEqualTo: userId).get();
+    final alarmQuery = firestore.collection('alarms').where('userId', isEqualTo: widget.dependentId).get();
+    final medicationQuery = firestore.collection('medications').where('userId', isEqualTo: widget.dependentId).get();
 
     List<QueryDocumentSnapshot> alarmDocumentList = [];
     List<QueryDocumentSnapshot> medicationDocumentList = [];
