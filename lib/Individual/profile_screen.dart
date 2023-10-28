@@ -133,6 +133,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout), // Icon for the logout button
+            onPressed: () {
+              // Handle the logout action here
+              // For example, you can sign out the user and navigate to the login screen
+              // Make sure you implement your own logout logic
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -159,51 +169,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildInfoRow('Phone', user.phoneNo, Icons.phone),
                     _buildInfoRow('Email', user.email, Icons.email),
                     // if (isDependent)
-                      Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        elevation: 2,
-                        child: InkWell(
-                          onTap: () {
-                            // Navigate to Dependent Details Screen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DependentDetailsScreen(),
-                              ),
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.person, // Your desired grey icon
-                                  color:
-                                      Colors.grey, // Set the icon color to grey
-                                ),
-                                SizedBox(
-                                    width:
-                                        16), // Add spacing between icon and text
-                                Text(
-                                  'Dependent Details',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Spacer(), // Add a spacer to push the icon to the end
-                                Icon(
-                                  Icons
-                                      .arrow_forward, // Your desired arrow icon
-                                ),
-                              ],
+                    Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      elevation: 2,
+                      child: InkWell(
+                        onTap: () {
+                          // Navigate to Dependent Details Screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DependentDetailsScreen(),
                             ),
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.person, // Your desired grey icon
+                                color:
+                                    Colors.grey, // Set the icon color to grey
+                              ),
+                              SizedBox(
+                                  width:
+                                      16), // Add spacing between icon and text
+                              Text(
+                                'Dependent Details',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Spacer(), // Add a spacer to push the icon to the end
+                              Icon(
+                                Icons.arrow_forward, // Your desired arrow icon
+                              ),
+                            ],
                           ),
                         ),
-                      )
+                      ),
+                    )
                   ],
                 );
               },
