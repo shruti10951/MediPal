@@ -13,7 +13,8 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 // final userId = auth.currentUser?.uid;
 
 Future<UserModel?> fetchData() async {
-  final userInfoQuery = firestore.collection('users').doc(auth.currentUser?.uid).get();
+  final userInfoQuery =
+      firestore.collection('users').doc(auth.currentUser?.uid).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -57,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // }
 
   UserModel? userData;
-
+  String guardianCode = '';
   void _openGuardianDialog() {
     String code = userData?.uid ?? ''; // Use the user's ID as the code
     TextEditingController codeController = TextEditingController(text: code);
@@ -124,7 +125,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  
   // Future<void> fetchUserData() async {
   //   final userDoc = await firestore.collection('users').doc(user.uid).get();
   //   if (userDoc.exists) {
