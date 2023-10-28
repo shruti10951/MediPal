@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/login_screen.dart';
 import 'package:medipal/Individual/register_screen.dart';
-import 'package:medipal/user_registration/sign_up_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -12,25 +11,28 @@ class WelcomeScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background Image
-          Positioned(
-            left: 0.0,
-            child: Image.asset(
-              'assets/images/welcome_background.png', // Replace with your image path
-               
-                fit: BoxFit.cover,
+          // Gradient Background
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.fromARGB(214, 152, 191, 255),
+                  Color.fromARGB(255, 223, 238, 255),
+                  
+                ],
+              ),
             ),
           ),
-
-          // Image (Add your image path)
           // Medipal Circular Image (Position it at the very top)
           Positioned(
-            top: 0.0,
-            left: 0.0,
+            top: 120.0,
+            left: 125.0,
             child: Image.asset(
-              'assets/images/medipalcircular.png', // Replace with your image path
-              width: 400.0,
-              height: 400.0,
+              'assets/images/medipal.png', // Replace with your image path
+              width: 150.0,
+              height: 150.0,
             ),
           ),
           // Back Button
@@ -55,16 +57,29 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          const Positioned(
+            left: 150.0,
+            top: 280.0,
+            child: Text(
+              'MEDIPAL',
+              style: TextStyle(
+                fontSize: 26.0,
+                color: Color.fromARGB(255, 41, 45, 92),
+                fontWeight: FontWeight.bold, // Make the text bold
+                // fontStyle: FontStyle.italic, // Make the text italic
+              ),
+            ),
+          ),
 
           // Quote Text at the Left Side
           const Positioned(
-            left: 30.0,
-            top: 270.0,
+            left: 60.0,
+            top: 320.0,
             child: Text(
               'Your medicine, our responsibility!',
               style: TextStyle(
-                fontSize: 22.0,
-                color: Colors.white,
+                fontSize: 18.0,
+                color: Color.fromARGB(255, 41, 45, 92),
                 fontWeight: FontWeight.bold, // Make the text bold
                 fontStyle: FontStyle.italic, // Make the text italic
               ),
@@ -87,8 +102,8 @@ class WelcomeScreen extends StatelessWidget {
                       ));
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(0, 0, 0, 0),
-                  side: const BorderSide(color: Colors.white, width: 2.0),
+                  primary: Color.fromARGB(255, 234, 244, 255),
+                  side: const BorderSide(color: Color.fromARGB(255, 41, 45, 92), width: 2.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
                         10.0), // Adjust the radius as needed
@@ -97,7 +112,7 @@ class WelcomeScreen extends StatelessWidget {
                 child: const Text(
                   'Sign In',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
+                    color: Color.fromARGB(255, 0, 0, 0),
                     fontSize: 20.0,
                   ),
                 ),
@@ -121,7 +136,7 @@ class WelcomeScreen extends StatelessWidget {
                       ));
                 },
                 style: TextButton.styleFrom(
-                  backgroundColor: Color.fromARGB(20, 255, 255, 255),
+                  backgroundColor: Color.fromARGB(103, 255, 255, 255),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
                         0.0), // Adjust the radius as needed
@@ -130,7 +145,7 @@ class WelcomeScreen extends StatelessWidget {
                 child: const Text(
                   'Create an Account',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 0, 0, 0),
                     fontSize: 20.0,
                   ),
                 ),

@@ -50,6 +50,14 @@ class _ProfileScreenState extends State<ProfileScreenDependent> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout), // Icon for the logout button
+            onPressed: () { 
+              
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(

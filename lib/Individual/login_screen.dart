@@ -196,44 +196,45 @@ class LoginScreen extends StatelessWidget {
       controller: _passwordController,
     );
   }
-
-  Widget _buildSignInButton(BuildContext context) {
-    return Container(
-      width: double.infinity, // Set width to match the parent
-      child: ElevatedButton(
-        onPressed: () {
-          final auth = FirebaseAuth.instance;
-          auth
-              .signInWithEmailAndPassword(
-                  email: _emailController.text,
-                  password: _passwordController.text)
-              .then((value) => {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const BottomNavigationIndividual()))
-                  });
-        },
-        style: ElevatedButton.styleFrom(
-          primary: const Color.fromARGB(255, 0, 0, 0), // Background color
-          onPrimary: Colors.white, // Text color
-          elevation: 3, // Shadow elevation
-          padding: const EdgeInsets.symmetric(
-              horizontal: 40, vertical: 16), // Button padding
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0), // Rounded corners
-          ),
-        ),
-        child: const Text(
-          'Sign In',
-          style: TextStyle(
-            fontSize: 18.0,
-            color: Color.fromARGB(255, 255, 255, 255),
-          ),
+Widget _buildSignInButton(BuildContext context) {
+  return Container(
+    width: double.infinity, // Set width to match the parent
+    child: ElevatedButton(
+      onPressed: () {
+        final auth = FirebaseAuth.instance;
+        auth
+            .signInWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text)
+            .then((value) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const BottomNavigationIndividual()),
+                (Route<dynamic> route) => false, // This line removes all the previous routes
+              );
+            });
+      },
+      style: ElevatedButton.styleFrom(
+        primary: const Color.fromARGB(255, 0, 0, 0), // Background color
+        onPrimary: Colors.white, // Text color
+        elevation: 3, // Shadow elevation
+        padding: const EdgeInsets.symmetric(
+            horizontal: 40, vertical: 16), // Button padding
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0), // Rounded corners
         ),
       ),
-    );
-  }
+      child: const Text(
+        'Sign In',
+        style: TextStyle(
+          fontSize: 18.0,
+          color: Color.fromARGB(255, 255, 255, 255),
+        ),
+      ),
+    ),
+  );
+}
 }
 
 class CustomShapeClipper extends CustomClipper<Path> {
