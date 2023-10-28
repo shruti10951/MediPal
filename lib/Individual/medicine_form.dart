@@ -341,7 +341,7 @@ class _MedicineFormState extends State<MedicineForm> {
                               String message = _dosageController.text;
                               AlarmModel alarmModel = AlarmModel(
                                   alarmId: alarmDocumentReference.id,
-                                  message: message,
+                                  skipReason: '',
                                   userId: auth.currentUser!.uid.toString(),
                                   time: dateTime.toString(),
                                   status: 'pending',
