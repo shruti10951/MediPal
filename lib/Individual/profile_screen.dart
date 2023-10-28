@@ -158,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildInfoRow('Name', user.name, Icons.person),
                     _buildInfoRow('Phone', user.phoneNo, Icons.phone),
                     _buildInfoRow('Email', user.email, Icons.email),
-                    if (isDependent)
+                    // if (isDependent)
                       Card(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16.0, vertical: 8.0),
