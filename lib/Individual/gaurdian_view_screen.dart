@@ -13,9 +13,7 @@ import 'package:medipal/models/MedicationModel.dart';
 
 import 'dashboard_screen.dart';
 
-
 class GaurdianView extends StatefulWidget {
-
   final dependentId;
 
   const GaurdianView({required this.dependentId});
@@ -26,17 +24,25 @@ class GaurdianView extends StatefulWidget {
 
 class _GaurdianViewState extends State<GaurdianView> {
   List<QueryDocumentSnapshot> filteredAlarms = [];
-  bool isExpanded = false;
+
+  // bool isExpanded = false;
 
   Future<List<List<QueryDocumentSnapshot>>?> fetchData() async {
-    final alarmQuery = firestore.collection('alarms').where('userId', isEqualTo: widget.dependentId).get();
-    final medicationQuery = firestore.collection('medications').where('userId', isEqualTo: widget.dependentId).get();
+    final alarmQuery = firestore
+        .collection('alarms')
+        .where('userId', isEqualTo: widget.dependentId)
+        .get();
+    final medicationQuery = firestore
+        .collection('medications')
+        .where('userId', isEqualTo: widget.dependentId)
+        .get();
 
     List<QueryDocumentSnapshot> alarmDocumentList = [];
     List<QueryDocumentSnapshot> medicationDocumentList = [];
 
     try {
-      final results = await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
+      final results =
+          await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
       final alarmQuerySnapshot = results[0] as QuerySnapshot;
       final medicationQuerySnapshot = results[1] as QuerySnapshot;
 
@@ -83,39 +89,52 @@ class _GaurdianViewState extends State<GaurdianView> {
         ],
       ),
       floatingActionButton: ExpandableFab(
-        distance: 112,
+        distance: 100,
         children: [
           ActionButton(
             onPressed: () => _showAction(context, 0),
-            icon: const Icon(Icons.format_size),
+            icon: const Icon(Icons.calendar_month_outlined),
           ),
           ActionButton(
             onPressed: () => _showAction(context, 1),
-            icon: const Icon(Icons.insert_photo),
+            icon: const Icon(Icons.pending_actions_rounded),
           ),
-          ActionButton(
-            onPressed: () => _showAction(context, 2),
-            icon: const Icon(Icons.videocam),
-          ),
+          // ActionButton(
+          //   onPressed: () => _showAction(context, 2),
+          //   icon: const Icon(Icons.videocam),
+          // ),
         ],
       ),
     );
   }
 
   void _showAction(BuildContext context, int index) {
-    showDialog<void>(
+    if (index == 0) {
+      // Open calendar here
+      // You can replace this with your own code to open a calendar screen
+      // For example, you can use Navigator to navigate to a calendar screen
+      _openCalendar(context);
+    } else if (index == 1) {
+      // Open Medicine Form screen here
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
+    }
+    // Add additional conditions for other action buttons if needed
+  }
+
+  void _openCalendar(BuildContext context) async {
+    final DateTime currentDate = DateTime.now();
+
+    final DateTime? selectedDate = await showDatePicker(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          //content: Text(_actionTitles[index]),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('CLOSE'),
-            ),
-          ],
-        );
-      },
+      initialDate: currentDate,
+      firstDate:
+      currentDate.subtract(const Duration(days: 365)), // One year ago
+      lastDate: currentDate.add(const Duration(days: 365)), // One year from now
     );
   }
 
@@ -174,12 +193,12 @@ class _GaurdianViewState extends State<GaurdianView> {
 
           String img;
 
-          if(type=='Pills'){
-            img= 'assets/images/pill_icon.png';
-          }else if(type=='Liquid'){
-            img= 'assets/images/liquid_icon.png';
-          }else{
-            img= 'assets/images/injection_icon.png';
+          if (type == 'Pills') {
+            img = 'assets/images/pill_icon.png';
+          } else if (type == 'Liquid') {
+            img = 'assets/images/liquid_icon.png';
+          } else {
+            img = 'assets/images/injection_icon.png';
           }
 
           DateTime dateTime = DateTime.parse(time);
