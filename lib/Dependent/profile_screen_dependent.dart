@@ -50,10 +50,8 @@ class _ProfileScreenState extends State<ProfileScreenDependent> {
         actions: [
           IconButton(
             icon: Icon(Icons.logout), // Icon for the logout button
-            onPressed: () {
-              // Handle the logout action here
-              // For example, you can sign out the user and navigate to the login screen
-              // Make sure you implement your own logout logic
+            onPressed: () { 
+              
             },
           ),
         ],
