@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import '../main.dart';
+import 'add_guardian.dart';
+
 class ProfileScreenDependent extends StatefulWidget {
   const ProfileScreenDependent({super.key});
 
@@ -110,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreenDependent> {
                 const SizedBox(width: 16),
                 OutlinedButton.icon(
                   onPressed: () {
-                    // Handle the "Edit" button press
+                    navigatorKey.currentState?.push(MaterialPageRoute(builder: (builder)=> AddGuardian()));
                   },
                   icon: const Icon(Icons.edit),
                   label: const Text('Edit'),

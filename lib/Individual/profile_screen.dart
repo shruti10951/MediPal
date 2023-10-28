@@ -3,8 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medipal/Dependent/add_guardian.dart';
+import 'package:medipal/main.dart';
 import 'package:medipal/models/UserModel.dart';
-import 'package:medipal/Individual/dependent_details_screen.dart'; // Replace with your screen for Dependent details
+import 'package:medipal/Individual/dependent_details_screen.dart';
+import 'package:qr_flutter/qr_flutter.dart'; // Replace with your screen for Dependent details
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -149,10 +152,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Replace the GestureDetector with an Image.asset widget
-            Image.asset(
-              'assets/images/medipal.png',
-              width: 160, // Adjust the width as needed
-              height: 160, // Adjust the height as needed
+            // Image.asset(
+            //   'assets/images/medipal.png',
+            //   width: 160, // Adjust the width as needed
+            //   height: 160, // Adjust the height as needed
+            // ),
+            QrImageView(
+              data: userId ?? 'error',
+              version: QrVersions.auto,
+              size: 200,
+              gapless: false,
             ),
             const SizedBox(height: 16),
             FutureBuilder<UserModel?>(
@@ -223,7 +232,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    _openGuardianDialog();
+                    // _openGuardianDialog();
+                    Visibility(
+                      child: QrImageView(
+                        data: userId ?? 'error',
+                        version: QrVersions.auto,
+                        size: 320,
+                        gapless: false,
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -236,6 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 OutlinedButton.icon(
                   onPressed: () {
                     // Handle the "Edit" button press
+                    // navigatorKey.currentState?.push(MaterialPageRoute(builder: (builder)=> AddGuardian()));
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(

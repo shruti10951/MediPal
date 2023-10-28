@@ -128,8 +128,6 @@ class _InventoryScreenDependentState extends State<InventoryScreenDependent> {
                     };
 
                     firestore.collection('medications').doc(id).update(medicine).then((value) => print('data updated'));
-                    
-
                     Navigator.pop(context);
                   },
                   child: Text('Save'),
