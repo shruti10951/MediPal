@@ -5,42 +5,44 @@ import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/main.dart';
 import 'package:medipal/user_registration/forgot_password_screen.dart';
 
-//DO SOMETHING ABOUT THIS
-//DON'T PUT USERNAME INSTEAD MAKE IT EMAIL
-//THAT SCREEN STILL GOES UP
 class LoginScreen extends StatelessWidget {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  LoginScreen({super.key});
+  LoginScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(234, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(234, 255, 255, 255),
       body: Stack(
         children: [
-          // Background Image with Curved Middle
+          // Background Gradient with Curved Middle
           Positioned.fill(
             child: ClipPath(
-              clipper: CustomShapeClipper(), // Custom clipper for curved shape
-              child: Image.asset(
-                'assets/images/welcome_background.png', // Replace with your image path
-                width: 850,
-                height: 900,
-                fit: BoxFit.cover,
+              clipper: CustomShapeClipper(),
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(214, 152, 191, 255),
+                  Color.fromARGB(255, 223, 238, 255),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
               ),
             ),
           ),
-
           // Back Button
           Positioned(
             top: 40.0,
             left: 17.0,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white
-                    .withOpacity(0.3), // Transparent white background
-                shape: BoxShape.circle, // Circular shape
+                color: Colors.white.withOpacity(0.3),
+                shape: BoxShape.circle,
               ),
               child: IconButton(
                 icon: const Icon(
@@ -48,24 +50,20 @@ class LoginScreen extends StatelessWidget {
                   color: Color.fromARGB(255, 0, 0, 0),
                 ),
                 onPressed: () {
-                  Navigator.of(context)
-                      .pop(); // Navigate back to the previous screen
+                  Navigator.of(context).pop();
                 },
               ),
             ),
           ),
           Positioned(
-             top: 40.0,
-            left: 17.0,
+            top: 150.0,
+            left: 125.0,
             child: SizedBox(
-              width: 350.0, // Set the width of the circular image
-              height: 350.0, // Set the height of the circular image
-              child: Image.asset(
-                'assets/images/medipalcircular.png', // Replace with your image path
-              ),
+              width: 140.0,
+              height: 140.0,
+              child: Image.asset('assets/images/medipal.png'),
             ),
           ),
-
           // Welcome Back Text
           Positioned(
             top: MediaQuery.of(context).size.height * 0.35,
@@ -78,9 +76,9 @@ class LoginScreen extends StatelessWidget {
                     'Welcome Back',
                     style: TextStyle(
                       fontSize: 22.0,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontWeight: FontWeight.bold, // Make the text bold
-                      fontStyle: FontStyle.italic, // Make the text italic
+                      color: Color.fromARGB(255, 41, 45, 92),
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                   const SizedBox(height: 8.0),
@@ -88,54 +86,42 @@ class LoginScreen extends StatelessWidget {
                     'Medipal - A medicine reminder app',
                     style: TextStyle(
                       fontSize: 14.0,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontWeight: FontWeight.bold, // Make the text bold
+                      color: Color.fromARGB(255, 41, 45, 92),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 32.0),
                   Container(
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 255, 255, 255)
-                          .withOpacity(0.6), // Light blue with opacity
+                          .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildInputField(Icons.person, 'Username'),
+                    child: _buildInputField(Icons.mark_email_read_outlined, 'Email Address'),
                   ),
                   const SizedBox(height: 16.0),
                   Container(
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 255, 255, 255)
-                          .withOpacity(0.6), // Light blue with opacity
+                          .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildPasswordField(Icons.lock, 'Password'),
+                    child: _buildPasswordField(Icons.password_outlined, 'Password'),
                   ),
                   const SizedBox(height: 8.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: false, // Change the value as needed
-                            onChanged: (bool? value) {
-                              // Implement remember me logic
-                            },
-                          ),
-                          const Text(
-                            'Remember Me',
-                            style:
-                                TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
-                          ),
-                        ],
-                      ),
+                     SizedBox(width: 10,),
                       TextButton(
                         onPressed: () {
-                          navigatorKey.currentState?.push(MaterialPageRoute(builder: (context)=> ForgetPasswordPage()));
+                          navigatorKey.currentState?.push(MaterialPageRoute(
+                              builder: (context) => ForgetPasswordPage()));
                         },
                         child: const Text(
                           'Forgot Password?',
-                          style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 41, 45, 92)),
                         ),
                       ),
                     ],
@@ -155,13 +141,13 @@ class LoginScreen extends StatelessWidget {
 
   Widget _buildInputField(IconData icon, String hintText) {
     return TextField(
-      style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+      style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
         prefixIcon: Icon(
           icon,
-          color: const Color.fromARGB(255, 0, 0, 0),
+          color: Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
       ),
@@ -174,82 +160,74 @@ class LoginScreen extends StatelessWidget {
 
     return TextField(
       obscureText: !_isPasswordVisible,
-      style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+      style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
         prefixIcon: Icon(
           icon,
-          color: const Color.fromARGB(255, 0, 0, 0),
+          color: const Color.fromARGB(218, 41, 45, 92),
         ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: const Color.fromARGB(255, 0, 0, 0),
-          ),
-          onPressed: () {
-            _isPasswordVisible = !_isPasswordVisible;
-          },
-        ),
+        
         border: InputBorder.none,
       ),
       controller: _passwordController,
     );
   }
-Widget _buildSignInButton(BuildContext context) {
-  return Container(
-    width: double.infinity, // Set width to match the parent
-    child: ElevatedButton(
-      onPressed: () {
-        final auth = FirebaseAuth.instance;
-        auth
-            .signInWithEmailAndPassword(
-                email: _emailController.text,
-                password: _passwordController.text)
-            .then((value) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const BottomNavigationIndividual()),
-                (Route<dynamic> route) => false, // This line removes all the previous routes
-              );
-            });
-      },
-      style: ElevatedButton.styleFrom(
-        primary: const Color.fromARGB(255, 0, 0, 0), // Background color
-        onPrimary: Colors.white, // Text color
-        elevation: 3, // Shadow elevation
-        padding: const EdgeInsets.symmetric(
-            horizontal: 40, vertical: 16), // Button padding
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0), // Rounded corners
+
+  Widget _buildSignInButton(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          final auth = FirebaseAuth.instance;
+          auth
+              .signInWithEmailAndPassword(
+                  email: _emailController.text,
+                  password: _passwordController.text)
+              .then((value) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const BottomNavigationIndividual()),
+              (Route<dynamic> route) => false,
+            );
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          primary: const Color.fromARGB(255, 41, 45, 92),
+          onPrimary: Colors.white,
+          elevation: 3,
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+        ),
+        child: const Text(
+          'Sign In',
+          style: TextStyle(
+            fontSize: 18.0,
+            color: Color.fromARGB(255, 255, 255, 255),
+          ),
         ),
       ),
-      child: const Text(
-        'Sign In',
-        style: TextStyle(
-          fontSize: 18.0,
-          color: Color.fromARGB(255, 255, 255, 255),
-        ),
-      ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class CustomShapeClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    path.lineTo(0, 0); // Start from the top-left corner
-    path.lineTo(size.width, 0); // Move to the top-right corner
-    path.lineTo(size.width, size.height * 0.7); // Curve starting point
+    path.lineTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height * 0.7);
     path.quadraticBezierTo(
       size.width / 2,
       size.height * 0.8,
       0,
       size.height * 0.7,
-    ); // Curve
+    );
     path.close();
     return path;
   }
