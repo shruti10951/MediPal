@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ class _AddGuardianState extends State<AddGuardian> {
 
   bool dependentAdded = false;
   bool isProcessingScan = false;
+  bool isScanning = false;
 
   @override
   void initState() {
@@ -32,6 +32,12 @@ class _AddGuardianState extends State<AddGuardian> {
     _mobileScannerController?.dispose();
 
     super.dispose();
+  }
+
+  void startScanning() {
+    setState(() {
+      isScanning = true;
+    });
   }
 
   void onDetect(BarcodeCapture capture) async {
@@ -90,41 +96,48 @@ class _AddGuardianState extends State<AddGuardian> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Scanner to become a dependent'),
+        title: const Text('QR Scanner For Dependent'),
       ),
-      body: Column(
-        children: <Widget>[
-          
-          Expanded(
-              child: Container(
-            width: 300, // Set the width as desired
-            height: 100,
-            color: Color.fromARGB(255, 255, 255, 255), // Set the height as desired
-            alignment: Alignment.center, // Center the content
-            child: Padding(
-              padding: const EdgeInsets.only(left: 40.0),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                child: MobileScanner(
-                  fit: BoxFit.contain,
-                  controller: _mobileScannerController,
-                  onDetect: onDetect,
+      body: Stack(
+        children: [
+          Container(
+            color: Color.fromARGB(156, 0, 0, 0),
+          ),
+          if (isScanning)
+            MobileScanner(
+              controller: _mobileScannerController,
+              onDetect: onDetect,
+            ),
+          Center(
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+            ),
+          ),
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  'Scan QR Code to be a Dependent',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-          )
-          ),
-          Container(
-            child: const Text(
-              'Scan the QR code to become a dependent',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            ],
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: startScanning,
+        
+        child: const Icon(Icons.camera),
       ),
     );
   }

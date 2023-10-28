@@ -16,7 +16,14 @@ class TabChange extends StatelessWidget {
       length: _tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Top Navigation Demo'),
+          toolbarHeight: 30,
+          automaticallyImplyLeading: true, // Show back button
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: const Color.fromARGB(255, 0, 0, 0)), // Customize back button
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
           bottom: TabBar(
             labelColor: Color.fromRGBO(41, 45, 92, 1.0),
             tabs: [

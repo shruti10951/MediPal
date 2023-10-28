@@ -326,6 +326,7 @@ class _MedicineFormState extends State<MedicineForm> {
                       date!.isBefore(_endDate!.add(Duration(days: 1)));
                       date = date.add(Duration(days: 1))) {
                         for (var key in medication.schedule.keys) {
+                          
                           final value = medication.schedule[key];
                           if (value != null && value.isNotEmpty) {
                             final hrMin = value.split(' ');
@@ -350,6 +351,7 @@ class _MedicineFormState extends State<MedicineForm> {
                               await alarmDocumentReference.set(alarm);
                             }
                           }
+                         
                         }
                       }
 
@@ -367,3 +369,26 @@ class _MedicineFormState extends State<MedicineForm> {
     );
   }
 }
+ Widget _buildLoadingIndicator() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color.fromARGB(255, 71, 78, 84),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            'Loading...',
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
