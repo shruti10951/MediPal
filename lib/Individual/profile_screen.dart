@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/Individual/dependent_details_screen.dart'; // Replace with your screen for Dependent details
 
+
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
-final userId = auth.currentUser?.uid;
+//final userId = auth.currentUser?.uid;
 
 Future<UserModel?> fetchData() async {
-  final userInfoQuery = firestore.collection('users').doc(userId).get();
+  final userInfoQuery = firestore.collection('users').doc(auth.currentUser?.uid).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -39,23 +42,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   XFile? _image;
 
   bool isDependent = false;
+  String guardianCode = '';
 
   @override
   void initState() {
     super.initState();
-    _loadDependentStatus();
+    fetchData();
   }
 
-  _loadDependentStatus() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // setState(() {
-    //   isDependent = prefs.getBool('isDependent') ?? false;
-    // });
-  }
-
-  UserModel? userData;
+ UserModel? userData;
 
   void _openGuardianDialog() {
+    String code = userId??''; // Use the user's ID as the code
+    TextEditingController codeController = TextEditingController(text: code);
+    
     showDialog(
       context: context,
       builder: (context) {
@@ -65,10 +65,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                controller:
+                    codeController, // Use a controller to display and edit the code
                 decoration: const InputDecoration(labelText: 'Code'),
                 onChanged: (value) {
                   setState(() {
-                    // Handle code input
+                    guardianCode = value;
                   });
                 },
               ),
@@ -76,13 +78,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () async {
-                // final prefs = await SharedPreferences.getInstance();
-                // prefs.setBool('isDependent', true);
-                // setState(() {
-                //   isDependent = true;
-                // });
-                Navigator.of(context).pop();
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: codeController.text));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Code copied to clipboard')),
+                );
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -118,16 +118,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> fetchUserData() async {
-    final userDoc = await firestore.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      final userData = UserModel.fromDocumentSnapshot(userDoc);
-      setState(() {
-        this.userData = userData;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,7 +128,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Replace the GestureDetector with an Image.asset widget
             Image.asset(
               'assets/images/medipal.png',
               width: 160, // Adjust the width as needed

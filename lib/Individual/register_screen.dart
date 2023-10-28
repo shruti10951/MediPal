@@ -69,8 +69,7 @@ class RegisterScreen extends StatelessWidget {
                     'assets/images/medipalcircular.png', // Replace with your image path
                   ),
                 ),
-                // const SizedBox(
-                //     height: 8.0), // Add some spacing between the image and text
+                
                 const Text(
                   'Register',
                   style: TextStyle(

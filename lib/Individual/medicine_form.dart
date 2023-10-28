@@ -31,9 +31,9 @@ class _MedicineFormState extends State<MedicineForm> {
   String? _selectedDosageType; // Stores the selected dosage type
 
   CollectionReference medicationCollectionRef =
-  FirebaseFirestore.instance.collection('medications');
+      FirebaseFirestore.instance.collection('medications');
   CollectionReference alarmCollectionRef =
-  FirebaseFirestore.instance.collection('alarms');
+      FirebaseFirestore.instance.collection('alarms');
   FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
@@ -284,7 +284,7 @@ class _MedicineFormState extends State<MedicineForm> {
                   ElevatedButton(
                     onPressed: () async {
                       DocumentReference medicationDocumentReference =
-                      medicationCollectionRef.doc();
+                          medicationCollectionRef.doc();
 
                       MedicationModel medication = MedicationModel(
                         medicationId: medicationDocumentReference.id,
@@ -304,9 +304,9 @@ class _MedicineFormState extends State<MedicineForm> {
                         },
                         inventory: {
                           'quantity':
-                          int.tryParse(_quantityController.text) ?? 0,
+                              int.tryParse(_quantityController.text) ?? 0,
                           'reorderLevel':
-                          int.tryParse(_reorderLevelController.text) ?? 0,
+                              int.tryParse(_reorderLevelController.text) ?? 0,
                         },
                         startDate: _startDate != null
                             ? dateFormat.format(_startDate!)
@@ -323,8 +323,8 @@ class _MedicineFormState extends State<MedicineForm> {
                       await medicationDocumentReference.set(medicationModel);
 
                       for (var date = _startDate;
-                      date!.isBefore(_endDate!.add(Duration(days: 1)));
-                      date = date.add(Duration(days: 1))) {
+                          date!.isBefore(_endDate!.add(Duration(days: 1)));
+                          date = date.add(Duration(days: 1))) {
                         for (var key in medication.schedule.keys) {
                           final value = medication.schedule[key];
                           if (value != null && value.isNotEmpty) {
@@ -336,11 +336,12 @@ class _MedicineFormState extends State<MedicineForm> {
                               DateTime dateTime = DateTime(
                                   date.year, date.month, date.day, hr, min);
                               DocumentReference alarmDocumentReference =
-                              alarmCollectionRef.doc();
+                                  alarmCollectionRef.doc();
                               String medicineName = _nameController.text;
+                              String message = _dosageController.text;
                               AlarmModel alarmModel = AlarmModel(
                                   alarmId: alarmDocumentReference.id,
-                                  skipReason: ' ',
+                                  message: message,
                                   userId: auth.currentUser!.uid.toString(),
                                   time: dateTime.toString(),
                                   status: 'pending',
@@ -353,8 +354,14 @@ class _MedicineFormState extends State<MedicineForm> {
                         }
                       }
 
-                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BottomNavigationIndividual()),
+                      );
 
+                      // Handle the form data as needed (e.g., save to Firestore)
+                      // print('Medication Data: $medicationModel');
                     },
                     child: const Text('Submit'),
                   ),
