@@ -41,7 +41,7 @@ class UserSelection extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LoginPage(),
+                    builder: (context) => DependentLogin(),
                   ),
                 );
               },

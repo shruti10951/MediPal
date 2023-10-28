@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medipal/Dependent/tab_change.dart';
 
 class DependentDetailsScreen extends StatefulWidget {
   @override
@@ -11,12 +10,12 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
     {
       'title': 'Dependent Name 1',
       'subtitle': 'Phone: 123-456-7890',
-      'imageUrl': 'https://i.pinimg.com/564x/fe/d3/53/fed353b15194e7dbf29d402ee4ebaa0f.jpg',
+      'imageUrl': 'https://example.com/dependent_profile_1.jpg',
     },
     {
       'title': 'Dependent Name 2',
       'subtitle': 'Phone: 123-456-7891',
-      'imageUrl': 'https://i.pinimg.com/564x/b5/9e/42/b59e4297dbe4f53e4b158ff3d66b8407.jpg',
+      'imageUrl': 'https://example.com/dependent_profile_2.jpg',
     },
     // Add more dependent data as needed
   ];
@@ -44,9 +43,9 @@ Widget _buildDependentCard(BuildContext context, Map<String, dynamic> data) {
       // Navigate to ---- when the card is tapped
       //TO DO ITS ROUTE go to main.dart file and in that in material 
       //dart there is route class in it in that do the futher changes
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        TabChange() as Route<Object?>,
+        '/dependent_dashboard',
          //arguments: data, // You can pass data to the DependentDashboard screen if needed // You can pass data to the DependentDashboard screen if needed
       );
     },

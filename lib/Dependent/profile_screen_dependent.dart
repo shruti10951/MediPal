@@ -1,104 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:medipal/models/UserModel.dart';
-
-FirebaseAuth auth = FirebaseAuth.instance;
-FirebaseFirestore firestore = FirebaseFirestore.instance;
-final userId = auth.currentUser?.uid;
-
-Future<UserModel?> fetchData() async {
-  final userInfoQuery = firestore.collection('users').doc(userId).get();
-
-  try {
-    final userDoc = await userInfoQuery;
-    if (userDoc.exists) {
-      final userData = UserModel.fromDocumentSnapshot(userDoc);
-      return userData;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    print('Error retrieving document: $error');
-    return null;
-  }
-}
 
 class ProfileScreenDependent extends StatefulWidget {
-  const ProfileScreenDependent({Key? key}) : super(key: key);
+  const ProfileScreenDependent({super.key});
 
   @override
-  _ProfileScreenDependentState createState() => _ProfileScreenDependentState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
+class _ProfileScreenState extends State<ProfileScreenDependent> {
   ImagePicker _imagePicker = ImagePicker();
   XFile? _image;
 
-  // Variables to store user profile data
-  String name = '';
-  String phone = '';
+  bool isDependent = false; // Track Dependent status
 
-  // Guardian code input controller
-  final guardianCodeController = TextEditingController();
-  
   @override
   void initState() {
     super.initState();
-    // Fetch and set the user's profile data
-    fetchUserProfileData();
   }
 
-  Future<void> fetchUserProfileData() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser != null) {
-      // Assuming the 'user' document is stored using the user's UID as the document ID
-      final userDocument = await FirebaseFirestore.instance.collection('user').doc(currentUser.uid).get();
-      if (userDocument.exists) {
-        final userData = userDocument.data() as Map<String, dynamic>;
-        setState(() {
-          name = userData['name'] ?? '';
-          phone = userData['phoneNo'] ?? '';
-        });
-      }
-    }
-  }
-
-  // Helper function to build user profile info rows
-  Widget _buildUserInfoRow(String title, String subtitle, IconData iconData) {
+  _buildInfoRow(String title, String subtitle, IconData iconData) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, 5),
-            color: const Color.fromARGB(255, 255, 255, 255).withOpacity(.2),
-            spreadRadius: 2,
-            blurRadius: 10,
-          ),
-        ],
-      ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+                offset: const Offset(0, 5),
+                color: const Color.fromARGB(255, 255, 255, 255).withOpacity(.2),
+                spreadRadius: 2,
+                blurRadius: 10)
+          ]),
       child: ListTile(
-        leading: Icon(iconData),
         title: Text(title),
         subtitle: Text(subtitle),
+        leading: Icon(iconData),
+        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
+        tileColor: Colors.white,
       ),
     );
-  }
-
-  Future<void> fetchUserData() async {
-    final userDoc = await firestore.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      final userData = UserModel.fromDocumentSnapshot(userDoc);
-      setState(() {
-        this.userData = userData;
-      });
-    }
   }
 
   @override
@@ -106,32 +47,19 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-                    // Handle the "Edit" button press
-                  },
-          ),
-        ],
-        title: const Text('Profile (Dependent)'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Replace the GestureDetector with an Image.asset widget
-            Image.asset(
-              'assets/images/medipal.png',
-              width: 160, // Adjust the width as needed
-              height: 160, // Adjust the height as needed
             GestureDetector(
               onTap: _selectImage,
               child: Stack(
                 children: [
                   CircleAvatar(
                     radius: 80,
-                    backgroundImage: _image != null ? FileImage(File(_image!.path)) : null,
+                    backgroundImage:
+                        _image != null ? FileImage(File(_image!.path)) : null,
                     child: _image == null
                         ? const Icon(
                             Icons.add,
@@ -161,9 +89,9 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  // Display user profile data
-                  _buildUserInfoRow('Name', name, Icons.person),
-                  _buildUserInfoRow('Phone', phone, Icons.phone),
+                  _buildInfoRow('Name', 'John Doe', Icons.person),
+                  _buildInfoRow('Phone', '123-456-7890', Icons.phone),
+                  _buildInfoRow('Email', 'john.doe@example.com', Icons.email),
                 ],
               ),
             ),
@@ -176,11 +104,6 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                   onPressed: () {
                     // Handle the "Edit" button press
                   },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
                   icon: const Icon(Icons.edit),
                   label: const Text('Edit'),
                 ),
@@ -193,18 +116,12 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
   }
 
   void _selectImage() async {
-    final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _image = pickedFile;
       });
     }
-  }
-
-  @override
-  void dispose() {
-    // Dispose of the guardianCodeController to free up resources
-    guardianCodeController.dispose();
-    super.dispose();
   }
 }

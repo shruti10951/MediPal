@@ -1,7 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/main.dart';
-import 'package:medipal/Individual/alarm_screen.dart';
+
+import 'alarm_screen.dart';
 
 
 class NotificationService {
@@ -43,8 +44,10 @@ class NotificationService {
     final payload = receivedNotification.payload ?? {};
     var alarmId= payload['alarmId'];
     if (payload["open"] == "true") {
-      navigatorKey.currentState
-          ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: alarmId ?? '')));
+      if(alarmId!=null){
+        navigatorKey.currentState
+            ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: alarmId)));
+      }
     }
   }
 

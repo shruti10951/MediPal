@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AlarmModel {
   final String alarmId;
-  final String message;
+  final String skipReason;
   final String userId;
   final String time;
   final String status;
@@ -10,17 +10,17 @@ class AlarmModel {
 
   AlarmModel(
       {required this.alarmId,
-      required this.message,
-      required this.userId,
-      required this.time,
-      required this.status,
-      required this.medicationId});
+        required this.skipReason,
+        required this.userId,
+        required this.time,
+        required this.status,
+        required this.medicationId});
 
   factory AlarmModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return AlarmModel(
       alarmId: data['alarmId'],
-      message: data['message'],
+      skipReason: data['skipReason'],
       userId: data['userId'],
       time: data['time'],
       status: data['status'],
@@ -31,7 +31,7 @@ class AlarmModel {
   Map<String, dynamic> toMap() {
     return {
       'alarmId': alarmId,
-      'message': message,
+      'skipReason': skipReason,
       'userId': userId,
       'time': time,
       'status': status,
