@@ -76,7 +76,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Liquid',
         child: Row(
           children: [
-            Icon(Icons.liquor),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/liquid_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Liquid'),
           ],
@@ -86,7 +91,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Pills',
         child: Row(
           children: [
-            Icon(Icons.local_hospital),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/pill_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Pills'),
           ],
@@ -96,7 +106,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Injection',
         child: Row(
           children: [
-            Icon(Icons.usb),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/injection_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Injection'),
           ],
@@ -363,10 +378,11 @@ class _MedicineFormState extends State<MedicineForm> {
                         textColor: Colors.white,
                       );
 
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                             builder: (context) => BottomNavigationIndividual()),
+                            (Route<dynamic> route) => false,
                       );
 
                       // Handle the form data as needed (e.g., save to Firestore)
