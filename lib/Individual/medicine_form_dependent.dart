@@ -6,16 +6,18 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
-class MedicineForm extends StatefulWidget {
-  const MedicineForm({super.key});
+class MedicineFormDependent extends StatefulWidget {
+
+  final dependentId;
+
+  MedicineFormDependent({required this.dependentId});
 
   @override
-  _MedicineFormState createState() => _MedicineFormState();
+  _MedicineFormDependentState createState() => _MedicineFormDependentState();
 }
 
-class _MedicineFormState extends State<MedicineForm> {
+class _MedicineFormDependentState extends State<MedicineFormDependent> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dosageController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -32,9 +34,9 @@ class _MedicineFormState extends State<MedicineForm> {
   String? _selectedDosageType; // Stores the selected dosage type
 
   CollectionReference medicationCollectionRef =
-      FirebaseFirestore.instance.collection('medications');
+  FirebaseFirestore.instance.collection('medications');
   CollectionReference alarmCollectionRef =
-      FirebaseFirestore.instance.collection('alarms');
+  FirebaseFirestore.instance.collection('alarms');
   FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
@@ -285,7 +287,7 @@ class _MedicineFormState extends State<MedicineForm> {
                   ElevatedButton(
                     onPressed: () async {
                       DocumentReference medicationDocumentReference =
-                          medicationCollectionRef.doc();
+                      medicationCollectionRef.doc();
 
                       MedicationModel medication = MedicationModel(
                         medicationId: medicationDocumentReference.id,
@@ -305,9 +307,9 @@ class _MedicineFormState extends State<MedicineForm> {
                         },
                         inventory: {
                           'quantity':
-                              int.tryParse(_quantityController.text) ?? 0,
+                          int.tryParse(_quantityController.text) ?? 0,
                           'reorderLevel':
-                              int.tryParse(_reorderLevelController.text) ?? 0,
+                          int.tryParse(_reorderLevelController.text) ?? 0,
                         },
                         startDate: _startDate != null
                             ? dateFormat.format(_startDate!)
@@ -315,7 +317,7 @@ class _MedicineFormState extends State<MedicineForm> {
                         endDate: _endDate != null
                             ? dateFormat.format(_endDate!)
                             : "",
-                        userId: auth.currentUser!.uid.toString(),
+                        userId: widget.dependentId,
                         description: _descriptionController.text,
                       );
 
@@ -324,8 +326,8 @@ class _MedicineFormState extends State<MedicineForm> {
                       await medicationDocumentReference.set(medicationModel);
 
                       for (var date = _startDate;
-                          date!.isBefore(_endDate!.add(Duration(days: 1)));
-                          date = date.add(Duration(days: 1))) {
+                      date!.isBefore(_endDate!.add(Duration(days: 1)));
+                      date = date.add(Duration(days: 1))) {
                         for (var key in medication.schedule.keys) {
                           final value = medication.schedule[key];
                           if (value != null && value.isNotEmpty) {
@@ -337,13 +339,13 @@ class _MedicineFormState extends State<MedicineForm> {
                               DateTime dateTime = DateTime(
                                   date.year, date.month, date.day, hr, min);
                               DocumentReference alarmDocumentReference =
-                                  alarmCollectionRef.doc();
+                              alarmCollectionRef.doc();
                               String medicineName = _nameController.text;
                               String message = _dosageController.text;
                               AlarmModel alarmModel = AlarmModel(
                                   alarmId: alarmDocumentReference.id,
                                   skipReason: '',
-                                  userId: auth.currentUser!.uid.toString(),
+                                  userId: widget.dependentId,
                                   time: dateTime.toString(),
                                   status: 'pending',
                                   medicationId: medicationDocumentReference.id);
@@ -354,20 +356,8 @@ class _MedicineFormState extends State<MedicineForm> {
                           }
                         }
                       }
-                      // Show the toast message
-                      Fluttertoast.showToast(
-                        msg: 'Medicine added successfully!',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white,
-                      );
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BottomNavigationIndividual()),
-                      );
+                      Navigator.pop(context);
 
                       // Handle the form data as needed (e.g., save to Firestore)
                       // print('Medication Data: $medicationModel');
@@ -382,28 +372,4 @@ class _MedicineFormState extends State<MedicineForm> {
       ),
     );
   }
-}
-
-Widget _buildLoadingIndicator() {
-  return const Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(
-            Color.fromARGB(255, 71, 78, 84),
-          ),
-        ),
-        SizedBox(height: 16.0),
-        Text(
-          'Loading...',
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    ),
-  );
 }

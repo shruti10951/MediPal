@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/add_guardian.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
-import 'package:medipal/Dependent/gaurdian_view_screen.dart';
+import 'package:medipal/Individual/gaurdian_view_screen.dart';
 import 'package:medipal/Dependent/tab_change.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
@@ -78,10 +78,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       title: 'Flutter Demo',
-      routes: {
-        '/dependent_dashboard': (context) => TabChange(),
-        // Define other routes as needed
-      },
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           backgroundColor:
