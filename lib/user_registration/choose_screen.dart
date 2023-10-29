@@ -66,12 +66,14 @@ class _MyCardState extends State<MyCard> {
     );
   }
 }
-
 class ChooseScreen extends StatelessWidget {
   const ChooseScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the card width based on screen width
+    double cardWidth = MediaQuery.of(context).size.width * 0.35;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -114,45 +116,43 @@ class ChooseScreen extends StatelessWidget {
           ),
           // Horizontal Cards
           Positioned(
-            top:360,
-            left:10,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  MyCard(
-                    title: 'Individual',
-                    imagePath:
-                        'assets/images/individual.png', // Path to individual image
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const WelcomeScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(width: 30,),
-                  MyCard(
-                    title: 'Dependent',
-                    imagePath:
-                        'assets/images/dependent.png', // Path to dependent image
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WelcomeScreenDependent(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+            top: MediaQuery.of(context).size.height * 0.5,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    MyCard(
+                      title: 'Individual',
+                      imagePath: 'assets/images/individual.png',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WelcomeScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    MyCard(
+                      title: 'Dependent',
+                      imagePath: 'assets/images/dependent.png',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WelcomeScreenDependent(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           ),
         ],
       ),

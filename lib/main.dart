@@ -98,8 +98,8 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home:
-       const BottomNavigationDependent(),
-    //  const MyHomePage(),
+      //  const BottomNavigationDependent(),
+     const MyHomePage(),
       //AlarmScreen(),
     );
   }
