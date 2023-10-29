@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
@@ -371,6 +372,15 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                           }
                         }
                       }
+                       // Show the toast message
+                      Fluttertoast.showToast(
+                        msg: 'Medicine added successfully!',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                      );
+
 
                       Navigator.pop(context);
 
@@ -381,7 +391,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                   ),
                 ],
               ),
-            ),
+            ), 
           ),
         ),
       ),
