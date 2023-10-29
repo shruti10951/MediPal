@@ -78,15 +78,15 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
+              icon: Icon(Icons.dashboard_customize),
               label: 'Dashboard',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.inventory),
+              icon: Icon(Icons.inventory_rounded),
               label: 'Inventory',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.person_2_rounded),
               label: 'Profile',
             ),
           ],

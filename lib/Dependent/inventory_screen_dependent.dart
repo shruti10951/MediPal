@@ -250,7 +250,7 @@ class _InventoryScreenDependentState extends State<InventoryScreenDependent> {
           final quantity = medication['inventory']['quantity'];
 
           String img;
-
+ 
           if(type=='Pills'){
             img= 'assets/images/pill_icon.png';
           }else if(type=='Liquid'){

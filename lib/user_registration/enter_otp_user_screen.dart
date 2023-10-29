@@ -46,14 +46,13 @@ class OTPForUserPage extends StatelessWidget {
 
                   User? user = FirebaseAuth.instance.currentUser;
 
-                  //DO SOMETHING ABOUT THIS!!!
-                  //BACK BUTTON
                   await user?.linkWithCredential(credential).then((value) async {
                     Map<String, dynamic> userMap = userModel.toMap();
                     await collectionReference.doc(auth.currentUser?.uid).set(userMap).then((value) => {
-                      Navigator.pushReplacement(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()),
+                         (Route<dynamic> route) => false,
                       ),
                     });
                   });

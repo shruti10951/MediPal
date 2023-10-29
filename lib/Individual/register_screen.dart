@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 
-
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
 
@@ -19,28 +18,29 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image with Curved Middle
-          Positioned(
-            child: ClipPath(
-              clipper: WaveClipper(), // Custom clipper for curved shape
-              child: Image.asset(
-                'assets/images/welcome_background.png', // Replace with your image path
-                height: 800.0,
-                width: 500.0,
-                fit: BoxFit.cover,
+          // Background Gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.fromARGB(214, 152, 191, 255),
+                  Color.fromARGB(255, 223, 238, 255),
+                  Color.fromARGB(242, 152, 191, 255),
+                ], // Customize your gradient colors
               ),
             ),
           ),
 
-         // Back Button
+          // Back Button
           Positioned(
             top: 40.0,
             left: 17.0,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white
-                    .withOpacity(0.3), // Transparent white background
-                shape: BoxShape.circle, // Circular shape
+                color: Colors.white.withOpacity(0.3),
+                shape: BoxShape.circle,
               ),
               child: IconButton(
                 icon: const Icon(
@@ -48,33 +48,41 @@ class RegisterScreen extends StatelessWidget {
                   color: Color.fromARGB(255, 0, 0, 0),
                 ),
                 onPressed: () {
-                  Navigator.of(context)
-                      .pop(); // Navigate back to the previous screen
+                  Navigator.of(context).pop();
                 },
               ),
             ),
           ),
 
-          // Register Text and Circular Medipal Image
+          // Circular Medipal Image and Register Text
           Positioned(
-            top: 0.0, // Align to the top
+            top: 80.0,
             left: 0.0,
             right: 0.0,
             child: Column(
               children: [
                 SizedBox(
-                  width: 350.0, // Set the width of the circular image
-                  height: 350.0, // Set the height of the circular image
+                  width: 140.0,
+                  height: 140.0,
                   child: Image.asset(
-                    'assets/images/medipalcircular.png', // Replace with your image path
+                    'assets/images/medipal.png',
                   ),
                 ),
-                
                 const Text(
-                  'Register',
+                  "MEDIPAL",
                   style: TextStyle(
                     fontSize: 24.0,
-                    color: Color.fromARGB(255, 0, 0, 0),
+                    color: Color.fromARGB(255, 41, 45, 92),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 25,),
+                const Text(
+                  "Registeration form",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontStyle: FontStyle.italic,
+                    color: Color.fromARGB(255, 41, 45, 92),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -82,45 +90,47 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
 
-          // Registration Form (Positioned at the bottom)
+          // Registration Form
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.35,
+            top: MediaQuery.of(context).size.height * 0.38,
             left: 16.0,
             right: 16.0,
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildInputField(Icons.person, 'Name', nameController),
+                  _buildInputField(
+                      Icons.person_2_rounded, 'Name', nameController),
                   const SizedBox(height: 16.0),
-                  _buildInputField(Icons.email, 'Email', emailController),
+                  _buildInputField(
+                      Icons.alternate_email_outlined, 'Email', emailController),
                   const SizedBox(height: 16.0),
-                  _buildInputField(Icons.phone, 'Phone Number', phoneController),
+                  _buildNumericInputField(
+                      Icons.phone_in_talk, 'Phone Number', phoneController),
                   const SizedBox(height: 16.0),
-                  _buildPasswordField(Icons.lock, 'Password', passwordController),
-                  const SizedBox(height: 24.0),
+                  _buildPasswordField(
+                      Icons.password_outlined, 'Password', passwordController),
+                  const SizedBox(height: 130.0),
                   ElevatedButton(
                     onPressed: () async {
-                      // Add your sign-up logic here
                       try {
                         await auth
                             .createUserWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passwordController.text)
-                            .then(
-                                (value) => verify(context, phoneController.text));
-                      }catch(e){
+                                email: emailController.text,
+                                password: passwordController.text)
+                            .then((value) =>
+                                verify(context, phoneController.text));
+                      } catch (e) {
                         print(e);
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 0, 0, 0), // Background color
-                      onPrimary: Colors.white, // Text color
-                      elevation: 3, // Shadow elevation
+                      primary: const Color.fromARGB(255, 0, 0, 0),
+                      onPrimary: Colors.white,
+                      elevation: 3,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 16), // Button padding
+                          horizontal: 40, vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(30.0), // Rounded corners
+                        borderRadius: BorderRadius.circular(30.0),
                       ),
                     ),
                     child: const Text(
@@ -139,12 +149,12 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInputField(IconData icon, String hintText, TextEditingController controller) {
+  Widget _buildInputField(
+      IconData icon, String hintText, TextEditingController controller) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 255, 255)
-            .withOpacity(0.8), // Light blue with opacity
-        borderRadius: BorderRadius.circular(30.0), // Rounded corners
+        color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8),
+        borderRadius: BorderRadius.circular(30.0),
       ),
       child: TextField(
         style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
@@ -162,14 +172,38 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordField(IconData icon, String hintText, TextEditingController controller) {
+  Widget _buildNumericInputField(
+      IconData icon, String hintText, TextEditingController controller) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8),
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      child: TextField(
+        style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+          prefixIcon: Icon(
+            icon,
+            color: const Color.fromARGB(255, 0, 0, 0),
+          ),
+          border: InputBorder.none,
+        ),
+        controller: controller,
+        keyboardType: TextInputType.phone, // Set the keyboard type to numeric
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(
+      IconData icon, String hintText, TextEditingController controller) {
     bool _isPasswordVisible = false;
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 255, 255)
-            .withOpacity(0.8), // Light blue with opacity
-        borderRadius: BorderRadius.circular(30.0), // Rounded corners
+        color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8),
+        borderRadius: BorderRadius.circular(30.0),
       ),
       child: TextField(
         obscureText: !_isPasswordVisible,
@@ -192,7 +226,7 @@ class RegisterScreen extends StatelessWidget {
           ),
           border: InputBorder.none,
         ),
-        controller: passwordController,
+        controller: controller,
       ),
     );
   }
@@ -219,46 +253,4 @@ class RegisterScreen extends StatelessWidget {
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }
-}
-
-//Costom CLipper class with Path
-class WaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = new Path();
-    path.lineTo(
-        0, size.height); //start path with this if you are making at bottom
-
-    var firstStart = Offset(size.width / 5, size.height);
-    //fist point of quadratic bezier curve
-    var firstEnd = Offset(size.width / 2.25, size.height - 50.0);
-    //second point of quadratic bezier curve
-    path.quadraticBezierTo(
-        firstStart.dx, firstStart.dy, firstEnd.dx, firstEnd.dy);
-
-// <<<<<<< HEAD
-    var secondStart =
-    Offset(size.width - (size.width / 3.24), size.height - 105);
-    //third point of quadratic bezier curve
-    var secondEnd = Offset(size.width, size.height - 10);
-    //fourth point of quadratic bezier curve
-    path.quadraticBezierTo(
-        secondStart.dx, secondStart.dy, secondEnd.dx, secondEnd.dy);
-
-    path.lineTo(
-        size.width, 0); //end with this path if you are making wave at bottom
-// =======
-//     path.lineTo(size.width, size.height - 40);
-//     path.lineTo(size.width, 0);
-// >>>>>>> 7f24f851722a8b00c12914649f090b225cc4645b
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false; //if new instance have different instance than old instance
-    //then you must return true;
-  }
-
 }

@@ -15,7 +15,8 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
 
 Future<UserModel?> fetchData() async {
-  final userInfoQuery = firestore.collection('users').doc(auth.currentUser?.uid).get();
+  final userInfoQuery =
+      firestore.collection('users').doc(auth.currentUser?.uid).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -39,70 +40,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  ImagePicker _imagePicker = ImagePicker();
-  XFile? _image;
-
-  bool isDependent = false;
-  String guardianCode = '';
-
   @override
   void initState() {
     super.initState();
     fetchData();
   }
 
- UserModel? userData;
-
-  void _openGuardianDialog() {
-    String code = userId??''; // Use the user's ID as the code
-    TextEditingController codeController = TextEditingController(text: code);
-    
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Guardian Code'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller:
-                    codeController, // Use a controller to display and edit the code
-                decoration: const InputDecoration(labelText: 'Code'),
-                onChanged: (value) {
-                  setState(() {
-                    guardianCode = value;
-                  });
-                },
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: codeController.text));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Code copied to clipboard')),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
-              child: const Text('Copy Code'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  UserModel? userData;
 
   Widget _buildInfoRow(String title, String subtitle, IconData iconData) {
     return Card(
@@ -112,9 +56,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: ListTile(
-        leading: Icon(iconData),
-        title: Text(title),
-        subtitle: Text(subtitle),
+        leading: Icon(
+          iconData,
+          color: const Color.fromARGB(171, 41, 45, 92),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Color.fromARGB(227, 41, 45, 92),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 20, 22, 44),
+            fontWeight: FontWeight.normal,
+          ),
+        ),
       ),
     );
   }
@@ -126,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('Profile'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout), // Icon for the logout button
+            icon: const Icon(Icons.logout), // Icon for the logout button
             onPressed: () {
               // Handle the logout action here
               // For example, you can sign out the user and navigate to the login screen
@@ -148,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             QrImageView(
               data: userId ?? 'error',
               version: QrVersions.auto,
-              size: 200,
+              size: 180,
               gapless: false,
             ),
             const SizedBox(height: 16),
@@ -162,9 +121,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final user = snapshot.data!;
                 return Column(
                   children: [
-                    _buildInfoRow('Name', user.name, Icons.person),
-                    _buildInfoRow('Phone', user.phoneNo, Icons.phone),
-                    _buildInfoRow('Email', user.email, Icons.email),
+                    _buildInfoRow('Name', user.name, Icons.person_add_alt),
+                    _buildInfoRow(
+                        'Phone', user.phoneNo, Icons.phone_android_sharp),
+                    _buildInfoRow('Email', user.email, Icons.mark_email_read),
                     // if (isDependent)
                     Card(
                       margin: const EdgeInsets.symmetric(
@@ -188,9 +148,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Row(
                             children: [
                               Icon(
-                                Icons.person, // Your desired grey icon
-                                color:
-                                    Colors.grey, // Set the icon color to grey
+                                Icons.group, // Your desired grey icon
+                                color: Color.fromARGB(255, 41, 45,
+                                    92), // Set the icon color to grey
                               ),
                               SizedBox(
                                   width:
@@ -199,6 +159,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 'Dependent Details',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 41, 45, 92),
+            
                                 ),
                               ),
                               Spacer(), // Add a spacer to push the icon to the end
@@ -214,44 +176,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // _openGuardianDialog();
-                    Visibility(
-                      child: QrImageView(
-                        data: userId ?? 'error',
-                        version: QrVersions.auto,
-                        size: 320,
-                        gapless: false,
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: const Text('Be Guardian'),
-                ),
-                const SizedBox(width: 16),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    // Handle the "Edit" button press
-                    navigatorKey.currentState?.push(MaterialPageRoute(builder: (builder)=> DependentDetailsScreen()));
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  icon: const Icon(Icons.edit),
-                  label: const Text('Edit'),
-                ),
-              ],
+            const SizedBox(
+              height: 40,
             ),
           ],
         ),

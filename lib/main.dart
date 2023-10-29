@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/add_guardian.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Individual/gaurdian_view_screen.dart';
 import 'package:medipal/Dependent/tab_change.dart';
@@ -76,7 +77,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
-      title: 'Flutter Demo',
+      title: 'MediPal',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           backgroundColor:
@@ -97,8 +98,8 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home:
-      //const BottomNavigationIndividual(),
-     const MyHomePage(),
+       const BottomNavigationDependent(),
+    //  const MyHomePage(),
       //AlarmScreen(),
     );
   }

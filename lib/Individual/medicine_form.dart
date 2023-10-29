@@ -6,6 +6,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MedicineForm extends StatefulWidget {
   const MedicineForm({super.key});
@@ -75,7 +76,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Liquid',
         child: Row(
           children: [
-            Icon(Icons.liquor),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/liquid_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Liquid'),
           ],
@@ -85,7 +91,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Pills',
         child: Row(
           children: [
-            Icon(Icons.local_hospital),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/pill_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Pills'),
           ],
@@ -95,7 +106,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Injection',
         child: Row(
           children: [
-            Icon(Icons.usb),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/injection_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Injection'),
           ],
@@ -353,11 +369,20 @@ class _MedicineFormState extends State<MedicineForm> {
                           }
                         }
                       }
+                      // Show the toast message
+                      Fluttertoast.showToast(
+                        msg: 'Medicine added successfully!',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                      );
 
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                             builder: (context) => BottomNavigationIndividual()),
+                            (Route<dynamic> route) => false,
                       );
 
                       // Handle the form data as needed (e.g., save to Firestore)
@@ -373,4 +398,28 @@ class _MedicineFormState extends State<MedicineForm> {
       ),
     );
   }
+}
+
+Widget _buildLoadingIndicator() {
+  return const Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Color.fromARGB(255, 71, 78, 84),
+          ),
+        ),
+        SizedBox(height: 16.0),
+        Text(
+          'Loading...',
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    ),
+  );
 }

@@ -20,6 +20,8 @@ class UserModel {
     required this.dependents,
   });
 
+  get uid => null;
+
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,

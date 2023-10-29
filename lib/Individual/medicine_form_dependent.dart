@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
@@ -75,20 +76,15 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
     // Define the dropdown items for dosage type
     final List<DropdownMenuItem<String>> dosageTypeItems = [
       const DropdownMenuItem(
-        value: 'Liquid',
-        child: Row(
-          children: [
-            Icon(Icons.liquor),
-            SizedBox(width: 8.0),
-            Text('Liquid'),
-          ],
-        ),
-      ),
-      const DropdownMenuItem(
         value: 'Pills',
         child: Row(
           children: [
-            Icon(Icons.local_hospital),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/pill_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Pills'),
           ],
@@ -98,9 +94,29 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
         value: 'Injection',
         child: Row(
           children: [
-            Icon(Icons.usb),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/injection_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Injection'),
+          ],
+        ),
+      ),
+      const DropdownMenuItem(
+        value: 'Liquid',
+        child: Row(
+          children: [
+            ImageIcon(
+              AssetImage(
+                  'assets/images/liquid_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
+            SizedBox(width: 8.0),
+            Text('Liquid'),
           ],
         ),
       ),
@@ -356,6 +372,15 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                           }
                         }
                       }
+                       // Show the toast message
+                      Fluttertoast.showToast(
+                        msg: 'Medicine added successfully!',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                      );
+
 
                       Navigator.pop(context);
 
@@ -366,7 +391,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                   ),
                 ],
               ),
-            ),
+            ), 
           ),
         ),
       ),
