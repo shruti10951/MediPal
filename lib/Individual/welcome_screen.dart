@@ -18,31 +18,30 @@ class WelcomeScreen extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
+                  Color.fromARGB(255, 223, 238, 255),
                   Color.fromARGB(214, 152, 191, 255),
                   Color.fromARGB(255, 223, 238, 255),
-                  
                 ],
               ),
             ),
           ),
           // Medipal Circular Image (Position it at the very top)
           Positioned(
-            top: 120.0,
-            left: 125.0,
+            top: 0.14 * MediaQuery.of(context).size.height,
+            left: 0.32 * MediaQuery.of(context).size.width,
             child: Image.asset(
               'assets/images/medipal.png', // Replace with your image path
-              width: 150.0,
-              height: 150.0,
+              width: 0.40 * MediaQuery.of(context).size.width,
+              height: 0.40 * MediaQuery.of(context).size.width,
             ),
           ),
           // Back Button
           Positioned(
-            top: 40.0,
-            left: 17.0,
+            top: 0.04 * MediaQuery.of(context).size.height,
+            left: 0.034 * MediaQuery.of(context).size.width,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white
-                    .withOpacity(0.3), // Transparent white background
+                color: Colors.white.withOpacity(0.3), // Transparent white background
                 shape: BoxShape.circle, // Circular shape
               ),
               child: IconButton(
@@ -51,62 +50,61 @@ class WelcomeScreen extends StatelessWidget {
                   color: Color.fromARGB(255, 0, 0, 0),
                 ),
                 onPressed: () {
-                  Navigator.of(context)
-                      .pop(); // Navigate back to the previous screen
+                  Navigator.of(context).pop(); // Navigate back to the previous screen
                 },
               ),
             ),
           ),
-          const Positioned(
-            left: 150.0,
-            top: 280.0,
+          Positioned(
+            left: 0.38 * MediaQuery.of(context).size.width,
+            top: 0.35 * MediaQuery.of(context).size.height,
             child: Text(
               'MEDIPAL',
               style: TextStyle(
-                fontSize: 26.0,
+                fontSize: 0.07 * MediaQuery.of(context).size.width,
                 color: Color.fromARGB(255, 41, 45, 92),
-                fontWeight: FontWeight.bold, // Make the text bold
-                // fontStyle: FontStyle.italic, // Make the text italic
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-
           // Quote Text at the Left Side
-          const Positioned(
-            left: 60.0,
-            top: 320.0,
+          Positioned(
+            left: 0.20 * MediaQuery.of(context).size.width,
+            top: 0.40 * MediaQuery.of(context).size.height,
             child: Text(
               'Your medicine, our responsibility!',
               style: TextStyle(
-                fontSize: 18.0,
+                fontSize: 0.043 * MediaQuery.of(context).size.width,
                 color: Color.fromARGB(255, 41, 45, 92),
-                fontWeight: FontWeight.bold, // Make the text bold
-                fontStyle: FontStyle.italic, // Make the text italic
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
               ),
             ),
           ),
-
           // Sign In Button (Transparent with Border)
           Positioned(
-            left: 16.0,
-            right: 16.0,
-            bottom: 150.0,
+            left: 0.03 * MediaQuery.of(context).size.width,
+            right: 0.03 * MediaQuery.of(context).size.width,
+            bottom: 0.25 * MediaQuery.of(context).size.height,
             child: SizedBox(
-              height: 50.0,
+              height: 0.065 * MediaQuery.of(context).size.height,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreen(),
-                      ));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color.fromARGB(255, 234, 244, 255),
-                  side: const BorderSide(color: Color.fromARGB(255, 41, 45, 92), width: 2.0),
+                  side: const BorderSide(
+                      color: Color.fromARGB(255, 41, 45, 92), width: 2.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
-                        10.0), // Adjust the radius as needed
+                      0.03 * MediaQuery.of(context).size.width,
+                    ),
                   ),
                 ),
                 child: const Text(
@@ -119,27 +117,28 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ),
           ),
-
           // Create Account Button (Transparent without Border)
           Positioned(
-            left: 16.0,
-            right: 16.0,
-            bottom: 80.0,
+            left: 0.03 * MediaQuery.of(context).size.width,
+            right: 0.03 * MediaQuery.of(context).size.width,
+            bottom: 0.15 * MediaQuery.of(context).size.height,
             child: SizedBox(
-              height: 50.0,
+              height: 0.065 * MediaQuery.of(context).size.height,
               child: TextButton(
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RegisterScreen(),
-                      ));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RegisterScreen(),
+                    ),
+                  );
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Color.fromARGB(103, 255, 255, 255),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
-                        0.0), // Adjust the radius as needed
+                      0.03 * MediaQuery.of(context).size.width,
+                    ),
                   ),
                 ),
                 child: const Text(
