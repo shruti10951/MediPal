@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medipal/Dependent/add_guardian.dart';
 import 'package:medipal/models/UserModel.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -24,7 +25,6 @@ Future<UserModel?> fetchData() async {
     return null;
   }
 }
-
 class ProfileScreenDependent extends StatefulWidget {
   const ProfileScreenDependent({Key? key}) : super(key: key);
 
@@ -78,7 +78,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
         title: const Text('Dependent Profile'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout), // Icon for the logout button
+            icon: const Icon(Icons.logout),
             onPressed: () {
               // Handle the logout action here
               // For example, you can sign out the user and navigate to the login screen
@@ -91,11 +91,10 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Replace the GestureDetector with an Image.asset widget
             Image.asset(
               'assets/images/medipal.png',
-              width: 160, // Adjust the width as needed
-              height: 160, // Adjust the height as needed
+              width: 160,
+              height: 160,
             ),
             const SizedBox(height: 16),
             FutureBuilder<UserModel?>(
@@ -111,13 +110,39 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                     _buildInfoRow('Name', user.name, Icons.person_add_alt),
                     _buildInfoRow('Phone', user.phoneNo, Icons.phone_android_sharp),
                     _buildInfoRow('Email', user.email, Icons.mark_email_read),
+                    const SizedBox(height: 16), // Add some spacing
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle the "Scan QR Code" button click
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddGuardian(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(255, 41, 45, 92),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Text(
+                          'Scan QR Code',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 );
               },
             ),
-            const SizedBox(
-              height: 40,
-            ),
+            const SizedBox(height: 40),
           ],
         ),
       ),
