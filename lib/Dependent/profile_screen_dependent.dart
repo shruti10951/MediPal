@@ -1,22 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medipal/Dependent/add_guardian.dart';
 import 'package:medipal/models/UserModel.dart';
 
+import '../main.dart';
+import '../user_registration/choose_screen.dart';
+
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
+final userId = auth.currentUser?.uid;
 
-Future<UserModel?> fetchData() async {
+Future<Map<String, dynamic>?> fetchData() async {
   final userInfoQuery =
-      firestore.collection('users').doc(auth.currentUser?.uid).get();
+  firestore.collection('dependent').doc(userId).get();
 
   try {
     final userDoc = await userInfoQuery;
     if (userDoc.exists) {
-      final userData = UserModel.fromDocumentSnapshot(userDoc);
+      // final userData = UserModel.fromDocumentSnapshot(userDoc);
+      final userData= userDoc.data() as Map<String, dynamic>;
       return userData;
     } else {
       return null;
@@ -26,6 +29,7 @@ Future<UserModel?> fetchData() async {
     return null;
   }
 }
+
 
 class ProfileScreenDependent extends StatefulWidget {
   const ProfileScreenDependent({Key? key}) : super(key: key);
@@ -85,7 +89,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(
                     Color.fromARGB(255, 206, 205, 255)),
-                    
+
               ),
               onPressed: () {
                 // Close the dialog
@@ -94,11 +98,10 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                // Handle the logout action here
-                // For example, you can sign out the user and navigate to the login screen
-                // Make sure you implement your own logout logic
+              onPressed: ()  async{
+                await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
+                navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> ChooseScreen()), (route) => false);
               },
               child: const Text('Logout'),
             ),
@@ -132,7 +135,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
               height: 160,
             ),
             const SizedBox(height: 16),
-            FutureBuilder<UserModel?>(
+            FutureBuilder<Map<String, dynamic>?>(
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.hasError || !snapshot.hasData) {
@@ -142,10 +145,10 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                 final user = snapshot.data!;
                 return Column(
                   children: [
-                    _buildInfoRow('Name', user.name, Icons.person_add_alt),
+                    _buildInfoRow('Name', user['name'] ?? 'Loading...', Icons.person_add_alt),
                     _buildInfoRow(
-                        'Phone', user.phoneNo, Icons.phone_android_sharp),
-                    _buildInfoRow('Email', user.email, Icons.mark_email_read),
+                        'Phone', user['phoneNo'] ?? 'Loading...', Icons.phone_android_sharp),
+                    // if (isDependent)
                     const SizedBox(height: 16), // Add some spacing
                     ElevatedButton(
                       onPressed: () {
@@ -185,3 +188,4 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
     );
   }
 }
+

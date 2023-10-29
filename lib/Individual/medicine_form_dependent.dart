@@ -176,6 +176,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                   const SizedBox(height: 16.0),
                   TextField(
                     controller: _dosageController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       labelText: 'Quatity Per Dose',
                     ),
@@ -309,7 +310,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                         medicationId: medicationDocumentReference.id,
                         name: _nameController.text,
                         type: _selectedDosageType.toString(),
-                        dosage: _dosageController.text,
+                        dosage: int.parse(_dosageController.text),
                         schedule: {
                           'morning': _morningTime != null
                               ? _morningTime!.format(context)

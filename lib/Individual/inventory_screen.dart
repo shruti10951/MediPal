@@ -150,7 +150,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         .then((value) => print('data updated'));
 
                     Navigator.pop(context);
-                    
+
                     // Refresh the page after data is updated
                     setState(() {});
                   },
@@ -227,20 +227,18 @@ class _InventoryScreenState extends State<InventoryScreen> {
         children: [
           Expanded(
               child: FutureBuilder(
-            future: fetchData(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildLoadingIndicator();
-
-                // return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                final medicationQuery = snapshot.data;
-                return _buildInventoryCard(medicationQuery!);
-              }
-            },
-          ))
+                future: fetchData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _buildLoadingIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final medicationQuery = snapshot.data;
+                    return _buildInventoryCard(medicationQuery!);
+                  }
+                },
+              ))
         ],
       ), // Create the inventory list view
     );
@@ -276,9 +274,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
         itemCount: medicationQuerySnapshot.length,
         itemBuilder: (BuildContext context, int index) {
           final QueryDocumentSnapshot medicationDocumentSnapshot =
-              medicationQuerySnapshot[index];
+          medicationQuerySnapshot[index];
           final MedicationModel medicationModel =
-              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+          MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
           final name = medication['name'];
           final type = medication['type'];
@@ -353,3 +351,4 @@ class _InventoryScreenState extends State<InventoryScreen> {
         });
   }
 }
+

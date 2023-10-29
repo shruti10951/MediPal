@@ -5,15 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:medipal/Individual/medicine_form_dependent.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:medipal/models/AlarmModel.dart';
-import 'package:medipal/models/MedicationModel.dart';
 
 import 'dashboard_screen.dart';
-import '../Individual/dashboard_screen.dart';
 
 class GaurdianView extends StatefulWidget {
   final dependentId;
@@ -46,8 +39,8 @@ class _GaurdianViewState extends State<GaurdianView> {
 
     try {
       final results =
-          await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
-      final alarmQuerySnapshot = results[0] as QuerySnapshot;
+      await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
+      alarmQuerySnapshot = results[0] as QuerySnapshot;
       final medicationQuerySnapshot = results[1] as QuerySnapshot;
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
@@ -194,24 +187,24 @@ class _GaurdianViewState extends State<GaurdianView> {
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
         final QueryDocumentSnapshot alarmDocumentSnapshot =
-            alarmQuerySnapshot[index];
+        alarmQuerySnapshot[index];
 
         final AlarmModel alarmModel =
-            AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+        AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
         final Map<String, dynamic> alarm = alarmModel.toMap();
         final String medicationId = alarm['medicationId'];
 
         QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
             .firstWhere((element) => element['medicationId'] == medicationId,
-                orElse: null);
+            orElse: null);
 
         if (medicationDocument != null) {
           final MedicationModel medicationModel =
-              MedicationModel.fromDocumentSnapshot(medicationDocument);
+          MedicationModel.fromDocumentSnapshot(medicationDocument);
           final Map<String, dynamic> medicine = medicationModel.toMap();
           final String name = medicine['name'];
           final String time = alarm['time'];
-          final String quantity = medicine['dosage'];
+          final int quantity = medicine['dosage'];
           final String type = medicine['type'];
 
           String img;
@@ -393,8 +386,8 @@ class _ExpandableFabState extends State<ExpandableFab>
     final count = widget.children.length;
     final step = 90.0 / (count - 1);
     for (var i = 0, angleInDegrees = 0.0;
-        i < count;
-        i++, angleInDegrees += step) {
+    i < count;
+    i++, angleInDegrees += step) {
       children.add(
         _ExpandingActionButton(
           directionInDegrees: angleInDegrees,

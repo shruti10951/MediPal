@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/bottom_navigation_dependent.dart';
-import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/main.dart';
 import 'package:medipal/models/DependentModel.dart';
 
 class OTPForDependentPage extends StatelessWidget {
@@ -58,17 +58,11 @@ class OTPForDependentPage extends StatelessWidget {
                     );
 
                     Map<String, dynamic> dependent= dependentModel.toMap();
-                    await collectionReference.doc(user?.uid).set(dependent);
+                    await collectionReference.doc(user.uid).set(dependent);
                   }
 
-                  //BACK BUTTON
-                  // ignore: use_build_context_synchronously
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BottomNavigationDependent(),
-                    ),
-                  );
+                  navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (builder)=> const BottomNavigationDependent()), (route) => false);
+
                 });
               } catch (e) {
                 final scaffoldMessenger = ScaffoldMessenger.of(context);
