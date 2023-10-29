@@ -116,7 +116,7 @@ class ChooseScreen extends StatelessWidget {
           ),
           // Horizontal Cards
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.5,
+            top: MediaQuery.of(context).size.height * 0.45,
             left: 0,
             right: 0,
             child: Padding(
