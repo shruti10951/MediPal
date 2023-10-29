@@ -10,7 +10,8 @@ FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 Future<UserModel?> fetchData() async {
-  final userInfoQuery = firestore.collection('users').doc(auth.currentUser?.uid).get();
+  final userInfoQuery =
+      firestore.collection('users').doc(auth.currentUser?.uid).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -25,6 +26,7 @@ Future<UserModel?> fetchData() async {
     return null;
   }
 }
+
 class ProfileScreenDependent extends StatefulWidget {
   const ProfileScreenDependent({Key? key}) : super(key: key);
 
@@ -71,6 +73,41 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
     );
   }
 
+  void _showLogoutConfirmation() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Logout Confirmation'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: <Widget>[
+            TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromARGB(255, 206, 205, 255)),
+                    
+              ),
+              onPressed: () {
+                // Close the dialog
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Handle the logout action here
+                // For example, you can sign out the user and navigate to the login screen
+                // Make sure you implement your own logout logic
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,9 +117,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              // Handle the logout action here
-              // For example, you can sign out the user and navigate to the login screen
-              // Make sure you implement your own logout logic
+              _showLogoutConfirmation(); // Show the confirmation dialog
             },
           ),
         ],
@@ -108,7 +143,8 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                 return Column(
                   children: [
                     _buildInfoRow('Name', user.name, Icons.person_add_alt),
-                    _buildInfoRow('Phone', user.phoneNo, Icons.phone_android_sharp),
+                    _buildInfoRow(
+                        'Phone', user.phoneNo, Icons.phone_android_sharp),
                     _buildInfoRow('Email', user.email, Icons.mark_email_read),
                     const SizedBox(height: 16), // Add some spacing
                     ElevatedButton(
