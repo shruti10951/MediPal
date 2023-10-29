@@ -375,7 +375,7 @@ class _MedicineFormState extends State<MedicineForm> {
                         msg: 'Medicine added successfully!',
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.green,
+                        backgroundColor: const Color.fromARGB(255, 48, 48, 48),
                         textColor: Colors.white,
                       );
 

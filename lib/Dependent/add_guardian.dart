@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,10 +33,28 @@ class _AddGuardianState extends State<AddGuardian> {
     super.dispose();
   }
 
+  void showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Scan Successful"),
+          content: Text("The QR Code was successfully scanned."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void onDetect(BarcodeCapture capture) async {
     if (!isProcessingScan) {
-      isProcessingScan = true;
-
       if (!dependentAdded) {
         final List<Barcode> barcodes = capture.barcodes;
         final Uint8List? image = capture.image;
@@ -60,8 +77,7 @@ class _AddGuardianState extends State<AddGuardian> {
             var noOfDependents = guardianMap['noOfDependents'] + 1;
             var dependentList = guardianMap['dependents'];
 
-            dependentList
-                .add(FirebaseAuth.instance.currentUser?.uid.toString());
+            dependentList.add(FirebaseAuth.instance.currentUser?.uid.toString());
 
             guardianMap['noOfDependents'] = noOfDependents;
             guardianMap['dependents'] = dependentList;
@@ -73,7 +89,8 @@ class _AddGuardianState extends State<AddGuardian> {
 
             dependentAdded = true;
             navigatorKey.currentState?.pop();
-            isProcessingScan = false;
+
+            showSuccessDialog(context); // Show the success dialog
           } else {
             final scaffoldMessenger = ScaffoldMessenger.of(context);
             scaffoldMessenger.showSnackBar(const SnackBar(
@@ -90,41 +107,28 @@ class _AddGuardianState extends State<AddGuardian> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Scanner to become a dependent'),
+        title: Text('Scan Guardian QR Code'),
       ),
-      body: Column(
-        children: <Widget>[
-          
-          Expanded(
-              child: Container(
-            width: 300, // Set the width as desired
-            height: 100,
-            color: Color.fromARGB(255, 255, 255, 255), // Set the height as desired
-            alignment: Alignment.center, // Center the content
-            child: Padding(
-              padding: const EdgeInsets.only(left: 40.0),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                child: MobileScanner(
-                  fit: BoxFit.contain,
-                  controller: _mobileScannerController,
-                  onDetect: onDetect,
-                ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(41.0), // Add padding here
+          child: Container(
+            width: 700,
+            height: 400,
+            decoration: BoxDecoration(
+              color: Colors.white, // Background color
+              border: Border.all(
+                color: Color.fromARGB(255, 123, 123, 123), // Border color
+                width: 4.0,           // Border width
               ),
             ),
-          )
-          ),
-          Container(
-            child: const Text(
-              'Scan the QR code to become a dependent',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            child: MobileScanner(
+              fit: BoxFit.contain,
+              controller: _mobileScannerController,
+              onDetect: onDetect,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
