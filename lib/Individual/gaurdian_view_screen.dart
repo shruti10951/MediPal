@@ -13,6 +13,7 @@ import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 
 import 'dashboard_screen.dart';
+import '../Individual/dashboard_screen.dart';
 
 class GaurdianView extends StatefulWidget {
   final dependentId;
@@ -46,7 +47,7 @@ class _GaurdianViewState extends State<GaurdianView> {
     try {
       final results =
           await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
-      alarmQuerySnapshot = results[0] as QuerySnapshot;
+      final alarmQuerySnapshot = results[0] as QuerySnapshot;
       final medicationQuerySnapshot = results[1] as QuerySnapshot;
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
