@@ -195,14 +195,29 @@ class LoginScreen extends StatelessWidget {
                   builder: (context) => const BottomNavigationIndividual()),
               (Route<dynamic> route) => false,
             );
+            Fluttertoast.showToast(
+              msg: 'Logged In Successfully!',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+            );
+          }).catchError((error) {
+            Fluttertoast.showToast(
+              msg: 'Please Verify your credentials',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: Color.fromARGB(255, 240, 91, 91),
+              textColor: Color.fromARGB(255, 255, 255, 255),
+            );
           });
-          Fluttertoast.showToast(
-                        msg: 'Logged In Scussessfully!',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white,
-                      );
+          // Fluttertoast.showToast(
+          //               msg: 'Please Verify your credentials',
+          //               toastLength: Toast.LENGTH_SHORT,
+          //               gravity: ToastGravity.BOTTOM,
+          //               backgroundColor: Color.fromARGB(255, 240, 91, 91),
+          //               textColor: Color.fromARGB(255, 251, 249, 249),
+          //             );
         },
         style: ElevatedButton.styleFrom(
           primary: const Color.fromARGB(255, 41, 45, 92),

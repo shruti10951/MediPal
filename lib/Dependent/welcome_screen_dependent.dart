@@ -225,3 +225,27 @@ class BackgroundPainter extends CustomPainter {
     return false;
   }
 }
+
+Widget _buildLoadingIndicator() {
+return const Center(
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(
+          Color.fromARGB(255, 71, 78, 84),
+        ),
+      ),
+      SizedBox(height: 16.0),
+      Text(
+        'Loading...',
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey,
+        ),
+      ),
+    ],
+  ),
+);
+}
