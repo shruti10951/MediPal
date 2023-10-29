@@ -37,6 +37,8 @@ class _MedicineFormState extends State<MedicineForm> {
       FirebaseFirestore.instance.collection('alarms');
   FirebaseAuth auth = FirebaseAuth.instance;
 
+  bool isSubmitting = false; // Track the submitting state
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -174,7 +176,7 @@ class _MedicineFormState extends State<MedicineForm> {
                   TextField(
                     controller: _dosageController,
                     decoration: const InputDecoration(
-                      labelText: 'Quatity Per Dose',
+                      labelText: 'Quantity Per Dose',
                     ),
                   ),
                   const SizedBox(height: 16.0),
@@ -299,6 +301,11 @@ class _MedicineFormState extends State<MedicineForm> {
                   const SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () async {
+                      // Set the submitting state to true
+                      setState(() {
+                        isSubmitting = true;
+                      });
+
                       DocumentReference medicationDocumentReference =
                           medicationCollectionRef.doc();
 
@@ -369,6 +376,7 @@ class _MedicineFormState extends State<MedicineForm> {
                           }
                         }
                       }
+
                       // Show the toast message
                       Fluttertoast.showToast(
                         msg: 'Medicine added successfully!',
@@ -378,11 +386,16 @@ class _MedicineFormState extends State<MedicineForm> {
                         textColor: Colors.white,
                       );
 
+                      // Set the submitting state back to false
+                      setState(() {
+                        isSubmitting = false;
+                      });
+
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                             builder: (context) => BottomNavigationIndividual()),
-                            (Route<dynamic> route) => false,
+                        (Route<dynamic> route) => false,
                       );
 
                       // Handle the form data as needed (e.g., save to Firestore)
@@ -396,6 +409,9 @@ class _MedicineFormState extends State<MedicineForm> {
           ),
         ),
       ),
+      bottomNavigationBar: isSubmitting
+          ? _buildLoadingIndicator()
+          : null, // Show loading indicator based on isSubmitting
     );
   }
 }

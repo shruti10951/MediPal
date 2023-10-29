@@ -7,7 +7,6 @@ class DependentLogin extends StatelessWidget {
 
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
-
   final auth = FirebaseAuth.instance;
 
   //show loading
@@ -45,17 +44,14 @@ class DependentLogin extends StatelessWidget {
                 isSigningUp = true;
                 verify(context, phoneController.text);
               },
-              child: isSigningUp == true
-                  ? CircularProgressIndicator(
-                color: Colors.black,
-              )
-                  : Text('Sign Up'),
+              child: Text('Sign Up'),
               style: ButtonStyle(
                 fixedSize: MaterialStateProperty.all<Size>(Size(300, 50)),
                 backgroundColor: MaterialStateProperty.all(Colors.cyan),
                 foregroundColor: MaterialStateProperty.all(Colors.white),
               ),
             ),
+            if (isSigningUp == true) _buildLoadingIndicator(),
           ],
         ),
       ),
@@ -77,4 +73,28 @@ class DependentLogin extends StatelessWidget {
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
   }
+}
+
+Widget _buildLoadingIndicator() {
+return const Center(
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(
+          Color.fromARGB(255, 71, 78, 84),
+        ),
+      ),
+      SizedBox(height: 16.0),
+      Text(
+        'Loading...',
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey,
+        ),
+      ),
+    ],
+  ),
+);
 }
