@@ -257,7 +257,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
           final Map<String, dynamic> medicine = medicationModel.toMap();
           final String name = medicine['name'];
           final String time = alarm['time'];
-          final String quantity = medicine['dosage'];
+          final int quantity = medicine['dosage'];
           final String type = medicine['type'];
 
           String img;
