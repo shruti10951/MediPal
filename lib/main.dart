@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
-      title: 'Flutter Demo',
+      title: 'MediPal',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           backgroundColor:
@@ -98,8 +98,8 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home:
-      //  AddGuardian(),
-     const MyHomePage(),
+       const BottomNavigationDependent(),
+    //  const MyHomePage(),
       //AlarmScreen(),
     );
   }

@@ -1,46 +1,72 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medipal/models/UserModel.dart';
 
-import '../main.dart';
-import 'add_guardian.dart';
+FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-class ProfileScreenDependent extends StatefulWidget {
-  const ProfileScreenDependent({super.key});
+Future<UserModel?> fetchData() async {
+  final userInfoQuery = firestore.collection('users').doc(auth.currentUser?.uid).get();
 
-  @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  try {
+    final userDoc = await userInfoQuery;
+    if (userDoc.exists) {
+      final userData = UserModel.fromDocumentSnapshot(userDoc);
+      return userData;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    print('Error retrieving document: $error');
+    return null;
+  }
 }
 
-class _ProfileScreenState extends State<ProfileScreenDependent> {
-  ImagePicker _imagePicker = ImagePicker();
-  XFile? _image;
+class ProfileScreenDependent extends StatefulWidget {
+  const ProfileScreenDependent({Key? key}) : super(key: key);
 
-  bool isDependent = false; // Track Dependent status
+  @override
+  _ProfileScreenDependentState createState() => _ProfileScreenDependentState();
+}
 
+class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
   @override
   void initState() {
     super.initState();
+    fetchData();
   }
 
-  _buildInfoRow(String title, String subtitle, IconData iconData) {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-                offset: const Offset(0, 5),
-                color: const Color.fromARGB(255, 255, 255, 255).withOpacity(.2),
-                spreadRadius: 2,
-                blurRadius: 10)
-          ]),
+  UserModel? userData;
+
+  Widget _buildInfoRow(String title, String subtitle, IconData iconData) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: ListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        leading: Icon(iconData),
-        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
-        tileColor: Colors.white,
+        leading: Icon(
+          iconData,
+          color: const Color.fromARGB(171, 41, 45, 92),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Color.fromARGB(227, 41, 45, 92),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 20, 22, 44),
+            fontWeight: FontWeight.normal,
+          ),
+        ),
       ),
     );
   }
@@ -49,12 +75,14 @@ class _ProfileScreenState extends State<ProfileScreenDependent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Dependent Profile'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout), // Icon for the logout button
-            onPressed: () { 
-              
+            icon: const Icon(Icons.logout), // Icon for the logout button
+            onPressed: () {
+              // Handle the logout action here
+              // For example, you can sign out the user and navigate to the login screen
+              // Make sure you implement your own logout logic
             },
           ),
         ],
@@ -63,76 +91,36 @@ class _ProfileScreenState extends State<ProfileScreenDependent> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: _selectImage,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 80,
-                    backgroundImage:
-                        _image != null ? FileImage(File(_image!.path)) : null,
-                    child: _image == null
-                        ? const Icon(
-                            Icons.add,
-                            size: 36,
-                          )
-                        : null,
-                  ),
-                  if (_image != null)
-                    const Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.add,
-                          size: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+            // Replace the GestureDetector with an Image.asset widget
+            Image.asset(
+              'assets/images/medipal.png',
+              width: 160, // Adjust the width as needed
+              height: 160, // Adjust the height as needed
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  _buildInfoRow('Name', 'John Doe', Icons.person),
-                  _buildInfoRow('Phone', '123-456-7890', Icons.phone),
-                  _buildInfoRow('Email', 'john.doe@example.com', Icons.email),
-                ],
-              ),
+            FutureBuilder<UserModel?>(
+              future: fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError || !snapshot.hasData) {
+                  return const Text('Error: Unable to load user data');
+                }
+
+                final user = snapshot.data!;
+                return Column(
+                  children: [
+                    _buildInfoRow('Name', user.name, Icons.person_add_alt),
+                    _buildInfoRow('Phone', user.phoneNo, Icons.phone_android_sharp),
+                    _buildInfoRow('Email', user.email, Icons.mark_email_read),
+                  ],
+                );
+              },
             ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(width: 16),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    navigatorKey.currentState?.push(MaterialPageRoute(builder: (builder)=> AddGuardian()));
-                  },
-                  icon: const Icon(Icons.edit),
-                  label: const Text('Edit'),
-                ),
-              ],
+            const SizedBox(
+              height: 40,
             ),
           ],
         ),
       ),
     );
-  }
-
-  void _selectImage() async {
-    final pickedFile =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = pickedFile;
-      });
-    }
   }
 }

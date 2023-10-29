@@ -73,16 +73,17 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory),
-            label: 'Inventory',
+            label: 'Inventory', 
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
-        unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+         unselectedItemColor: Color.fromARGB(146, 170, 149, 247),
+          //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
+          currentIndex: _selectedIndex,
+          selectedItemColor: Color.fromARGB(255, 41,45,92),
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
