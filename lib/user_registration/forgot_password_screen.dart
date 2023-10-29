@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:medipal/main.dart';
 import 'package:medipal/user_registration/dependent_login.dart';
 import 'package:medipal/user_registration/login_screen.dart';
@@ -55,6 +56,14 @@ class ForgetPasswordPage extends StatelessWidget {
                       ),
                     );
                   }
+                  Fluttertoast.showToast(
+                        msg: 'Email Sent SuccessFully!',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: const Color.fromARGB(255, 48, 48, 48),
+                        textColor: Colors.white,
+                      );
+
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -63,7 +72,7 @@ class ForgetPasswordPage extends StatelessWidget {
                   ),
                 ),
                 child: Text('Reset Password'),
-              ),
+              ), 
             ],
           ),
         ),

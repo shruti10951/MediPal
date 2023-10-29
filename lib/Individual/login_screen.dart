@@ -38,7 +38,7 @@ class LoginScreen extends StatelessWidget {
           // Back Button
           Positioned(
             top: 40.0,
-            left: 17.0,
+            left: MediaQuery.of(context).size.width * 0.05,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.3),
@@ -56,19 +56,19 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 150.0,
-            left: 125.0,
+            top: MediaQuery.of(context).size.height * 0.15,
+            left: MediaQuery.of(context).size.width * 0.25,
             child: SizedBox(
-              width: 140.0,
-              height: 140.0,
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.width * 0.4,
               child: Image.asset('assets/images/medipal.png'),
             ),
           ),
           // Welcome Back Text
           Positioned(
             top: MediaQuery.of(context).size.height * 0.35,
-            left: 16.0,
-            right: 16.0,
+            left: MediaQuery.of(context).size.width * 0.05,
+            right: MediaQuery.of(context).size.width * 0.05,
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -197,7 +197,7 @@ class LoginScreen extends StatelessWidget {
             );
           });
           Fluttertoast.showToast(
-                        msg: 'Logged In Scussessfully!',
+                        msg: 'Logged In Successfully!',
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         backgroundColor: Colors.green,

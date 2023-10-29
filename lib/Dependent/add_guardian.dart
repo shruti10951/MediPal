@@ -55,7 +55,7 @@ class _AddGuardianState extends State<AddGuardian> {
 
           if (guardianData.exists) {
             Map<String, dynamic> guardianMap =
-            guardianData.data() as Map<String, dynamic>;
+                guardianData.data() as Map<String, dynamic>;
 
             var noOfDependents = guardianMap['noOfDependents'] + 1;
             var dependentList = guardianMap['dependents'];
