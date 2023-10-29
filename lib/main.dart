@@ -2,10 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/Dependent/add_guardian.dart';
-import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
-import 'package:medipal/Individual/gaurdian_view_screen.dart';
-import 'package:medipal/Dependent/tab_change.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/credentials/twilio_cred.dart';
@@ -22,30 +18,6 @@ Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
   await check.checkFirestore();
 }
-
-// Future<List> getData() async {
-//   final user = FirebaseAuth.instance.currentUser;
-//   FirebaseFirestore firestore = FirebaseFirestore.instance;
-//   QuerySnapshot dependentQuery = await firestore
-//       .collection('dependents')
-//       .where('userId', isEqualTo: user?.uid.toString())
-//       .get();
-//   QuerySnapshot userQuery = await firestore
-//       .collection('users')
-//       .where('userId', isEqualTo: user?.uid.toString())
-//       .get();
-//   var role;
-//   if(dependentQuery.docs.isNotEmpty){
-//     role= 'dependent';
-//   }else{
-//     for (QueryDocumentSnapshot document in userQuery.docs) {
-//       Map<String, dynamic> userData =
-//       document.data() as Map<String, dynamic>;
-//       role = userData['role'];
-//     }
-//   }
-//   return ([user, role]);
-// }
 
 final GlobalKey<NavigatorState> navigatorKey= GlobalKey<NavigatorState>();
 
@@ -97,9 +69,8 @@ class MyApp extends StatelessWidget {
         // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
-      home:
-      //  const BottomNavigationDependent(),
-     const MyHomePage(),
+      home: MyHomePage(),
+    //  const MyHomePage(),
       //AlarmScreen(),
     );
   }

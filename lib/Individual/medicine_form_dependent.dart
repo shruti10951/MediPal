@@ -603,6 +603,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                         const SizedBox(height: 16.0),
                         TextField(
                           controller: _dosageController,
+                    keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
                             labelText: 'Quantity Per Dose',
                           ),
@@ -735,25 +736,37 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                             DocumentReference medicationDocumentReference =
                                 medicationCollectionRef.doc();
 
-                            MedicationModel medication = MedicationModel(
-                              medicationId: medicationDocumentReference.id,
-                              name: _nameController.text,
-                              type: _selectedDosageType.toString(),
-                              dosage: _dosageController.text,
-                              schedule: {
-                                'morning': _morningTime != null ? _morningTime!.format(context) : '',
-                                'noon': _noonTime != null ? _noonTime!.format(context) : '',
-                                'evening': _eveningTime != null ? _eveningTime!.format(context) : '',
-                              },
-                              inventory: {
-                                'quantity': int.tryParse(_quantityController.text) ?? 0,
-                                'reorderLevel': int.tryParse(_reorderLevelController.text) ?? 0,
-                              },
-                              startDate: _startDate != null ? dateFormat.format(_startDate!) : "",
-                              endDate: _endDate != null ? dateFormat.format(_endDate!) : "",
-                              userId: widget.dependentId,
-                              description: _descriptionController.text,
-                            );
+                      MedicationModel medication = MedicationModel(
+                        medicationId: medicationDocumentReference.id,
+                        name: _nameController.text,
+                        type: _selectedDosageType.toString(),
+                        dosage: int.parse(_dosageController.text),
+                        schedule: {
+                          'morning': _morningTime != null
+                              ? _morningTime!.format(context)
+                              : '',
+                          'noon': _noonTime != null
+                              ? _noonTime!.format(context)
+                              : '',
+                          'evening': _eveningTime != null
+                              ? _eveningTime!.format(context)
+                              : '',
+                        },
+                        inventory: {
+                          'quantity':
+                          int.tryParse(_quantityController.text) ?? 0,
+                          'reorderLevel':
+                          int.tryParse(_reorderLevelController.text) ?? 0,
+                        },
+                        startDate: _startDate != null
+                            ? dateFormat.format(_startDate!)
+                            : "",
+                        endDate: _endDate != null
+                            ? dateFormat.format(_endDate!)
+                            : "",
+                        userId: widget.dependentId,
+                        description: _descriptionController.text,
+                      );
 
                             Map<String, dynamic> medicationModel = medication.toMap();
 

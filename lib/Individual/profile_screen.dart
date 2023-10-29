@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:medipal/Dependent/add_guardian.dart';
 import 'package:medipal/main.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/Individual/dependent_details_screen.dart';
+import 'package:medipal/user_registration/choose_screen.dart';
 import 'package:qr_flutter/qr_flutter.dart'; // Replace with your screen for Dependent details
 
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -16,7 +14,7 @@ final userId = auth.currentUser?.uid;
 
 Future<UserModel?> fetchData() async {
   final userInfoQuery =
-      firestore.collection('users').doc(auth.currentUser?.uid).get();
+      firestore.collection('users').doc(userId).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -99,11 +97,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                // Handle the logout action here
-                // For example, you can sign out the user and navigate to the login screen
-                // Make sure you implement your own logout logic
+              onPressed: () async{
+                await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
+                navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> ChooseScreen()), (route) => false);
               },
               child: const Text('Logout'),
             ),
