@@ -55,7 +55,7 @@ class _AddGuardianState extends State<AddGuardian> {
 
           if (guardianData.exists) {
             Map<String, dynamic> guardianMap =
-                guardianData.data() as Map<String, dynamic>;
+            guardianData.data() as Map<String, dynamic>;
 
             var noOfDependents = guardianMap['noOfDependents'] + 1;
             var dependentList = guardianMap['dependents'];
@@ -90,41 +90,12 @@ class _AddGuardianState extends State<AddGuardian> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('QR Scanner to become a dependent'),
+        title: const Text('Scan guardian QR code'),
       ),
-      body: Column(
-        children: <Widget>[
-          
-          Expanded(
-              child: Container(
-            width: 300, // Set the width as desired
-            height: 100,
-            color: Color.fromARGB(255, 255, 255, 255), // Set the height as desired
-            alignment: Alignment.center, // Center the content
-            child: Padding(
-              padding: const EdgeInsets.only(left: 40.0),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                child: MobileScanner(
-                  fit: BoxFit.contain,
-                  controller: _mobileScannerController,
-                  onDetect: onDetect,
-                ),
-              ),
-            ),
-          )
-          ),
-          Container(
-            child: const Text(
-              'Scan the QR code to become a dependent',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
+      body: MobileScanner(
+        fit: BoxFit.contain,
+        controller: _mobileScannerController,
+        onDetect: onDetect,
       ),
     );
   }
