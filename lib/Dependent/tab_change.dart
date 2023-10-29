@@ -36,8 +36,8 @@ class _TabChangeState extends State<TabChange> {
       length: _tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 30,
-          automaticallyImplyLeading: true, // Show back button
+          toolbarHeight: 0,
+          // automaticallyImplyLeading: true, // Show back button
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: const Color.fromARGB(255, 0, 0, 0)), // Customize back button
             onPressed: () {
