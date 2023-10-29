@@ -6,7 +6,6 @@ import 'package:medipal/models/MedicationModel.dart';
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class InventoryDependentGuardian extends StatefulWidget {
-
   final dependentId;
 
   InventoryDependentGuardian({required this.dependentId});
@@ -16,7 +15,6 @@ class InventoryDependentGuardian extends StatefulWidget {
 }
 
 class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
-
   @override
   void initState() {
     super.initState();
@@ -83,10 +81,27 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                         value: value,
                         child: Row(
                           children: [
-                            if (value == 'Pills') Icon(Icons.local_pharmacy),
-                            if (value == 'Liquid') Icon(Icons.opacity),
+                           if (value == 'Pills')
+                              Container(
+                                height: 24, // Specify the height you want
+                                width: 24, // Specify the width you want
+                                child: Image.asset(
+                                    'assets/images/pill_icon.png'), // Replace 'assets/pills.png' with the actual image path
+                              ),
+                            if (value == 'Liquid')
+                              Container(
+                                height: 24, // Specify the height you want
+                                width: 24, // Specify the width you want
+                                child: Image.asset(
+                                    'assets/images/liquid_icon.png'), // Replace 'assets/liquid.png' with the actual image path
+                              ),
                             if (value == 'Injection')
-                              Icon(Icons.local_hospital),
+                              Container(
+                                height: 24, // Specify the height you want
+                                width: 24, // Specify the width you want
+                                child: Image.asset(
+                                    'assets/images/injection_icon.png'), // Replace 'assets/injection.png' with the actual image path
+                              ),
                             SizedBox(width: 8),
                             Text(value),
                           ],
@@ -109,6 +124,8 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                       type = typeController.text;
                     });
                     Navigator.pop(context);
+                    // Refresh the page after data is deleted
+                    setState(() {});
                   },
                   child: Text('Close'),
                 ),
@@ -121,14 +138,20 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                     // Use updatedType for the selected medicine type
                     // Update the item in the database
 
-                    Map<String, dynamic> medicine= {
-                      'name' : updatedName,
-                      'inventory.quantity' : updatedQuantity,
-                      'type' : type
+                    Map<String, dynamic> medicine = {
+                      'name': updatedName,
+                      'inventory.quantity': updatedQuantity,
+                      'type': type
                     };
 
-                    firestore.collection('medications').doc(id).update(medicine).then((value) => print('data updated'));
+                    firestore
+                        .collection('medications')
+                        .doc(id)
+                        .update(medicine)
+                        .then((value) => print('data updated'));
                     Navigator.pop(context);
+                    // Refresh the page after data is deleted
+                    setState(() {});
                   },
                   child: Text('Save'),
                 ),
@@ -160,15 +183,23 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
           actions: [
             TextButton(
               onPressed: () {
-
-                firestore.collection('medications').doc(id).delete().then((value) async{
-                  final snapshots= await firestore.collection('alarms').where('medicationId', isEqualTo: id).get();
-                  for (final doc in snapshots.docs){
+                firestore
+                    .collection('medications')
+                    .doc(id)
+                    .delete()
+                    .then((value) async {
+                  final snapshots = await firestore
+                      .collection('alarms')
+                      .where('medicationId', isEqualTo: id)
+                      .get();
+                  for (final doc in snapshots.docs) {
                     await doc.reference.delete();
                   }
                 });
 
                 Navigator.pop(context);
+                // Refresh the page after data is deleted
+                setState(() {});
               },
               child: const Text('Delete'),
             ),
@@ -187,29 +218,29 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Column(
         children: [
           Expanded(
               child: FutureBuilder(
-                future: fetchData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildLoadingIndicator();
+            future: fetchData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
 
-                    // return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final medicationQuery = snapshot.data;
-                    return _buildInventoryCard(medicationQuery!);
-                  }
-                },
-              ))
+                // return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final medicationQuery = snapshot.data;
+                return _buildInventoryCard(medicationQuery!);
+              }
+            },
+          ))
         ],
       ), // Create the inventory list view
     );
   }
+
   Widget _buildLoadingIndicator() {
     return const Center(
       child: Column(
@@ -240,9 +271,9 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
         itemCount: medicationQuerySnapshot.length,
         itemBuilder: (BuildContext context, int index) {
           final QueryDocumentSnapshot medicationDocumentSnapshot =
-          medicationQuerySnapshot[index];
+              medicationQuerySnapshot[index];
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
           final name = medication['name'];
           final type = medication['type'];
@@ -251,12 +282,12 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
 
           String img;
 
-          if(type=='Pills'){
-            img= 'assets/images/pill_icon.png';
-          }else if(type=='Liquid'){
-            img= 'assets/images/liquid_icon.png';
-          }else{
-            img= 'assets/images/injection_icon.png';
+          if (type == 'Pills') {
+            img = 'assets/images/pill_icon.png';
+          } else if (type == 'Liquid') {
+            img = 'assets/images/liquid_icon.png';
+          } else {
+            img = 'assets/images/injection_icon.png';
           }
 
           // Add this in UI
@@ -295,7 +326,8 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                             icon: const Icon(Icons.edit),
                             onPressed: () {
                               // Open the edit dialog when the edit button is pressed
-                              _openEditDialog(medicationId, name, type, quantity);
+                              _openEditDialog(
+                                  medicationId, name, type, quantity);
                             },
                           ),
                           IconButton(

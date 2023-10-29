@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/add_guardian.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/credentials/twilio_cred.dart';
@@ -69,8 +70,10 @@ class MyApp extends StatelessWidget {
         // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
-      home: MyHomePage(),
-    //  const MyHomePage(),
+      home:
+          MyHomePage(),
+      //  const BottomNavigationDependent(),
+      // AddGuardian(),
       //AlarmScreen(),
     );
   }

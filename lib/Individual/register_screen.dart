@@ -25,18 +25,19 @@ class RegisterScreen extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color.fromARGB(214, 152, 191, 255),
+                  Color.fromARGB(255, 223, 238, 255),
+                  Color.fromARGB(213, 170, 202, 255),
                   Color.fromARGB(255, 223, 238, 255),
                   Color.fromARGB(242, 152, 191, 255),
-                ], // Customize your gradient colors
+                ],
               ),
             ),
           ),
 
           // Back Button
           Positioned(
-            top: 40.0,
-            left: 17.0,
+            top: MediaQuery.of(context).size.height * 0.05,
+            left: MediaQuery.of(context).size.width * 0.05,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.3),
@@ -56,14 +57,14 @@ class RegisterScreen extends StatelessWidget {
 
           // Circular Medipal Image and Register Text
           Positioned(
-            top: 80.0,
+            top: MediaQuery.of(context).size.height * 0.10,
             left: 0.0,
             right: 0.0,
             child: Column(
               children: [
                 SizedBox(
-                  width: 140.0,
-                  height: 140.0,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  height: MediaQuery.of(context).size.width * 0.4,
                   child: Image.asset(
                     'assets/images/medipal.png',
                   ),
@@ -76,9 +77,9 @@ class RegisterScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 25,),
+                const SizedBox(height: 25),
                 const Text(
-                  "Registeration form",
+                  "Registration form",
                   style: TextStyle(
                     fontSize: 16.0,
                     fontStyle: FontStyle.italic,
@@ -86,15 +87,17 @@ class RegisterScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                 // const SizedBox(height: 180.0),
+
               ],
             ),
           ),
 
           // Registration Form
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.38,
-            left: 16.0,
-            right: 16.0,
+            top: MediaQuery.of(context).size.height * 0.40,
+            left: MediaQuery.of(context).size.width * 0.05,
+            right: MediaQuery.of(context).size.width * 0.05,
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -108,7 +111,7 @@ class RegisterScreen extends StatelessWidget {
                       Icons.phone_in_talk, 'Phone Number', phoneController),
                   const SizedBox(height: 16.0),
                   _buildPasswordField(
-                      Icons.password_outlined, 'Password', passwordController),
+                      Icons.password_outlined, 'Password', passwordController, context),
                   const SizedBox(height: 130.0),
                   ElevatedButton(
                     onPressed: () async {
@@ -196,47 +199,37 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-Widget _buildPasswordField(
-  IconData icon,
-  String hintText,
-  TextEditingController controller,
-) {
-  bool _isPasswordVisible = false;
+  Widget _buildPasswordField(
+      IconData icon, String hintText, TextEditingController controller, BuildContext context) {
+    bool _isPasswordVisible = false;
 
-  return Container(
-    decoration: BoxDecoration(
-      color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8),
-      borderRadius: BorderRadius.circular(30.0),
-    ),
-
-    child: SingleChildScrollView(
-      child: Column(
-        children: [
-          TextField(
-            obscureText: !_isPasswordVisible,
-            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              prefixIcon: Icon(
-                icon,
-                color: const Color.fromARGB(255, 0, 0, 0),
-              ),
-              border: InputBorder.none,
-            ),
-            controller: controller,
-          ),
-
-          // Add this to prevent the password component from being overlapped by the keyboard
-          // if (MediaQuery.of(context as BuildContext).viewInsets.bottom > 0) {
-          //   SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
-          // },
-        ],
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8),
+        borderRadius: BorderRadius.circular(30.0),
       ),
-    ),
-  );
-}
-
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              obscureText: !_isPasswordVisible,
+              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                prefixIcon: Icon(
+                  icon,
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                ),
+                border: InputBorder.none,
+              ),
+              controller: controller,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   verify(context, phoneNumber) async {
     await auth.verifyPhoneNumber(

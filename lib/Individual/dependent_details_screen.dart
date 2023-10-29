@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/tab_change.dart';
-import 'package:medipal/credentials/firebase_cred.dart';
 
 class DependentDetailsScreen extends StatefulWidget {
   @override
@@ -18,7 +17,7 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
         .doc(FirebaseAuth.instance.currentUser?.uid.toString())
         .get();
 
-    final userData= user.data() as Map<String, dynamic>;
+    final userData = user.data() as Map<String, dynamic>;
 
     List<String> dependentList = List<String>.from(userData['dependents']);
 
@@ -30,10 +29,10 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
           .get();
       final documents = querySnapshot.docs;
       if (documents.isNotEmpty) {
-        final Map<String, dynamic> dependentData = documents.first.data() as Map<String, dynamic>;
+        final Map<String, dynamic> dependentData =
+            documents.first.data() as Map<String, dynamic>;
         dependentsData.add(dependentData);
       }
-
     }
     return dependentsData;
   }
@@ -82,9 +81,6 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
                   return ListView.builder(
                     itemCount: dependentsData.data?.length,
                     itemBuilder: (context, index) {
-                      // final String dependentId= dependentList[index];
-                      // // final Map<String, dynamic> data = dependentData[index];
-                      // return _buildDependentCard(context, dependentsData);
                       final Map<String, dynamic>? dependent =
                           dependentsData.data?[index];
                       return _buildDependentCard(context, dependent!);
@@ -96,17 +92,26 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
   }
 
   Widget _buildDependentCard(BuildContext context, Map<String, dynamic> data) {
+    // List of image URLs for dependent profiles
+    List<String> imageUrls = [
+      'https://cdn-icons-png.flaticon.com/512/4128/4128253.png',
+      'https://w7.pngwing.com/pngs/666/201/png-transparent-computer-icons-woman-women-s-day-face-holidays-head-thumbnail.png',
+      
+    ];
+
+    // Generate a random index to select an image URL
+    int randomIndex = data.hashCode % imageUrls.length;
+    String imageUrl = imageUrls[randomIndex];
+
     return GestureDetector(
       onTap: () {
-        // Navigate to ---- when the card is tapped
-        //TO DO ITS ROUTE go to main.dart file and in that in material
-        //dart there is route class in it in that do the futher changes
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => TabChange(dependentId: data['userId'],)), // Use MaterialPageRoute
-          //arguments: data,
+          MaterialPageRoute(
+              builder: (context) => TabChange(
+                    dependentId: data['userId'],
+                  )),
         );
-
       },
       child: Card(
         elevation: 2.0,
@@ -117,7 +122,7 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
           contentPadding: const EdgeInsets.all(16),
           leading: CircleAvatar(
             radius: 30,
-            backgroundImage: NetworkImage('https://example.com/dependent_profile_2.jpg'),
+            backgroundImage: NetworkImage(imageUrl),
           ),
           title: Text(
             data['name'],
