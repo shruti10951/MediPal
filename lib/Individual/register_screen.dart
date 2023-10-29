@@ -196,40 +196,47 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordField(
-      IconData icon, String hintText, TextEditingController controller) {
-    bool _isPasswordVisible = false;
+Widget _buildPasswordField(
+  IconData icon,
+  String hintText,
+  TextEditingController controller,
+) {
+  bool _isPasswordVisible = false;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8),
-        borderRadius: BorderRadius.circular(30.0),
-      ),
-      child: TextField(
-        obscureText: !_isPasswordVisible,
-        style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-          prefixIcon: Icon(
-            icon,
-            color: const Color.fromARGB(255, 0, 0, 0),
-          ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              color: const Color.fromARGB(255, 0, 0, 0),
+  return Container(
+    decoration: BoxDecoration(
+      color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.8),
+      borderRadius: BorderRadius.circular(30.0),
+    ),
+
+    child: SingleChildScrollView(
+      child: Column(
+        children: [
+          TextField(
+            obscureText: !_isPasswordVisible,
+            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              prefixIcon: Icon(
+                icon,
+                color: const Color.fromARGB(255, 0, 0, 0),
+              ),
+              border: InputBorder.none,
             ),
-            onPressed: () {
-              _isPasswordVisible = !_isPasswordVisible;
-            },
+            controller: controller,
           ),
-          border: InputBorder.none,
-        ),
-        controller: controller,
+
+          // Add this to prevent the password component from being overlapped by the keyboard
+          // if (MediaQuery.of(context as BuildContext).viewInsets.bottom > 0) {
+          //   SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+          // },
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   verify(context, phoneNumber) async {
     await auth.verifyPhoneNumber(

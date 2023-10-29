@@ -99,7 +99,7 @@ class MyApp extends StatelessWidget {
       ),
       home:
       //  const BottomNavigationDependent(),
-      const MyHomePage(),
+     const MyHomePage(),
       //AlarmScreen(),
     );
   }
