@@ -24,19 +24,19 @@ class WelcomeScreenDependent extends StatelessWidget {
 
           // Medipal Circular Image (Position it at the very top)
           Positioned(
-            top: 100.0,
-            left: 130.0,
+            top: MediaQuery.of(context).size.height * 0.1,
+            left: MediaQuery.of(context).size.width * 0.3,
             child: Image.asset(
               'assets/images/medipal.png',
-              width: 120.0,
-              height: 120.0,
+              width: MediaQuery.of(context).size.width * 0.4,
+              height: MediaQuery.of(context).size.width * 0.4,
             ),
           ),
 
           // Back Button
           Positioned(
-            top: 40.0,
-            left: 17.0,
+            top: MediaQuery.of(context).size.height * 0.03,
+            left: MediaQuery.of(context).size.width * 0.05,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.3),
@@ -53,28 +53,27 @@ class WelcomeScreenDependent extends StatelessWidget {
               ),
             ),
           ),
-          const Positioned(
-            left: 135.0,
-            top: 230.0,
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.28,
+            left: MediaQuery.of(context).size.width * 0.38,
             child: Text(
               'MEDIPAL',
               style: TextStyle(
-                fontSize: 26.0,
+                fontSize: MediaQuery.of(context).size.width * 0.055,
                 color: Color.fromARGB(255, 36, 40, 81),
                 fontWeight: FontWeight.bold,
-                // fontStyle: FontStyle.italic,
               ),
             ),
           ),
 
           // Quote Text at the Left Side
-          const Positioned(
-            left: 60.0,
-            top: 270.0,
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.33,
+            left: MediaQuery.of(context).size.width * 0.18,
             child: Text(
               'Your medicine, our responsibility!',
               style: TextStyle(
-                fontSize: 18.0,
+                fontSize: MediaQuery.of(context).size.width * 0.042,
                 color: Color.fromARGB(255, 41, 45, 92),
                 fontWeight: FontWeight.bold,
                 fontStyle: FontStyle.italic,
@@ -84,8 +83,8 @@ class WelcomeScreenDependent extends StatelessWidget {
 
           Positioned(
             top: MediaQuery.of(context).size.height * 0.35,
-            left: 16.0,
-            right: 16.0,
+            left: MediaQuery.of(context).size.width * 0.05,
+            right: MediaQuery.of(context).size.width * 0.05,
             child: SingleChildScrollView(
               child: Column(
                 children: [

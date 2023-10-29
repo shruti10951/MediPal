@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/gaurdian_view_screen.dart';
 import 'package:medipal/Individual/inventory_dependet_guardian.dart';
-import 'inventory_screen_dependent.dart';
 
 class TabChange extends StatefulWidget {
   int _currentIndex = 0;
@@ -71,8 +70,3 @@ class _TabChangeState extends State<TabChange> {
     );
   }
 }
-
-  // [const GaurdianView(dependent: dependentId), const InventoryScreenDependent()];
-
-
-
