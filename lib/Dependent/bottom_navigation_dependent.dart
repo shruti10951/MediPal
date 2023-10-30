@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
+import 'package:medipal/Dependent/inventory_screen_dependent.dart';
 import 'package:medipal/Dependent/profile_screen_dependent.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
 
@@ -54,7 +55,7 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
         // ignore: prefer_const_literals_to_create_immutables
         children: <Widget>[
           const DashboardScreenDependent(), // Replace with your Dashboard screen widget
-          const InventoryScreen(), // Replace with your Inventory screen widget
+          InventoryDependent(), // Replace with your Inventory screen widget
           const ProfileScreenDependent(), // Replace with your Profile screen widget
 
           // Add other screens as needed

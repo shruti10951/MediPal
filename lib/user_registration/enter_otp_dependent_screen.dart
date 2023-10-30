@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/bottom_navigation_dependent.dart';
-import 'package:medipal/main.dart';
 import 'package:medipal/models/DependentModel.dart';
 
 class OTPForDependentPage extends StatelessWidget {
@@ -13,72 +12,88 @@ class OTPForDependentPage extends StatelessWidget {
 
   OTPForDependentPage({required this.verificationId, required this.name, required this.phoneNo});
 
-  final otpController = TextEditingController();
+final otpController = TextEditingController();
 
-  final auth = FirebaseAuth.instance;
+final auth = FirebaseAuth.instance;
 
-  CollectionReference collectionReference =
-  FirebaseFirestore.instance.collection('dependent');
+CollectionReference collectionReference =
+FirebaseFirestore.instance.collection('dependent');
 
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('OTP'),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('OTP'),
+    ),
+    body: Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color.fromARGB(255, 223, 238, 255),
+            Color.fromARGB(240, 183, 210, 253),
+          ],
+        ),
       ),
-      body: Column(
-        children: [
-          TextField(
-            decoration: const InputDecoration(
-              labelText: 'OTP',
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'OTP',
+              ),
+              controller: otpController,
             ),
-            controller: otpController,
-          ),
-          const SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                    verificationId: verificationId,
-                    smsCode: otpController.text);
-
-                await auth.signInWithCredential(credential).then((value) async {
-                  User? user = FirebaseAuth.instance.currentUser;
-
-                  // Check if the user already exists as a dependent
-                  final userDoc = await collectionReference.doc(user?.uid).get();
-                  if (!userDoc.exists) {
-                    // The user doesn't exist, create a new dependent
-
-                    DependentModel dependentModel= DependentModel(
-                      userId: user!.uid,
-                      name: name,
-                      phoneNo: phoneNo,
+            const SizedBox(height: 48.0),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20.0), // Adjust margin as needed
+              child: ElevatedButton(
+                onPressed: () async {
+                  try {
+                    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                      verificationId: verificationId,
+                      smsCode: otpController.text,
                     );
 
-                    Map<String, dynamic> dependent= dependentModel.toMap();
-                    await collectionReference.doc(user.uid).set(dependent);
+                    await auth.signInWithCredential(credential).then((value) async {
+                      User? user = FirebaseAuth.instance.currentUser;
+
+                      final userDoc = await collectionReference.doc(user?.uid).get();
+                      if (!userDoc.exists) {
+                        DependentModel dependentModel = DependentModel(
+                          userId: user!.uid,
+                          name: name,
+                          phoneNo: phoneNo,
+                        );
+
+                        Map<String, dynamic> dependent = dependentModel.toMap();
+                        await collectionReference.doc(user.uid).set(dependent);
+                      }
+
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (builder) => const BottomNavigationDependent()),
+                            (route) => false,
+                      );
+                    });
+                  } catch (e) {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    scaffoldMessenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Invalid OTP'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                   }
-
-                  navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (builder)=> const BottomNavigationDependent()), (route) => false);
-
-                });
-              } catch (e) {
-                final scaffoldMessenger = ScaffoldMessenger.of(context);
-                scaffoldMessenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Invalid OTP'),
-                    duration: Duration(seconds: 3),
-                  ),
-                );
-              }
-            },
-            child: const Text('Verify'),
-          )
-
-        ],
+                },
+                child: const Text('Verify'),
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
