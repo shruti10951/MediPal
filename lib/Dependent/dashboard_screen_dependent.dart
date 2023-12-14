@@ -236,9 +236,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-    // Implement your dynamic vertical cards here based on data
-    // You can use a ListView.builder to create a list of cards.
-    // Provide functions to fetch and handle the card data.
+
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {

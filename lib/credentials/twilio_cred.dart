@@ -5,11 +5,11 @@ class TwilioCred {
       const FlutterSecureStorage();
   writeCred() async {
     await flutterSecureStorage.write(
-        key: 'twilioAccountSid', value: 'AC86ce41bcc4825bd595bb91a30bff4074');
+        key: 'twilioAccountSid', value: 'AC3657367cb3e2e46d3496682634d0e3bd');
     await flutterSecureStorage.write(
-        key: 'twilioAuthToken', value: '7ac56f22c2a457a2040b2c2abf27082e');
+        key: 'twilioAuthToken', value: '87b6898958321922f5a32752a34b84ef');
     await flutterSecureStorage.write(
-        key: 'twilioNumber', value: '+13106607395');
+        key: 'twilioNumber', value: '+12057934634');
   }
 
   readCred() async {
