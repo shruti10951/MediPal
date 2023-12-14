@@ -46,6 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
 
       return [alarmDocumentList, medicationDocumentList];
+
     } catch (error) {
       print('Error retrieving documents: $error');
       return null;
@@ -255,9 +256,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-    // Implement your dynamic vertical cards here based on data
-    // You can use a ListView.builder to create a list of cards.
-    // Provide functions to fetch and handle the card data.
+    alarmQuerySnapshot.sort((a, b){
+      final DateTime timeA= DateTime.parse(a['time']);
+      final DateTime timeB= DateTime.parse(b['time']);
+      return timeA.compareTo(timeB);
+    });
+
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
