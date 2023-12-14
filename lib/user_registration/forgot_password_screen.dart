@@ -41,15 +41,10 @@ class ForgetPasswordPage extends StatelessWidget {
               SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () async {
-                  // Add your forgot password logic here
                   try {
                     await FirebaseAuth.instance
                         .sendPasswordResetEmail(email: _emailController.text)
                         .then((value) {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => DependentLogin()))
                       navigatorKey.currentState?.pop(context);
                     });
                   } catch (e) {

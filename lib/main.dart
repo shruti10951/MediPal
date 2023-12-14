@@ -12,7 +12,6 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
 
 import 'Dependent/bottom_navigation_dependent.dart';
-import 'notification/alarm_screen.dart';
 
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
@@ -70,8 +69,9 @@ class MyApp extends StatelessWidget {
         //useMaterial3: true,
       ),
       home:
+          MyHomePage(),
       //  const BottomNavigationDependent(),
-     const MyHomePage(),
+      // AddGuardian(),
       //AlarmScreen(),
     );
   }
