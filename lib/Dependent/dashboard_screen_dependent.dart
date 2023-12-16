@@ -237,6 +237,12 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
 
+      alarmQuerySnapshot.sort((a, b){
+      final DateTime timeA= DateTime.parse(a['time']);
+      final DateTime timeB= DateTime.parse(b['time']);
+      return timeA.compareTo(timeB);
+    });
+
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
