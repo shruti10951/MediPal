@@ -44,4 +44,4 @@ app.*.map.json
 /android/app/release
 
 #twilio
-C:/Users/Admin/MediPal/lib/credentials/twilio_cred.dart
+/lib/credentials/twilio_cred.dart
