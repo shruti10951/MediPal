@@ -77,7 +77,7 @@ class NotificationService {
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-          channelKey: 'MediPal',
+          channelKey: 'MedipalChannel',
           title: title,
           body: body,
           fullScreenIntent: true,

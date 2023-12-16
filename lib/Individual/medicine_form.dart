@@ -6,6 +6,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MedicineForm extends StatefulWidget {
   const MedicineForm({super.key});
@@ -31,10 +32,12 @@ class _MedicineFormState extends State<MedicineForm> {
   String? _selectedDosageType; // Stores the selected dosage type
 
   CollectionReference medicationCollectionRef =
-  FirebaseFirestore.instance.collection('medications');
+      FirebaseFirestore.instance.collection('medications');
   CollectionReference alarmCollectionRef =
-  FirebaseFirestore.instance.collection('alarms');
+      FirebaseFirestore.instance.collection('alarms');
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  bool isSubmitting = false; // Track the submitting state
 
   @override
   void dispose() {
@@ -75,7 +78,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Liquid',
         child: Row(
           children: [
-            Icon(Icons.liquor),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/liquid_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Liquid'),
           ],
@@ -85,7 +93,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Pills',
         child: Row(
           children: [
-            Icon(Icons.local_hospital),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/pill_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Pills'),
           ],
@@ -95,7 +108,12 @@ class _MedicineFormState extends State<MedicineForm> {
         value: 'Injection',
         child: Row(
           children: [
-            Icon(Icons.usb),
+            ImageIcon(
+              AssetImage(
+                  'assets/images/injection_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
             SizedBox(width: 8.0),
             Text('Injection'),
           ],
@@ -157,8 +175,9 @@ class _MedicineFormState extends State<MedicineForm> {
                   const SizedBox(height: 16.0),
                   TextField(
                     controller: _dosageController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
-                      labelText: 'Quatity Per Dose',
+                      labelText: 'Quantity Per Dose',
                     ),
                   ),
                   const SizedBox(height: 16.0),
@@ -283,14 +302,19 @@ class _MedicineFormState extends State<MedicineForm> {
                   const SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () async {
+                      // Set the submitting state to true
+                      setState(() {
+                        isSubmitting = true;
+                      });
+
                       DocumentReference medicationDocumentReference =
-                      medicationCollectionRef.doc();
+                          medicationCollectionRef.doc();
 
                       MedicationModel medication = MedicationModel(
                         medicationId: medicationDocumentReference.id,
                         name: _nameController.text,
                         type: _selectedDosageType.toString(),
-                        dosage: _dosageController.text,
+                        dosage: int.parse(_dosageController.text),
                         schedule: {
                           'morning': _morningTime != null
                               ? _morningTime!.format(context)
@@ -304,9 +328,9 @@ class _MedicineFormState extends State<MedicineForm> {
                         },
                         inventory: {
                           'quantity':
-                          int.tryParse(_quantityController.text) ?? 0,
+                              int.tryParse(_quantityController.text) ?? 0,
                           'reorderLevel':
-                          int.tryParse(_reorderLevelController.text) ?? 0,
+                              int.tryParse(_reorderLevelController.text) ?? 0,
                         },
                         startDate: _startDate != null
                             ? dateFormat.format(_startDate!)
@@ -323,8 +347,8 @@ class _MedicineFormState extends State<MedicineForm> {
                       await medicationDocumentReference.set(medicationModel);
 
                       for (var date = _startDate;
-                      date!.isBefore(_endDate!.add(Duration(days: 1)));
-                      date = date.add(Duration(days: 1))) {
+                          date!.isBefore(_endDate!.add(Duration(days: 1)));
+                          date = date.add(Duration(days: 1))) {
                         for (var key in medication.schedule.keys) {
                           final value = medication.schedule[key];
                           if (value != null && value.isNotEmpty) {
@@ -336,11 +360,12 @@ class _MedicineFormState extends State<MedicineForm> {
                               DateTime dateTime = DateTime(
                                   date.year, date.month, date.day, hr, min);
                               DocumentReference alarmDocumentReference =
-                              alarmCollectionRef.doc();
+                                  alarmCollectionRef.doc();
                               String medicineName = _nameController.text;
+                              String message = _dosageController.text;
                               AlarmModel alarmModel = AlarmModel(
                                   alarmId: alarmDocumentReference.id,
-                                  skipReason: ' ',
+                                  skipReason: '',
                                   userId: auth.currentUser!.uid.toString(),
                                   time: dateTime.toString(),
                                   status: 'pending',
@@ -353,8 +378,29 @@ class _MedicineFormState extends State<MedicineForm> {
                         }
                       }
 
-                      Navigator.of(context).pop();
+                      // Show the toast message
+                      Fluttertoast.showToast(
+                        msg: 'Medicine added successfully!',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: const Color.fromARGB(255, 48, 48, 48),
+                        textColor: Colors.white,
+                      );
 
+                      // Set the submitting state back to false
+                      setState(() {
+                        isSubmitting = false;
+                      });
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BottomNavigationIndividual()),
+                        (Route<dynamic> route) => false,
+                      );
+
+                      // Handle the form data as needed (e.g., save to Firestore)
+                      // print('Medication Data: $medicationModel');
                     },
                     child: const Text('Submit'),
                   ),
@@ -364,6 +410,33 @@ class _MedicineFormState extends State<MedicineForm> {
           ),
         ),
       ),
+      bottomNavigationBar: isSubmitting
+          ? _buildLoadingIndicator()
+          : null, // Show loading indicator based on isSubmitting
     );
   }
+}
+
+Widget _buildLoadingIndicator() {
+  return const Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Color.fromARGB(255, 71, 78, 84),
+          ),
+        ),
+        SizedBox(height: 16.0),
+        Text(
+          'Loading...',
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    ),
+  );
 }

@@ -4,7 +4,7 @@ class MedicationModel {
   final String medicationId;
   final String name;
   final String type;
-  final String dosage;
+  final int dosage;
   final Map<String, dynamic> schedule;
   final Map<String, dynamic> inventory;
   final String startDate;

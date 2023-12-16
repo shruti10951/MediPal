@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
@@ -27,7 +26,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   Map<String, dynamic> userMap = {};
 
   var user;
-  var role='';
+  var role = '';
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +38,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Text('Error: ${snapshot.error.toString()}');
           } else {
             return buildUI();
           }
@@ -53,7 +52,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     medicationMap = await loadMedicationData();
     var userList = await FirebaseCred().getData();
     role = userList[1];
-    user= userList[0];
+    user = userList[0];
   }
 
   Future<Map<String, dynamic>> loadMedicationData() async {
@@ -128,7 +127,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
           const SizedBox(height: 10),
           // Quantity of Medicine
           Text(
-            'Quantity: ${medicationMap['inventory']['quantity'] ?? 0}',
+            'Quantity: ${medicationMap['dosage'] ?? 0}',
             style: const TextStyle(
               fontSize: 18,
               color: Colors.black,
@@ -136,7 +135,12 @@ class _AlarmScreenState extends State<AlarmScreen> {
           ),
           const SizedBox(height: 200),
           // Action Buttons
-          ActionButtons(alarmId: widget.alarmId, alarmMap: alarmMap, userId: user.uid, role: role),
+          ActionButtons(
+              alarmId: widget.alarmId,
+              alarmMap: alarmMap,
+              medicationMap: medicationMap,
+              userId: user.uid,
+              role: role),
         ],
       ),
     );
@@ -205,8 +209,14 @@ class ActionButtons extends StatelessWidget {
   final String userId;
   final String role;
   Map<String, dynamic> alarmMap;
+  Map<String, dynamic> medicationMap;
 
-  ActionButtons({required this.alarmId, required this.alarmMap, required this.userId, required this.role});
+  ActionButtons(
+      {required this.alarmId,
+      required this.alarmMap,
+      required this.medicationMap,
+      required this.userId,
+      required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -228,11 +238,56 @@ class ActionButtons extends StatelessWidget {
           label: 'Take',
           onPressed: () async {
             alarmMap['status'] = 'taken';
+            medicationMap['inventory']['quantity'] = medicationMap['inventory']['quantity'] - medicationMap['dosage'];
+            var quantity= medicationMap['inventory']['quantity'];
+            var name= medicationMap['name'];
             await FirebaseFirestore.instance
                 .collection('alarms')
                 .doc(alarmId)
                 .update(alarmMap)
-                .then((value) => Navigator.of(context).pop());
+                .then((value) async {
+              await FirebaseFirestore.instance
+                  .collection('medications')
+                  .doc(medicationMap['medicationId'])
+                  .update(medicationMap)
+                  .then((value) async {
+                    if(medicationMap['inventory']['quantity'] <= medicationMap['inventory']['reorderLevel']){
+                      TwilioFlutter twilioFlutter;
+                      final cred = await TwilioCred().readCred();
+                      if(role== 'dependent'){
+                        final guardian =
+                        await FirebaseCred().getGuardianData(userId);
+                        twilioFlutter = TwilioFlutter(
+                          accountSid: cred[0],
+                          authToken: cred[1],
+                          twilioNumber: cred[2],
+                        );
+
+                        twilioFlutter.sendSMS(
+                          toNumber: '+91' + guardian['phoneNo'],
+                          messageBody:
+                          "$quantity units of medicine $name remaining of your dependent!",
+                        );
+                      }else{
+                        final userData= await FirebaseFirestore.instance.collection('users').doc(userId).get();
+                        final userMap= userData.data() as Map<String, dynamic>;
+                        twilioFlutter = TwilioFlutter(
+                          accountSid: cred[0],
+                          authToken: cred[1],
+                          twilioNumber: cred[2],
+                        );
+
+                        twilioFlutter.sendSMS(
+                          toNumber: '+91' + userMap['phoneNo'],
+                          messageBody:
+                          "$quantity units of medicine $name remaining!",
+                        );
+                      }
+
+                    }
+                Navigator.of(context).pop();
+              });
+            });
           },
           color: Colors.green,
         ),
@@ -269,33 +324,37 @@ class ActionButtons extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                alarmMap['skipReason'] = reasonController.text;
+                var reason = reasonController.text;
+                alarmMap['skipReason'] = reason;
                 alarmMap['status'] = 'Skipped';
                 await FirebaseFirestore.instance
                     .collection('alarms')
                     .doc(alarmId)
                     .update(alarmMap)
-                    .then((value) {
-                      if(role=='dependent'){
-                        final cred = TwilioCred().readCred();
-                        final guardian = FirebaseCred().getGuardianData(userId);
-                        TwilioFlutter twilioFlutter;
-                        if (guardian != null) {
-                          twilioFlutter = TwilioFlutter(
-                            accountSid: cred[0],
-                            authToken: cred[1],
-                            twilioNumber: cred[2],
-                          );
+                    .then((value) async {
+                  if (role == 'dependent') {
+                    final cred = await TwilioCred().readCred();
+                    final guardian =
+                        await FirebaseCred().getGuardianData(userId);
+                    TwilioFlutter twilioFlutter;
+                    if (guardian != null) {
+                      twilioFlutter = TwilioFlutter(
+                        accountSid: cred[0],
+                        authToken: cred[1],
+                        twilioNumber: cred[2],
+                      );
 
-                          twilioFlutter.sendSMS(
-                            toNumber: '+91' + guardian['phoneNo'],
-                            messageBody: 'Your dependent did not take the medicine!',
-                          );
-                        } else {
-                          // Handle the case where guardian is null (e.g., show an error message).
-                          print('Guardian data is not available.');
-                        }
-                      }
+                      twilioFlutter.sendSMS(
+                        toNumber: '+91' + guardian['phoneNo'],
+                        messageBody:
+                            "Your dependent did not take the medicine! \nReason: $reason",
+                      );
+                      print('done');
+                    } else {
+                      // Handle the case where guardian is null (e.g., show an error message).
+                      print('Guardian data is not available.');
+                    }
+                  }
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 });

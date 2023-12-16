@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medipal/main.dart';
 import 'package:medipal/models/UserModel.dart';
+import 'package:medipal/Individual/dependent_details_screen.dart';
+import 'package:medipal/user_registration/choose_screen.dart';
+import 'package:qr_flutter/qr_flutter.dart'; // Replace with your screen for Dependent details
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
 
 Future<UserModel?> fetchData() async {
-  final userInfoQuery = firestore.collection('users').doc(userId).get();
+  final userInfoQuery =
+      firestore.collection('users').doc(userId).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -18,7 +22,6 @@ Future<UserModel?> fetchData() async {
       final userData = UserModel.fromDocumentSnapshot(userDoc);
       return userData;
     } else {
-      // Return null or handle the case when the document doesn't exist
       return null;
     }
   } catch (error) {
@@ -35,56 +38,71 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  ImagePicker _imagePicker = ImagePicker();
-  XFile? _image;
-
-  void _selectImage() async {
-    final pickedFile =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = pickedFile;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
   }
 
-  String guardianCode = '';
+  UserModel? userData;
 
-  DependentBox? dependent;
-  UserModel? userData; // Add user data
+  Widget _buildInfoRow(String title, String subtitle, IconData iconData) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: ListTile(
+        leading: Icon(
+          iconData,
+          color: const Color.fromARGB(171, 41, 45, 92),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Color.fromARGB(227, 41, 45, 92),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 20, 22, 44),
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
 
-  void _openGuardianDialog() {
+  void _showLogoutConfirmation() {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Guardian Code'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration: const InputDecoration(labelText: 'Code'),
-                onChanged: (value) {
-                  setState(() {
-                    guardianCode = value;
-                  });
-                },
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                // Copy code logic
-                // You can use the guardianCode variable here
-              },
-              child: const Text('Copy Code'),
-            ),
+          title: const Text('Logout Confirmation'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: <Widget>[
             TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromARGB(255, 206, 205, 255)),
+                    
+              ),
               onPressed: () {
+                // Close the dialog
                 Navigator.of(context).pop();
               },
-              child: const Text('Close'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async{
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pop(); // Close the dialog
+                navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> ChooseScreen()), (route) => false);
+              },
+              child: const Text('Logout'),
             ),
           ],
         );
@@ -93,158 +111,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    fetchUserData();
-  }
-
-  Future<void> fetchUserData() async {
-    final userDoc = await firestore.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      final userData = UserModel.fromDocumentSnapshot(userDoc);
-      setState(() {
-        this.userData = userData;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _showLogoutConfirmation(); // Show the confirmation dialog
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: _selectImage,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 80,
-                    backgroundImage:
-                        _image != null ? FileImage(File(_image!.path)) : null,
-                    child: _image == null
-                        ? const Icon(
-                            Icons.add,
-                            size: 36,
-                          )
-                        : null,
-                  ),
-                  if (_image != null)
-                    const Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.add,
-                          size: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+            // Replace the GestureDetector with an Image.asset widget
+            // Image.asset(
+            //   'assets/images/medipal.png',
+            //   width: 160, // Adjust the width as needed
+            //   height: 160, // Adjust the height as needed
+            // ),
+            QrImageView(
+              data: userId ?? 'error',
+              version: QrVersions.auto,
+              size: 180,
+              gapless: false,
             ),
             const SizedBox(height: 16),
             FutureBuilder<UserModel?>(
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.hasError || !snapshot.hasData) {
-                  return Text('Error: Unable to load user data');
+                  return const Text('loading user data...');
                 }
 
                 final user = snapshot.data!;
                 return Column(
                   children: [
-                    _buildInfoRow('Name', user.name, Icons.person),
-                    _buildInfoRow('Phone', user.phoneNo, Icons.phone),
-                    _buildInfoRow('Email', user.email, Icons.email),
-                    if (dependent != null) dependent!,
+                    _buildInfoRow('Name', user.name, Icons.person_add_alt),
+                    _buildInfoRow(
+                        'Phone', user.phoneNo, Icons.phone_android_sharp),
+                    _buildInfoRow('Email', user.email, Icons.mark_email_read),
+                    // if (isDependent)
+                    Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      elevation: 2,
+                      child: InkWell(
+                        onTap: () {
+                          // Navigate to Dependent Details Screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DependentDetailsScreen(),
+                            ),
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.group, // Your desired grey icon
+                                color: Color.fromARGB(255, 41, 45,
+                                    92), // Set the icon color to grey
+                              ),
+                              SizedBox(
+                                  width:
+                                      16), // Add spacing between icon and text
+                              Text(
+                                'Dependent Details',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 41, 45, 92),
+            
+                                ),
+                              ),
+                              Spacer(), // Add a spacer to push the icon to the end
+                              Icon(
+                                Icons.arrow_forward, // Your desired arrow icon
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 );
               },
             ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    _openGuardianDialog();
-                    setState(() {
-                      dependent = const DependentBox();
-                    });
-                  },
-                  child: const Text('Be Guardian'),
-                ),
-                const SizedBox(width: 16),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    // Handle the "Edit" button press
-                  },
-                  icon: const Icon(Icons.edit),
-                  label: const Text('Edit'),
-                ),
-              ],
+            const SizedBox(
+              height: 40,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  _buildInfoRow(String title, String subtitle, IconData iconData) {
-    return Padding(padding:const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-      child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-              offset: const Offset(0, 5),
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 10,),
-        ],
-      ),
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        leading: Icon(iconData),
-        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
-        tileColor: Colors.white,
-      ),
-      ),
-    );
-  }
-}
-
-class DependentBox extends StatelessWidget {
-  const DependentBox({Key? key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 400,
-      height: 60,
-      child: Card(
-        elevation: 1.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 0),
-          child: ListTile(
-            title: Text('Dependent',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            leading: Icon(Icons.person,
-                size: 20, color: Color.fromARGB(255, 0, 0, 0)),
-          ),
         ),
       ),
     );

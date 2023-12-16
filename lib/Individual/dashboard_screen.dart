@@ -6,7 +6,6 @@ import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'medicine_form.dart';
 
-
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
@@ -47,6 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
 
       return [alarmDocumentList, medicationDocumentList];
+
     } catch (error) {
       print('Error retrieving documents: $error');
       return null;
@@ -63,6 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(224, 249, 249, 249),
       appBar: AppBar(
         title: Row(
           children: [
@@ -76,32 +77,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          _buildCalendar(context),
-          const Divider(),
-          Expanded(
-            child: FutureBuilder(
-              future: fetchData(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  //PLEASE DO SOMETHING ABOUT THIS.
-                  return _buildLoadingIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  final alarmQuerySnapshot = snapshot.data![0];
-                  final medicineQuerySnapshot = snapshot.data![1];
-                  return _buildDynamicCards(
-                      filteredAlarms.isEmpty
-                          ? alarmQuerySnapshot
-                          : filteredAlarms,
-                      medicineQuerySnapshot);
-                }
-              },
+      body: Padding(
+        padding: const EdgeInsets.only(top: 15.0), // Set the top padding here
+        child: Column(
+          children: [
+            _buildCalendar(context),
+            const Divider(),
+            Expanded(
+              child: FutureBuilder(
+                future: fetchData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _buildLoadingIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final alarmQuerySnapshot = snapshot.data![0];
+                    final medicineQuerySnapshot = snapshot.data![1];
+                    return _buildDynamicCards(
+                        filteredAlarms.isEmpty
+                            ? alarmQuerySnapshot
+                            : filteredAlarms,
+                        medicineQuerySnapshot);
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
 
       //add action button
@@ -109,14 +112,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onPressed: () {
           _navigateToMedicineForm(context); // Call the navigation function
         },
-        backgroundColor: const Color.fromARGB(255, 71, 78, 84),
+        backgroundColor: Color.fromARGB(255, 117, 116, 116),
         child: const Icon(Icons.add), // Set the button background color
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
-   Widget _buildLoadingIndicator() {
+  Widget _buildLoadingIndicator() {
     return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -140,15 +143,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-
   Widget _buildCalendar(BuildContext context) {
     return FutureBuilder(
       future: fetchData(),
       builder: (BuildContext context,
           AsyncSnapshot<List<List<QueryDocumentSnapshot>>?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          //PLEASE DO SOMETHING ABOUT THIS.
-          return CircularProgressIndicator();
+          return _buildLoadingIndicator();
         } else if (snapshot.hasError || snapshot.data == null) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -176,7 +177,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           margin: const EdgeInsets.all(4),
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blue),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 41, 45, 92),
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Column(
@@ -253,9 +256,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-    // Implement your dynamic vertical cards here based on data
-    // You can use a ListView.builder to create a list of cards.
-    // Provide functions to fetch and handle the card data.
+    alarmQuerySnapshot.sort((a, b){
+      final DateTime timeA= DateTime.parse(a['time']);
+      final DateTime timeB= DateTime.parse(b['time']);
+      return timeA.compareTo(timeB);
+    });
+
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
@@ -267,64 +273,74 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final Map<String, dynamic> alarm = alarmModel.toMap();
         final String medicationId = alarm['medicationId'];
 
-        QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
-            .firstWhere((element) => element['medicationId'] == medicationId,
-                orElse: null);
+        if (medicineQuerySnapshot.isNotEmpty) {
+          QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
+              .firstWhere((element) => element['medicationId'] == medicationId,
+                  orElse: null);
 
-        if (medicationDocument != null) {
-          final MedicationModel medicationModel =
-              MedicationModel.fromDocumentSnapshot(medicationDocument);
-          final Map<String, dynamic> medicine = medicationModel.toMap();
-          final String name = medicine['name'];
-          final String time = alarm['time'];
-          final String quantity = medicine['dosage'];
-          final String type = medicine['type'];
-          
-          String img;
+          if (medicationDocument != null) {
+            final MedicationModel medicationModel =
+                MedicationModel.fromDocumentSnapshot(medicationDocument);
+            final Map<String, dynamic> medicine = medicationModel.toMap();
+            final String name = medicine['name'];
+            final String time = alarm['time'];
+            final int quantity = medicine['dosage'];
+            final String type = medicine['type'];
 
-          if(type=='Pills'){
-            img= 'assets/images/pill_icon.png';
-          }else if(type=='Liquid'){
-            img= 'assets/images/liquid_icon.png';
-          }else{
-            img= 'assets/images/injection_icon.png';
+            String img;
+
+            if (type == 'Pills') {
+              img = 'assets/images/pill_icon.png';
+            } else if (type == 'Liquid') {
+              img = 'assets/images/liquid_icon.png';
+            } else {
+              img = 'assets/images/injection_icon.png';
+            }
+
+            DateTime dateTime = DateTime.parse(time);
+
+            //check this once again for time and date
+            // String formattedTime = DateFormat.Hm().format(dateTime);
+            // DateTime dateTime = DateTime.parse(time);
+
+// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+            String formattedDate = DateFormat('d MMM').format(dateTime);
+
+// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
+            String formattedTime = DateFormat.Hm().format(dateTime);
+
+            String dateTimeText = '$formattedDate | $formattedTime';
+            return Card(
+              margin: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      dateTimeText,
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 1, color: Colors.grey),
+                  ListTile(
+                    leading: Image.asset(img),
+                    title: Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text('Quantity: $quantity'),
+                  ),
+                ],
+              ),
+            );
           }
-
-          DateTime dateTime = DateTime.parse(time);
-
-          //check this once again for time and date
-          String formattedTime = DateFormat.Hm().format(dateTime);
-
-          return Card(
-            margin: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    formattedTime,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Divider(height: 1, color: Colors.grey),
-                ListTile(
-                  leading: Image.asset(img),
-                  title: Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text('Quantity: $quantity'),
-                ),
-              ],
-            ),
-          );
         } else {
           return const Card(
             margin: EdgeInsets.all(8),

@@ -1,21 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
 
-FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
-final userId = auth.currentUser?.uid;
 
-class InventoryScreen extends StatefulWidget {
-  const InventoryScreen({super.key});
+class InventoryDependentGuardian extends StatefulWidget {
+  final dependentId;
+
+  InventoryDependentGuardian({required this.dependentId});
 
   @override
-  _InventoryScreenState createState() => _InventoryScreenState();
+  _InventoryDependentGuardian createState() => _InventoryDependentGuardian();
 }
 
-class _InventoryScreenState extends State<InventoryScreen> {
+class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
   @override
   void initState() {
     super.initState();
@@ -24,7 +23,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Future<List<QueryDocumentSnapshot>?> fetchData() async {
     final medicationQuery = firestore
         .collection('medications')
-        .where('userId', isEqualTo: userId)
+        .where('userId', isEqualTo: widget.dependentId)
         .get();
 
     List<QueryDocumentSnapshot> medicationDocumentList = [];
@@ -82,7 +81,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         value: value,
                         child: Row(
                           children: [
-                            if (value == 'Pills')
+                           if (value == 'Pills')
                               Container(
                                 height: 24, // Specify the height you want
                                 width: 24, // Specify the width you want
@@ -125,6 +124,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       type = typeController.text;
                     });
                     Navigator.pop(context);
+                    // Refresh the page after data is deleted
+                    setState(() {});
                   },
                   child: Text('Close'),
                 ),
@@ -148,10 +149,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         .doc(id)
                         .update(medicine)
                         .then((value) => print('data updated'));
-
                     Navigator.pop(context);
-
-                    // Refresh the page after data is updated
+                    // Refresh the page after data is deleted
                     setState(() {});
                   },
                   child: Text('Save'),
@@ -199,7 +198,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 });
 
                 Navigator.pop(context);
-
                 // Refresh the page after data is deleted
                 setState(() {});
               },
@@ -220,25 +218,24 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inventory'),
-      ),
       body: Column(
         children: [
           Expanded(
               child: FutureBuilder(
-                future: fetchData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildLoadingIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final medicationQuery = snapshot.data;
-                    return _buildInventoryCard(medicationQuery!);
-                  }
-                },
-              ))
+            future: fetchData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
+
+                // return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final medicationQuery = snapshot.data;
+                return _buildInventoryCard(medicationQuery!);
+              }
+            },
+          ))
         ],
       ), // Create the inventory list view
     );
@@ -274,9 +271,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
         itemCount: medicationQuerySnapshot.length,
         itemBuilder: (BuildContext context, int index) {
           final QueryDocumentSnapshot medicationDocumentSnapshot =
-          medicationQuerySnapshot[index];
+              medicationQuerySnapshot[index];
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
           final name = medication['name'];
           final type = medication['type'];
@@ -351,4 +348,3 @@ class _InventoryScreenState extends State<InventoryScreen> {
         });
   }
 }
-
