@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
 import 'package:medipal/Individual/profile_screen.dart';
-import 'package:medipal/Individual/profile_screen.dart';
 
 class BottomNavigationIndividual extends StatefulWidget {
   const BottomNavigationIndividual({Key? key}) : super(key: key);
@@ -67,25 +66,6 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
             DashboardScreen(), // Replace with your Dashboard screen widget
             InventoryScreen(), // Replace with your Inventory screen widget
             ProfileScreen(), // Replace with your Profile screen widget
-    return WillPopScope(
-      onWillPop: () async {
-        // Prevent back button when on the first page
-        if (_selectedIndex == 0) {
-          return false;
-        }
-        // Handle navigation when on other pages
-        _navigateToDashboard();
-        return true;
-      },
-      child: Scaffold(
-        appBar: null, // Set the AppBar to null to hide it
-        body: PageView(
-          controller: _pageController,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: <Widget>[
-            DashboardScreen(), // Replace with your Dashboard screen widget
-            InventoryScreen(), // Replace with your Inventory screen widget
-            ProfileScreen(), // Replace with your Profile screen widget
 
             // Add other screens as needed
           ],
@@ -119,21 +99,6 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
               _selectedIndex = index;
             });
 
-            // Add logic to navigate to specific pages based on index
-            switch (index) {
-              case 0:
-                _navigateToDashboard();
-                break;
-              case 1:
-                _navigateToInventory();
-                break;
-              case 2:
-                _navigateToProfile();
-                break;
-              // Add other cases for additional tabs
-            }
-          },
-        ),
             // Add logic to navigate to specific pages based on index
             switch (index) {
               case 0:
