@@ -1,7 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
-import 'package:medipal/Individual/profile_screen.dart';
 import 'package:medipal/Individual/profile_screen.dart';
 
 class BottomNavigationIndividual extends StatefulWidget {
@@ -67,25 +67,6 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
             DashboardScreen(), // Replace with your Dashboard screen widget
             InventoryScreen(), // Replace with your Inventory screen widget
             ProfileScreen(), // Replace with your Profile screen widget
-    return WillPopScope(
-      onWillPop: () async {
-        // Prevent back button when on the first page
-        if (_selectedIndex == 0) {
-          return false;
-        }
-        // Handle navigation when on other pages
-        _navigateToDashboard();
-        return true;
-      },
-      child: Scaffold(
-        appBar: null, // Set the AppBar to null to hide it
-        body: PageView(
-          controller: _pageController,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: <Widget>[
-            DashboardScreen(), // Replace with your Dashboard screen widget
-            InventoryScreen(), // Replace with your Inventory screen widget
-            ProfileScreen(), // Replace with your Profile screen widget
 
             // Add other screens as needed
           ],
@@ -96,44 +77,31 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
           },
         ),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor:
+              Colors.black, // Set the background color of the Scaffold to black
+
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_customize),
+              icon: Icon(Icons.dashboard),
               label: 'Dashboard',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_rounded),
+              icon: Icon(Icons.inventory),
               label: 'Inventory',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_2_rounded),
+              icon: Icon(Icons.person),
               label: 'Profile',
             ),
           ],
-         unselectedItemColor: Color.fromARGB(146, 170, 149, 247),
-          //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
+          unselectedItemColor: Color.fromARGB(255, 255, 255, 255),
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 41,45,92),
+          selectedItemColor: Color.fromARGB(255, 226, 251, 255),
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
             });
 
-            // Add logic to navigate to specific pages based on index
-            switch (index) {
-              case 0:
-                _navigateToDashboard();
-                break;
-              case 1:
-                _navigateToInventory();
-                break;
-              case 2:
-                _navigateToProfile();
-                break;
-              // Add other cases for additional tabs
-            }
-          },
-        ),
             // Add logic to navigate to specific pages based on index
             switch (index) {
               case 0:
