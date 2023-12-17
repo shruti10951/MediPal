@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/bottom_navigation_dependent.dart';
 import 'package:medipal/models/DependentModel.dart';
@@ -66,6 +65,8 @@ Widget build(BuildContext context) {
                           userId: user!.uid,
                           name: name,
                           phoneNo: phoneNo,
+                          guardians: [],
+                          noOfGuardian: 0,
                         );
 
                         Map<String, dynamic> dependent = dependentModel.toMap();

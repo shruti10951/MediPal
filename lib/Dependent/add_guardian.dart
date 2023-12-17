@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +5,8 @@ import 'package:medipal/main.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class AddGuardian extends StatefulWidget {
+  const AddGuardian({super.key});
+
   @override
   _AddGuardianState createState() => _AddGuardianState();
 }
@@ -40,7 +40,6 @@ class _AddGuardianState extends State<AddGuardian> {
 
       if (!dependentAdded) {
         final List<Barcode> barcodes = capture.barcodes;
-        final Uint8List? image = capture.image;
         var guardianId;
 
         for (final barcode in barcodes) {
@@ -53,24 +52,50 @@ class _AddGuardianState extends State<AddGuardian> {
               .doc(guardianId)
               .get();
 
+          var dependentData = await FirebaseFirestore.instance
+              .collection('dependent')
+              .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+              .get();
+
           if (guardianData.exists) {
             Map<String, dynamic> guardianMap =
                 guardianData.data() as Map<String, dynamic>;
 
-            var noOfDependents = guardianMap['noOfDependents'] + 1;
+            Map<String, dynamic> dependentMap =
+                dependentData.data() as Map<String, dynamic>;
+
             var dependentList = guardianMap['dependents'];
+            var guardianList = dependentMap['guardians'];
 
-            dependentList
-                .add(FirebaseAuth.instance.currentUser?.uid.toString());
+            if (dependentList
+                .contains(FirebaseAuth.instance.currentUser?.uid.toString())) {
+              //toast msg here to indicate that guardian is already added!
+            } else {
+              dependentList
+                  .add(FirebaseAuth.instance.currentUser?.uid.toString());
 
-            guardianMap['noOfDependents'] = noOfDependents;
-            guardianMap['dependents'] = dependentList;
+              guardianList
+                  .add(guardianId);
 
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(guardianId)
-                .update(guardianMap);
+              var noOfDependents = guardianMap['noOfDependents'] + 1;
+              var noOfGuardian = dependentMap['noOfGuardian'] + 1;
 
+              guardianMap['noOfDependents'] = noOfDependents;
+              guardianMap['dependents'] = dependentList;
+
+              dependentMap['noOfGuardian'] = noOfGuardian;
+              dependentMap['guardians'] = guardianList;
+
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(guardianId)
+                  .update(guardianMap);
+
+              await FirebaseFirestore.instance
+                  .collection('dependent')
+                  .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+                  .update(dependentMap);
+            }
             dependentAdded = true;
             navigatorKey.currentState?.pop();
             isProcessingScan = false;
