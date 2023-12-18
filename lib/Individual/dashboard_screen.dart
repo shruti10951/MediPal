@@ -14,7 +14,6 @@ class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
@@ -34,8 +33,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     try {
       final results = await Future.wait([alarmQuery, medicationQuery]);
-      final alarmQuerySnapshot = results[0] as QuerySnapshot;
-      final medicationQuerySnapshot = results[1] as QuerySnapshot;
+      final alarmQuerySnapshot = results[0];
+      final medicationQuerySnapshot = results[1];
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
         alarmDocumentList = alarmQuerySnapshot.docs.toList();
@@ -46,8 +45,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
 
       return [alarmDocumentList, medicationDocumentList];
-
     } catch (error) {
+      //add toast or snack-bar
       print('Error retrieving documents: $error');
       return null;
     }
@@ -63,7 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(224, 249, 249, 249),
+      backgroundColor: const Color.fromARGB(224, 249, 249, 249),
       appBar: AppBar(
         title: Row(
           children: [
@@ -112,7 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onPressed: () {
           _navigateToMedicineForm(context); // Call the navigation function
         },
-        backgroundColor: Color.fromARGB(255, 117, 116, 116),
+        backgroundColor: const Color.fromARGB(255, 117, 116, 116),
         child: const Icon(Icons.add), // Set the button background color
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -226,8 +225,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
 
     if (selectedDate != null) {
-      // Handle the selected date here (e.g., update the UI with the selected date)
-      print('Selected date: $selectedDate');
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
   }
@@ -252,13 +249,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       filteredAlarms = alarmFilteredSnapshot;
     });
+
+    if (filteredAlarms.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No alarms scheduled for this day.'),
+        ),
+      );
+    }
   }
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-    alarmQuerySnapshot.sort((a, b){
-      final DateTime timeA= DateTime.parse(a['time']);
-      final DateTime timeB= DateTime.parse(b['time']);
+    if (filteredAlarms.isEmpty) {
+      DateTime currentDate = DateTime.now();
+      alarmQuerySnapshot = alarmQuerySnapshot.where((element) {
+        DateTime alarmTime = DateTime.parse(element['time']);
+        return alarmTime.isAfter(currentDate);
+      }).toList();
+    }
+
+    //sorting
+    alarmQuerySnapshot.sort((a, b) {
+      final DateTime timeA = DateTime.parse(a['time']);
+      final DateTime timeB = DateTime.parse(b['time']);
       return timeA.compareTo(timeB);
     });
 
@@ -299,14 +313,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             DateTime dateTime = DateTime.parse(time);
 
-            //check this once again for time and date
-            // String formattedTime = DateFormat.Hm().format(dateTime);
-            // DateTime dateTime = DateTime.parse(time);
-
-// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+            // Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
             String formattedDate = DateFormat('d MMM').format(dateTime);
 
-// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
+            // Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
             String formattedTime = DateFormat.Hm().format(dateTime);
 
             String dateTimeText = '$formattedDate | $formattedTime';

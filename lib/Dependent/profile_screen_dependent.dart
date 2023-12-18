@@ -32,8 +32,7 @@ Future<Map<String, dynamic>?> fetchData() async {
       backgroundColor: Color.fromARGB(255, 240, 91, 91),
       textColor: Color.fromARGB(255, 255, 255, 255),
     );
-    //show toast msg
-    // print('Error retrieving document: $error');
+
     return null;
   }
 }
@@ -108,7 +107,8 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
                 navigatorKey.currentState?.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => ChooseScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const ChooseScreen()),
                     (route) => false);
               },
               child: const Text('Logout'),
@@ -183,9 +183,8 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                                 color: Color.fromARGB(255, 41, 45,
                                     92), // Set the icon color to grey
                               ),
-                              SizedBox(
-                                  width:
-                                      16), // Add spacing between icon and text
+                              SizedBox(width: 16),
+                              // Add spacing between icon and text
                               Text(
                                 'Guardian Details',
                                 style: TextStyle(
@@ -193,7 +192,8 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                                   color: Color.fromARGB(255, 41, 45, 92),
                                 ),
                               ),
-                              Spacer(), // Add a spacer to push the icon to the end
+                              Spacer(),
+                              // Add a spacer to push the icon to the end
                               Icon(
                                 Icons.arrow_forward, // Your desired arrow icon
                               ),

@@ -31,13 +31,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     try {
       final results = await Future.wait([medicationQuery]);
-      final medicationQuerySnapshot = results[0] as QuerySnapshot;
+      final medicationQuerySnapshot = results[0];
 
       if (medicationQuerySnapshot.docs.isNotEmpty) {
         medicationDocumentList = medicationQuerySnapshot.docs.toList();
       }
       return medicationDocumentList;
     } catch (error) {
+      //toast
       print('Error retrieving documents: $error');
       return null;
     }
@@ -59,15 +60,15 @@ class _InventoryScreenState extends State<InventoryScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Edit Medication'),
+              title: const Text('Edit Medication'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: InputDecoration(labelText: 'Medication Name'),
+                    decoration: const InputDecoration(labelText: 'Medication Name'),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   DropdownButton<String>(
                     value: type,
                     onChanged: (String? newValue) {
@@ -103,17 +104,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 child: Image.asset(
                                     'assets/images/injection_icon.png'), // Replace 'assets/injection.png' with the actual image path
                               ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(value),
                           ],
                         ),
                       );
                     }).toList(),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: quantityController,
-                    decoration: InputDecoration(labelText: 'Quantity'),
+                    decoration: const InputDecoration(labelText: 'Quantity'),
                     keyboardType: TextInputType.number,
                   ),
                 ],
@@ -126,7 +127,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     });
                     Navigator.pop(context);
                   },
-                  child: Text('Close'),
+                  child: const Text('Close'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -134,8 +135,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     String updatedType = typeController.text;
                     int updatedQuantity =
                         int.tryParse(quantityController.text) ?? 0;
-                    // Use updatedType for the selected medicine type
-                    // Update the item in the database
 
                     Map<String, dynamic> medicine = {
                       'name': updatedName,
@@ -154,7 +153,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     // Refresh the page after data is updated
                     setState(() {});
                   },
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ),
               ],
             );

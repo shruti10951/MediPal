@@ -241,6 +241,10 @@ class RegisterScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+<<<<<<< HEAD
+=======
+                // const SizedBox(height: 180.0),
+>>>>>>> bf44d24ef2fc32e9ce261db8126e7e1f19dd5242
               ],
             ),
           ),
@@ -264,6 +268,7 @@ class RegisterScreen extends StatelessWidget {
                   const SizedBox(height: 16.0),
                   _buildPasswordField(Icons.password_outlined, 'Password',
                       passwordController, context),
+<<<<<<< HEAD
                   //JANA KRIPYA YAHA DEKHIYE
                   if (_validatePassword() !=
                       null) // Conditionally display the error message
@@ -271,6 +276,8 @@ class RegisterScreen extends StatelessWidget {
                       _validatePassword() ?? '',
                       style: TextStyle(color: Colors.red),
                     ),
+=======
+>>>>>>> bf44d24ef2fc32e9ce261db8126e7e1f19dd5242
                   const SizedBox(height: 130.0),
                   ElevatedButton(
                     onPressed: () async {
@@ -359,6 +366,7 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
   // Widget _buildPasswordField(IconData icon, String hintText,
   //     TextEditingController controller, BuildContext context) {
   //   bool _isPasswordVisible = false;
@@ -394,6 +402,11 @@ class RegisterScreen extends StatelessWidget {
   Widget _buildPasswordField(IconData icon, String hintText,
       TextEditingController controller, BuildContext context) {
     bool _isPasswordVisible = false;
+=======
+  Widget _buildPasswordField(IconData icon, String hintText,
+      TextEditingController controller, BuildContext context) {
+    bool isPasswordVisible = false;
+>>>>>>> bf44d24ef2fc32e9ce261db8126e7e1f19dd5242
 
     return Container(
       decoration: BoxDecoration(
@@ -404,7 +417,7 @@ class RegisterScreen extends StatelessWidget {
         child: Column(
           children: [
             TextField(
-              obscureText: !_isPasswordVisible,
+              obscureText: !isPasswordVisible,
               style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               decoration: InputDecoration(
                 hintText: hintText,

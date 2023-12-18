@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:medipal/notification/notification_service.dart';
 
 class FireStoreCheck {
-
   Future<void> checkFirestore() async {
     await Firebase.initializeApp();
     final firestore = FirebaseFirestore.instance;
@@ -27,8 +26,8 @@ class FireStoreCheck {
 
           DateTime timestamp = DateTime.parse(time);
           DateTime timestamp2 = DateTime.now();
+
           if (timestamp.isBefore(timestamp2) && status == 'pending') {
-            print('Before calling');
             await NotificationService.showNotification(
                 title: 'Medipal',
                 body: 'This is a reminder',
@@ -38,17 +37,13 @@ class FireStoreCheck {
                 },
                 actionButtons: [
                   NotificationActionButton(
-                      key: 'key',
-                      label: 'Open',
-                      actionType: ActionType.Default)
+                      key: 'key', label: 'Open', actionType: ActionType.Default)
                 ]);
-            print('after calling');
-          } else {
-            print('No documents found in Firestore query.');
           }
         }
       }
     } catch (error) {
+      //snack-bar
       print('Error fetching alarms: $error');
     }
   }

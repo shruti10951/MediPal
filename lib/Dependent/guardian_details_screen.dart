@@ -28,8 +28,7 @@ class _GuardianDetailsScreenState extends State<GuardianDetailsScreen> {
           .get();
       final documents = querySnapshot.docs;
       if (documents.isNotEmpty) {
-        final Map<String, dynamic> guardianData =
-            documents.first.data();
+        final Map<String, dynamic> guardianData = documents.first.data();
         guardiansData.add(guardianData);
       }
     }
@@ -73,6 +72,7 @@ class _GuardianDetailsScreenState extends State<GuardianDetailsScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
+                  //toast
                   print(snapshot.error);
                   return Text('Error: ${snapshot.error}');
                 } else {

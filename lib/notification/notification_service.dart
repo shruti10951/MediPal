@@ -4,7 +4,6 @@ import 'package:medipal/main.dart';
 
 import 'alarm_screen.dart';
 
-
 class NotificationService {
   static Future<void> initializeNotification() async {
     await AwesomeNotifications().initialize(
@@ -42,11 +41,11 @@ class NotificationService {
       ReceivedNotification receivedNotification) async {
     debugPrint('On Notification Received');
     final payload = receivedNotification.payload ?? {};
-    var alarmId= payload['alarmId'];
+    var alarmId = payload['alarmId'];
     if (payload["open"] == "true") {
-      if(alarmId!=null){
-        navigatorKey.currentState
-            ?.push(MaterialPageRoute(builder: (context) => AlarmScreen(alarmId: alarmId)));
+      if (alarmId != null) {
+        navigatorKey.currentState?.push(MaterialPageRoute(
+            builder: (context) => AlarmScreen(alarmId: alarmId)));
       }
     }
   }
