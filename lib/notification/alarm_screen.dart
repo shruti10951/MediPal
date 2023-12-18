@@ -121,7 +121,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
           // Medicine Description
           MedicineDescription(
               description:
-              medicationMap['description'] ?? 'No description available'),
+                  medicationMap['description'] ?? 'No description available'),
           // Add some space below the Medicine Description
           const SizedBox(height: 10),
           // Quantity of Medicine
@@ -192,7 +192,7 @@ class MedicineTypeIcon extends StatelessWidget {
       imagePath = 'assets/images/injection_icon.png';
     } else {
       imagePath =
-      'assets/images/default.png'; // Default image for unknown medicine type
+          'assets/images/default.png'; // Default image for unknown medicine type
     }
 
     return Image.asset(
@@ -212,10 +212,10 @@ class ActionButtons extends StatelessWidget {
 
   ActionButtons(
       {required this.alarmId,
-        required this.alarmMap,
-        required this.medicationMap,
-        required this.userId,
-        required this.role});
+      required this.alarmMap,
+      required this.medicationMap,
+      required this.userId,
+      required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +238,7 @@ class ActionButtons extends StatelessWidget {
           onPressed: () async {
             alarmMap['status'] = 'taken';
             medicationMap['inventory']['quantity'] = medicationMap['inventory']
-            ['quantity'] -
+                    ['quantity'] -
                 medicationMap['dosage'];
             var quantity = medicationMap['inventory']['quantity'];
             var name = medicationMap['name'];
@@ -258,7 +258,7 @@ class ActionButtons extends StatelessWidget {
                   final cred = await TwilioCred().readCred();
                   if (role == 'dependent') {
                     final guardian =
-                    await FirebaseCred().getGuardianData(userId);
+                        await FirebaseCred().getGuardianData(userId);
                     twilioFlutter = TwilioFlutter(
                       accountSid: cred[0],
                       authToken: cred[1],
@@ -268,7 +268,7 @@ class ActionButtons extends StatelessWidget {
                     twilioFlutter.sendSMS(
                       toNumber: '+91' + guardian['phoneNo'],
                       messageBody:
-                      "$quantity units of medicine $name remaining of your dependent!",
+                          "$quantity units of medicine $name remaining of your dependent!",
                     );
                   } else {
                     final userData = await FirebaseFirestore.instance
@@ -285,7 +285,7 @@ class ActionButtons extends StatelessWidget {
                     twilioFlutter.sendSMS(
                       toNumber: '+91' + userMap['phoneNo'],
                       messageBody:
-                      "$quantity units of medicine $name remaining!",
+                          "$quantity units of medicine $name remaining!",
                     );
                   }
                 }
@@ -300,26 +300,35 @@ class ActionButtons extends StatelessWidget {
   }
 
   void _showCancelDialog(BuildContext context) {
+    GlobalKey<FormState> formKey = GlobalKey<FormState>();
     TextEditingController reasonController = TextEditingController();
-    bool showError= false;
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Cancel Medication'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Why are you canceling this medication?'),
-              TextFormField(
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Enter reason here',
-                  errorText: showError ? 'Please Enter a reason!' : null,
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Why are you canceling this medication?'),
+                TextFormField(
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Enter reason here',
+                  ),
+                  controller: reasonController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a reason';
+                    }
+                    return null;
+                  },
                 ),
-                controller: reasonController,
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -330,8 +339,8 @@ class ActionButtons extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                String reason = reasonController.text.toString();
-                if (reason.isNotEmpty) {
+                if (formKey.currentState!.validate()) {
+                  String reason = reasonController.text.trim();
                   alarmMap['skipReason'] = reason;
                   alarmMap['status'] = 'Skipped';
                   await FirebaseFirestore.instance
@@ -365,8 +374,6 @@ class ActionButtons extends StatelessWidget {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   });
-                }else{
-                  showError= true;
                 }
               },
               child: const Text('Submit'),
