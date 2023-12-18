@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medipal/models/DependentModel.dart';
 import 'package:medipal/models/UserModel.dart';
 
+
 class FirebaseCred {
   Future<List> getData() async {
     final user = FirebaseAuth.instance.currentUser;
