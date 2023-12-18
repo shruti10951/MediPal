@@ -20,19 +20,26 @@ class DependentModel{
       'userId' : userId,
       'phoneNo' : phoneNo,
       'name' : name,
-      'dependents' : guardians,
-      'noOfDependents' : noOfGuardian,
+      'guardians' : guardians,
+      'noOfGuardian' : noOfGuardian,
     };
   }
 
   factory DependentModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
+    final guardianData = data['dependents'];
+    List<String> guardians = [];
+    if (guardianData is List) {
+      guardians = guardianData.map((item) => item.toString()).toList();
+    }
+
     return DependentModel(
       userId: data['userId'],
       name: data['name'],
       phoneNo: data['phoneNo'],
-      guardians: data['dependents'],
-      noOfGuardian: data['noOfDependents'],
+      guardians: guardians,
+      noOfGuardian: data['noOfGuardian'],
     );
   }
 

@@ -229,10 +229,26 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
     setState(() {
       filteredAlarms = alarmFilteredSnapshot;
     });
+
+    if (filteredAlarms.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No alarms scheduled for this day.'),
+        ),
+      );
+    }
   }
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
+
+    if(filteredAlarms.isEmpty){
+      DateTime currentDate= DateTime.now();
+      alarmQuerySnapshot= alarmQuerySnapshot.where((element) {
+        DateTime alarmTime= DateTime.parse(element['time']);
+        return alarmTime.isAfter(currentDate);
+      }).toList();
+    }
 
         //sorting
       alarmQuerySnapshot.sort((a, b){
