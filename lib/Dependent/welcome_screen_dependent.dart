@@ -96,14 +96,14 @@ class WelcomeScreenDependent extends StatelessWidget {
                           .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildInputField(Icons.person_2_sharp,
-                        'Name', _nameController),
+                    child: _buildInputField(
+                        Icons.person_2_sharp, 'Name', _nameController),
                   ),
                   const SizedBox(height: 16.0),
                   Container(
                     decoration: BoxDecoration(
-                      color:
-                          const Color.fromARGB(182, 255, 255, 255).withOpacity(0.6),
+                      color: const Color.fromARGB(182, 255, 255, 255)
+                          .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                     child: _buildPhoneNoField(
@@ -134,7 +134,7 @@ class WelcomeScreenDependent extends StatelessWidget {
         },
         style: ElevatedButton.styleFrom(
           //check this ui
-          primary: const Color.fromARGB(255, 41,45,92),
+          primary: const Color.fromARGB(255, 41, 45, 92),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
           ),
@@ -170,13 +170,13 @@ class WelcomeScreenDependent extends StatelessWidget {
   Widget _buildInputField(
       IconData icon, String hintText, TextEditingController nameController) {
     return TextField(
-      style: const TextStyle(color: Color.fromARGB(255, 41,45,92)),
+      style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Color.fromARGB(255, 41,45,92)),
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
         prefixIcon: Icon(
           icon,
-          color: const Color.fromARGB(218, 41,45,92),
+          color: const Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
       ),
@@ -185,20 +185,19 @@ class WelcomeScreenDependent extends StatelessWidget {
   }
 
   Widget _buildPhoneNoField(
-    IconData icon, String hintText, TextEditingController phoneController) {
-  return TextField(
-    style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-    decoration: InputDecoration(
-      hintText: hintText,
-      hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-      prefixIcon: Icon(icon, color: const Color.fromARGB(218, 41, 45, 92)),
-      border: InputBorder.none,
-    ),
-    controller: phoneController,
-    keyboardType: TextInputType.number, // Only allow numeric input
-  );
-}
-
+      IconData icon, String hintText, TextEditingController phoneController) {
+    return TextField(
+      style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
+        prefixIcon: Icon(icon, color: const Color.fromARGB(218, 41, 45, 92)),
+        border: InputBorder.none,
+      ),
+      controller: phoneController,
+      keyboardType: TextInputType.number, // Only allow numeric input
+    );
+  }
 }
 
 class BackgroundPainter extends CustomPainter {
@@ -228,25 +227,25 @@ class BackgroundPainter extends CustomPainter {
 
 //check this if not required pls remove
 Widget _buildLoadingIndicator() {
-return const Center(
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(
-          Color.fromARGB(255, 71, 78, 84),
+  return const Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Color.fromARGB(255, 71, 78, 84),
+          ),
         ),
-      ),
-      SizedBox(height: 16.0),
-      Text(
-        'Loading...',
-        style: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey,
+        SizedBox(height: 16.0),
+        Text(
+          'Loading...',
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
         ),
-      ),
-    ],
-  ),
-);
+      ],
+    ),
+  );
 }

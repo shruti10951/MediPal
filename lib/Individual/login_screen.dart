@@ -162,22 +162,7 @@ class LoginScreen extends StatelessWidget {
   Widget _buildPasswordField(IconData icon, String hintText) {
     bool _isPasswordVisible = false;
 
-    // return TextField(
-    //   obscureText: !_isPasswordVisible,
-    //   style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-    //   decoration: InputDecoration(
-    //     hintText: hintText,
-    //     hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-    //     prefixIcon: Icon(
-    //       icon,
-    //       color: const Color.fromARGB(218, 41, 45, 92),
-    //     ),
-    //     border: InputBorder.none,
-    //   ),
-    //   controller: _passwordController,
-    // );
-
-    return TextFormField(
+    return TextField(
       obscureText: !_isPasswordVisible,
       style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
@@ -188,17 +173,8 @@ class LoginScreen extends StatelessWidget {
           color: const Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
-        errorText: _passwordController.text.length < 6
-            ? 'Password should be of at least 6 characters'
-            : null,
       ),
       controller: _passwordController,
-      validator: (value) {
-        if (value!.isEmpty || value.length < 6) {
-          return 'Password should be of at least 6 characters';
-        }
-        return null;
-      },
     );
   }
 

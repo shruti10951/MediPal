@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/main.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AddGuardian extends StatefulWidget {
   const AddGuardian({super.key});
@@ -70,12 +71,18 @@ class _AddGuardianState extends State<AddGuardian> {
             if (dependentList
                 .contains(FirebaseAuth.instance.currentUser?.uid.toString())) {
               //toast msg here to indicate that guardian is already added!
+              Fluttertoast.showToast(
+                msg: 'Guardian is already added!',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Color.fromARGB(255, 255, 0, 0),
+                textColor: Colors.white,
+              );
             } else {
               dependentList
                   .add(FirebaseAuth.instance.currentUser?.uid.toString());
 
-              guardianList
-                  .add(guardianId);
+              guardianList.add(guardianId);
 
               var noOfDependents = guardianMap['noOfDependents'] + 1;
               var noOfGuardian = dependentMap['noOfGuardian'] + 1;
