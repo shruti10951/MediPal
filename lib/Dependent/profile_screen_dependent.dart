@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/add_guardian.dart';
+import 'package:medipal/Dependent/guardian_details_screen.dart';
 import 'package:medipal/models/UserModel.dart';
 
 import '../main.dart';
@@ -18,13 +19,13 @@ Future<Map<String, dynamic>?> fetchData() async {
   try {
     final userDoc = await userInfoQuery;
     if (userDoc.exists) {
-      // final userData = UserModel.fromDocumentSnapshot(userDoc);
       final userData= userDoc.data() as Map<String, dynamic>;
       return userData;
     } else {
       return null;
     }
   } catch (error) {
+    //show toast msg
     print('Error retrieving document: $error');
     return null;
   }
@@ -88,7 +89,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
             TextButton(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 206, 205, 255)),
+                    const Color.fromARGB(255, 206, 205, 255)),
 
               ),
               onPressed: () {
@@ -148,19 +149,64 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                     _buildInfoRow('Name', user['name'] ?? 'Loading...', Icons.person_add_alt),
                     _buildInfoRow(
                         'Phone', user['phoneNo'] ?? 'Loading...', Icons.phone_android_sharp),
-                    // if (isDependent)
-                    const SizedBox(height: 16), // Add some spacing
+                        Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      elevation: 2,
+                      child: InkWell(
+                        onTap: () {
+                          // Navigate to Dependent Details Screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GuardianDetailsScreen(),
+                            ),
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.group, // Your desired grey icon
+                                color: Color.fromARGB(255, 41, 45,
+                                    92), // Set the icon color to grey
+                              ),
+                              SizedBox(
+                                  width:
+                                      16), // Add spacing between icon and text
+                              Text(
+                                'Guardian Details',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 41, 45, 92),
+            
+                                ),
+                              ),
+                              Spacer(), // Add a spacer to push the icon to the end
+                              Icon(
+                                Icons.arrow_forward, // Your desired arrow icon
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16), 
                     ElevatedButton(
                       onPressed: () {
-                        // Handle the "Scan QR Code" button click
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddGuardian(),
+                            builder: (context) => const AddGuardian(),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
+                        //check this once
                         primary: const Color.fromARGB(255, 41, 45, 92),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),

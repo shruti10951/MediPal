@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Dependent/inventory_screen_dependent.dart';
 import 'package:medipal/Dependent/profile_screen_dependent.dart';
-import 'package:medipal/Individual/inventory_screen.dart';
 
 class BottomNavigationDependent extends StatefulWidget {
   const BottomNavigationDependent({Key? key}) : super(key: key);
@@ -80,10 +79,10 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
             label: 'Profile',
           ),
         ],
-         unselectedItemColor: Color.fromARGB(146, 170, 149, 247),
+         unselectedItemColor: const Color.fromARGB(146, 170, 149, 247),
           //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 41,45,92),
+          selectedItemColor: const Color.fromARGB(255, 41,45,92),
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
