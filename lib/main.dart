@@ -13,6 +13,7 @@ import 'package:medipal/notification/FirestoreCheck.dart';
 
 import 'Dependent/bottom_navigation_dependent.dart';
 
+
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
   await check.checkFirestore();
