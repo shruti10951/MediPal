@@ -88,12 +88,12 @@ class _AlarmScreenState extends State<AlarmScreen> {
           const SizedBox(height: 10),
           Text(
             alarmMap['time']
-                    .toString()
-                    .split(' ')
-                    .last
-                    .split(':')
-                    .sublist(0, 2)
-                    .join(':') ??
+                .toString()
+                .split(' ')
+                .last
+                .split(':')
+                .sublist(0, 2)
+                .join(':') ??
                 'No time available',
             style: const TextStyle(
               fontSize: 24,
@@ -121,7 +121,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
           // Medicine Description
           MedicineDescription(
               description:
-                  medicationMap['description'] ?? 'No description available'),
+              medicationMap['description'] ?? 'No description available'),
           // Add some space below the Medicine Description
           const SizedBox(height: 10),
           // Quantity of Medicine
@@ -192,7 +192,7 @@ class MedicineTypeIcon extends StatelessWidget {
       imagePath = 'assets/images/injection_icon.png';
     } else {
       imagePath =
-          'assets/images/default.png'; // Default image for unknown medicine type
+      'assets/images/default.png'; // Default image for unknown medicine type
     }
 
     return Image.asset(
@@ -212,10 +212,10 @@ class ActionButtons extends StatelessWidget {
 
   ActionButtons(
       {required this.alarmId,
-      required this.alarmMap,
-      required this.medicationMap,
-      required this.userId,
-      required this.role});
+        required this.alarmMap,
+        required this.medicationMap,
+        required this.userId,
+        required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +238,7 @@ class ActionButtons extends StatelessWidget {
           onPressed: () async {
             alarmMap['status'] = 'taken';
             medicationMap['inventory']['quantity'] = medicationMap['inventory']
-                    ['quantity'] -
+            ['quantity'] -
                 medicationMap['dosage'];
             var quantity = medicationMap['inventory']['quantity'];
             var name = medicationMap['name'];
@@ -258,7 +258,7 @@ class ActionButtons extends StatelessWidget {
                   final cred = await TwilioCred().readCred();
                   if (role == 'dependent') {
                     final guardian =
-                        await FirebaseCred().getGuardianData(userId);
+                    await FirebaseCred().getGuardianData(userId);
                     twilioFlutter = TwilioFlutter(
                       accountSid: cred[0],
                       authToken: cred[1],
@@ -268,7 +268,7 @@ class ActionButtons extends StatelessWidget {
                     twilioFlutter.sendSMS(
                       toNumber: '+91' + guardian['phoneNo'],
                       messageBody:
-                          "$quantity units of medicine $name remaining of your dependent!",
+                      "$quantity units of medicine $name remaining of your dependent!",
                     );
                   } else {
                     final userData = await FirebaseFirestore.instance
@@ -285,7 +285,7 @@ class ActionButtons extends StatelessWidget {
                     twilioFlutter.sendSMS(
                       toNumber: '+91' + userMap['phoneNo'],
                       messageBody:
-                          "$quantity units of medicine $name remaining!",
+                      "$quantity units of medicine $name remaining!",
                     );
                   }
                 }
@@ -342,7 +342,7 @@ class ActionButtons extends StatelessWidget {
                     if (role == 'dependent') {
                       final cred = await TwilioCred().readCred();
                       final guardian =
-                          await FirebaseCred().getGuardianData(userId);
+                      await FirebaseCred().getGuardianData(userId);
                       TwilioFlutter twilioFlutter;
                       if (guardian != null) {
                         twilioFlutter = TwilioFlutter(
@@ -354,7 +354,7 @@ class ActionButtons extends StatelessWidget {
                         twilioFlutter.sendSMS(
                           toNumber: '+91' + guardian['phoneNo'],
                           messageBody:
-                              "Your dependent did not take the medicine! \nReason: $reason",
+                          "Your dependent did not take the medicine! \nReason: $reason",
                         );
                         print('done');
                       } else {
