@@ -7,7 +7,8 @@ class BottomNavigationDependent extends StatefulWidget {
   const BottomNavigationDependent({Key? key}) : super(key: key);
 
   @override
-  _BottomNavigationDependentState createState() => _BottomNavigationDependentState();
+  _BottomNavigationDependentState createState() =>
+      _BottomNavigationDependentState();
 }
 
 class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
@@ -50,13 +51,10 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        // ignore: prefer_const_literals_to_create_immutables
-        children: <Widget>[
-          const DashboardScreenDependent(), // Replace with your Dashboard screen widget
-          InventoryDependent(), // Replace with your Inventory screen widget
-          const ProfileScreenDependent(), // Replace with your Profile screen widget
-
-          // Add other screens as needed
+        children: const <Widget>[
+          DashboardScreenDependent(),
+          InventoryDependent(),
+          ProfileScreenDependent(),
         ],
         onPageChanged: (index) {
           setState(() {
@@ -72,23 +70,22 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory),
-            label: 'Inventory', 
+            label: 'Inventory',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
-         unselectedItemColor: const Color.fromARGB(146, 170, 149, 247),
-          //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
-          currentIndex: _selectedIndex,
-          selectedItemColor: const Color.fromARGB(255, 41,45,92),
+        unselectedItemColor: const Color.fromARGB(146, 170, 149, 247),
+        //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 41, 45, 92),
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
           });
 
-          // Add logic to navigate to specific pages based on index
           switch (index) {
             case 0:
               _navigateToDashboard();
@@ -99,7 +96,6 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
             case 2:
               _navigateToProfile();
               break;
-            // Add other cases for additional tabs
           }
         },
       ),

@@ -79,10 +79,11 @@ class _MedicineFormState extends State<MedicineForm> {
         child: Row(
           children: [
             ImageIcon(
-              AssetImage(
-                  'assets/images/liquid_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              AssetImage('assets/images/liquid_icon.png'),
+              // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
-              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+              color:
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Liquid'),
@@ -94,10 +95,11 @@ class _MedicineFormState extends State<MedicineForm> {
         child: Row(
           children: [
             ImageIcon(
-              AssetImage(
-                  'assets/images/pill_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              AssetImage('assets/images/pill_icon.png'),
+              // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
-              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+              color:
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Pills'),
@@ -109,10 +111,11 @@ class _MedicineFormState extends State<MedicineForm> {
         child: Row(
           children: [
             ImageIcon(
-              AssetImage(
-                  'assets/images/injection_icon.png'), // Replace 'assets/icon.png' with the path to your image
+              AssetImage('assets/images/injection_icon.png'),
+              // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
-              color: Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+              color:
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Injection'),
@@ -347,8 +350,9 @@ class _MedicineFormState extends State<MedicineForm> {
                       await medicationDocumentReference.set(medicationModel);
 
                       for (var date = _startDate;
-                          date!.isBefore(_endDate!.add(Duration(days: 1)));
-                          date = date.add(Duration(days: 1))) {
+                          date!
+                              .isBefore(_endDate!.add(const Duration(days: 1)));
+                          date = date.add(const Duration(days: 1))) {
                         for (var key in medication.schedule.keys) {
                           final value = medication.schedule[key];
                           if (value != null && value.isNotEmpty) {

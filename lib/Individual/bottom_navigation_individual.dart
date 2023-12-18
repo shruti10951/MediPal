@@ -61,13 +61,10 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
         appBar: null, // Set the AppBar to null to hide it
         body: PageView(
           controller: _pageController,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: <Widget>[
-            DashboardScreen(), // Replace with your Dashboard screen widget
-            InventoryScreen(), // Replace with your Inventory screen widget
-            ProfileScreen(), // Replace with your Profile screen widget
-
-            // Add other screens as needed
+          children: const <Widget>[
+            DashboardScreen(),
+            InventoryScreen(),
+            ProfileScreen(),
           ],
           onPageChanged: (index) {
             setState(() {
@@ -90,16 +87,15 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
               label: 'Profile',
             ),
           ],
-         unselectedItemColor: Color.fromARGB(146, 170, 149, 247),
+          unselectedItemColor: const Color.fromARGB(146, 170, 149, 247),
           //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 41,45,92),
+          selectedItemColor: const Color.fromARGB(255, 41, 45, 92),
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
             });
 
-            // Add logic to navigate to specific pages based on index
             switch (index) {
               case 0:
                 _navigateToDashboard();
@@ -110,7 +106,6 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
               case 2:
                 _navigateToProfile();
                 break;
-              // Add other cases for additional tabs
             }
           },
         ),

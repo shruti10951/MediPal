@@ -41,7 +41,8 @@ class WelcomeScreen extends StatelessWidget {
             left: 0.034 * MediaQuery.of(context).size.width,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3), // Transparent white background
+                color: Colors.white.withOpacity(0.3),
+                // Transparent white background
                 shape: BoxShape.circle, // Circular shape
               ),
               child: IconButton(
@@ -50,7 +51,8 @@ class WelcomeScreen extends StatelessWidget {
                   color: Color.fromARGB(255, 0, 0, 0),
                 ),
                 onPressed: () {
-                  Navigator.of(context).pop(); // Navigate back to the previous screen
+                  Navigator.of(context)
+                      .pop(); // Navigate back to the previous screen
                 },
               ),
             ),
@@ -62,7 +64,7 @@ class WelcomeScreen extends StatelessWidget {
               'MEDIPAL',
               style: TextStyle(
                 fontSize: 0.07 * MediaQuery.of(context).size.width,
-                color: Color.fromARGB(255, 41, 45, 92),
+                color: const Color.fromARGB(255, 41, 45, 92),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -75,7 +77,7 @@ class WelcomeScreen extends StatelessWidget {
               'Your medicine, our responsibility!',
               style: TextStyle(
                 fontSize: 0.043 * MediaQuery.of(context).size.width,
-                color: Color.fromARGB(255, 41, 45, 92),
+                color: const Color.fromARGB(255, 41, 45, 92),
                 fontWeight: FontWeight.bold,
                 fontStyle: FontStyle.italic,
               ),
@@ -98,7 +100,7 @@ class WelcomeScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 234, 244, 255),
+                  primary: const Color.fromARGB(255, 234, 244, 255),
                   side: const BorderSide(
                       color: Color.fromARGB(255, 41, 45, 92), width: 2.0),
                   shape: RoundedRectangleBorder(
@@ -134,7 +136,7 @@ class WelcomeScreen extends StatelessWidget {
                   );
                 },
                 style: TextButton.styleFrom(
-                  backgroundColor: Color.fromARGB(103, 255, 255, 255),
+                  backgroundColor: const Color.fromARGB(103, 255, 255, 255),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
                       0.03 * MediaQuery.of(context).size.width,

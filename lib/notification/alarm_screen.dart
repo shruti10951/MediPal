@@ -35,7 +35,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
         future: loadData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error.toString()}');
           } else {
@@ -88,12 +88,12 @@ class _AlarmScreenState extends State<AlarmScreen> {
           const SizedBox(height: 10),
           Text(
             alarmMap['time']
-                .toString()
-                .split(' ')
-                .last
-                .split(':')
-                .sublist(0, 2)
-                .join(':') ??
+                    .toString()
+                    .split(' ')
+                    .last
+                    .split(':')
+                    .sublist(0, 2)
+                    .join(':') ??
                 'No time available',
             style: const TextStyle(
               fontSize: 24,
@@ -260,9 +260,10 @@ class ActionButtons extends StatelessWidget {
                     final guardians =
                         await FirebaseCred().getGuardianData(userId);
 
-                    final dependent = await FirebaseCred().getDependentData(userId);
+                    final dependent =
+                        await FirebaseCred().getDependentData(userId);
 
-                    String dependentName= dependent['name'];
+                    String dependentName = dependent['name'];
 
                     twilioFlutter = TwilioFlutter(
                       accountSid: cred[0],
@@ -270,11 +271,11 @@ class ActionButtons extends StatelessWidget {
                       twilioNumber: cred[2],
                     );
 
-                    for(Map guardian in guardians){
+                    for (Map guardian in guardians) {
                       twilioFlutter.sendSMS(
                         toNumber: '+91' + guardian['phoneNo'],
                         messageBody:
-                        "$quantity units of medicine: $name remaining of your dependent: $dependentName!",
+                            "$quantity units of medicine: $name remaining of your dependent: $dependentName!",
                       );
                     }
                   } else {
@@ -323,7 +324,7 @@ class ActionButtons extends StatelessWidget {
                 const Text('Why are you canceling this medication?'),
                 TextFormField(
                   maxLines: 3,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter reason here',
                   ),
                   controller: reasonController,
@@ -358,7 +359,7 @@ class ActionButtons extends StatelessWidget {
                     if (role == 'dependent') {
                       final cred = await TwilioCred().readCred();
                       final guardians =
-                      await FirebaseCred().getGuardianData(userId);
+                          await FirebaseCred().getGuardianData(userId);
                       TwilioFlutter twilioFlutter;
                       if (guardians != null) {
                         twilioFlutter = TwilioFlutter(
@@ -367,15 +368,16 @@ class ActionButtons extends StatelessWidget {
                           twilioNumber: cred[2],
                         );
 
-                        final dependent = await FirebaseCred().getDependentData(userId);
+                        final dependent =
+                            await FirebaseCred().getDependentData(userId);
 
-                        String dependentName= dependent['name'];
+                        String dependentName = dependent['name'];
 
-                        for(Map guardian in guardians){
+                        for (Map guardian in guardians) {
                           twilioFlutter.sendSMS(
                             toNumber: '+91' + guardian['phoneNo'],
                             messageBody:
-                            "Your dependent $dependentName did not take the medicine! \nReason: $reason",
+                                "Your dependent $dependentName did not take the medicine! \nReason: $reason",
                           );
                         }
                       } else {

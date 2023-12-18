@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DependentModel{
+class DependentModel {
   final String name;
   final String userId;
   final String phoneNo;
@@ -15,13 +15,13 @@ class DependentModel{
     required this.guardians,
   });
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      'userId' : userId,
-      'phoneNo' : phoneNo,
-      'name' : name,
-      'guardians' : guardians,
-      'noOfGuardian' : noOfGuardian,
+      'userId': userId,
+      'phoneNo': phoneNo,
+      'name': name,
+      'guardians': guardians,
+      'noOfGuardian': noOfGuardian,
     };
   }
 
@@ -42,5 +42,4 @@ class DependentModel{
       noOfGuardian: data['noOfGuardian'],
     );
   }
-
 }

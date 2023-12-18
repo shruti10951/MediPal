@@ -30,7 +30,7 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
       final documents = querySnapshot.docs;
       if (documents.isNotEmpty) {
         final Map<String, dynamic> dependentData =
-            documents.first.data() as Map<String, dynamic>;
+            documents.first.data();
         dependentsData.add(dependentData);
       }
     }
@@ -74,6 +74,7 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
+                  //toast
                   print(snapshot.error);
                   return Text('Error: ${snapshot.error}');
                 } else {

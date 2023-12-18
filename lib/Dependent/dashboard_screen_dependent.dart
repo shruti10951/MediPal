@@ -59,16 +59,16 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
           children: [
             Image.asset(
               'assets/images/medipal.png',
-              width: 30, 
-              height: 30, 
+              width: 30,
+              height: 30,
             ),
-            const SizedBox(width: 8), 
-            const Text('MediPal'), 
+            const SizedBox(width: 8),
+            const Text('MediPal'),
           ],
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 15.0), 
+        padding: const EdgeInsets.only(top: 15.0),
         child: Column(
           children: [
             _buildCalendar(context),
@@ -200,9 +200,8 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
     final DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: currentDate,
-      firstDate:
-          currentDate.subtract(const Duration(days: 365)), 
-      lastDate: currentDate.add(const Duration(days: 365)), 
+      firstDate: currentDate.subtract(const Duration(days: 365)),
+      lastDate: currentDate.add(const Duration(days: 365)),
     );
 
     if (selectedDate != null) {
@@ -212,14 +211,13 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
   void _onDateTapped(
       DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
-    
     final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
         alarmQuerySnapshot.where((element) {
       final Map<String, dynamic>? data =
           element.data() as Map<String, dynamic>?;
       if (data != null) {
         final String? date = data['time']?.toString().split(' ')[0];
-        
+
         return date == currentDate.toString().split(' ')[0];
       } else {
         return false;
@@ -241,19 +239,18 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-
-    if(filteredAlarms.isEmpty){
-      DateTime currentDate= DateTime.now();
-      alarmQuerySnapshot= alarmQuerySnapshot.where((element) {
-        DateTime alarmTime= DateTime.parse(element['time']);
+    if (filteredAlarms.isEmpty) {
+      DateTime currentDate = DateTime.now();
+      alarmQuerySnapshot = alarmQuerySnapshot.where((element) {
+        DateTime alarmTime = DateTime.parse(element['time']);
         return alarmTime.isAfter(currentDate);
       }).toList();
     }
 
-        //sorting
-      alarmQuerySnapshot.sort((a, b){
-      final DateTime timeA= DateTime.parse(a['time']);
-      final DateTime timeB= DateTime.parse(b['time']);
+    //sorting
+    alarmQuerySnapshot.sort((a, b) {
+      final DateTime timeA = DateTime.parse(a['time']);
+      final DateTime timeB = DateTime.parse(b['time']);
       return timeA.compareTo(timeB);
     });
 
@@ -293,12 +290,10 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
           DateTime dateTime = DateTime.parse(time);
 
-          
-
-// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          // Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
           String formattedDate = DateFormat('d MMM').format(dateTime);
 
-// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
+          // Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
           String dateTimeText = '$formattedDate | $formattedTime';
 
@@ -332,7 +327,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
               ],
             ),
           );
-                } else {
+        } else {
           return const Card(
             margin: EdgeInsets.all(8),
             child: Column(

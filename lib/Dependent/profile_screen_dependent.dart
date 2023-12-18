@@ -13,13 +13,12 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
 
 Future<Map<String, dynamic>?> fetchData() async {
-  final userInfoQuery =
-  firestore.collection('dependent').doc(userId).get();
+  final userInfoQuery = firestore.collection('dependent').doc(userId).get();
 
   try {
     final userDoc = await userInfoQuery;
     if (userDoc.exists) {
-      final userData= userDoc.data() as Map<String, dynamic>;
+      final userData = userDoc.data() as Map<String, dynamic>;
       return userData;
     } else {
       return null;
@@ -30,7 +29,6 @@ Future<Map<String, dynamic>?> fetchData() async {
     return null;
   }
 }
-
 
 class ProfileScreenDependent extends StatefulWidget {
   const ProfileScreenDependent({Key? key}) : super(key: key);
@@ -90,7 +88,6 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(
                     const Color.fromARGB(255, 206, 205, 255)),
-
               ),
               onPressed: () {
                 // Close the dialog
@@ -99,10 +96,13 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: ()  async{
+              onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
-                navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> ChooseScreen()), (route) => false);
+                navigatorKey.currentState?.pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (context) => const ChooseScreen()),
+                    (route) => false);
               },
               child: const Text('Logout'),
             ),
@@ -146,10 +146,11 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                 final user = snapshot.data!;
                 return Column(
                   children: [
-                    _buildInfoRow('Name', user['name'] ?? 'Loading...', Icons.person_add_alt),
-                    _buildInfoRow(
-                        'Phone', user['phoneNo'] ?? 'Loading...', Icons.phone_android_sharp),
-                        Card(
+                    _buildInfoRow('Name', user['name'] ?? 'Loading...',
+                        Icons.person_add_alt),
+                    _buildInfoRow('Phone', user['phoneNo'] ?? 'Loading...',
+                        Icons.phone_android_sharp),
+                    Card(
                       margin: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
                       shape: RoundedRectangleBorder(
@@ -175,18 +176,17 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                                 color: Color.fromARGB(255, 41, 45,
                                     92), // Set the icon color to grey
                               ),
-                              SizedBox(
-                                  width:
-                                      16), // Add spacing between icon and text
+                              SizedBox(width: 16),
+                              // Add spacing between icon and text
                               Text(
                                 'Guardian Details',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color.fromARGB(255, 41, 45, 92),
-            
                                 ),
                               ),
-                              Spacer(), // Add a spacer to push the icon to the end
+                              Spacer(),
+                              // Add a spacer to push the icon to the end
                               Icon(
                                 Icons.arrow_forward, // Your desired arrow icon
                               ),
@@ -195,7 +195,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16), 
+                    const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -234,4 +234,3 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
     );
   }
 }
-

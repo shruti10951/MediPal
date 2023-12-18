@@ -74,8 +74,7 @@ class _AddGuardianState extends State<AddGuardian> {
               dependentList
                   .add(FirebaseAuth.instance.currentUser?.uid.toString());
 
-              guardianList
-                  .add(guardianId);
+              guardianList.add(guardianId);
 
               var noOfDependents = guardianMap['noOfDependents'] + 1;
               var noOfGuardian = dependentMap['noOfGuardian'] + 1;
