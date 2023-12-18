@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
-
-import '../credentials/twilio_cred.dart';
+import 'package:medipal/credentials/twilio_cred.dart';
+// import '../credentials/twilio_cred.dart';
 
 class AlarmScreen extends StatefulWidget {
   final String alarmId;
@@ -238,9 +237,11 @@ class ActionButtons extends StatelessWidget {
           label: 'Take',
           onPressed: () async {
             alarmMap['status'] = 'taken';
-            medicationMap['inventory']['quantity'] = medicationMap['inventory']['quantity'] - medicationMap['dosage'];
-            var quantity= medicationMap['inventory']['quantity'];
-            var name= medicationMap['name'];
+            medicationMap['inventory']['quantity'] = medicationMap['inventory']
+                    ['quantity'] -
+                medicationMap['dosage'];
+            var quantity = medicationMap['inventory']['quantity'];
+            var name = medicationMap['name'];
             await FirebaseFirestore.instance
                 .collection('alarms')
                 .doc(alarmId)
@@ -251,40 +252,43 @@ class ActionButtons extends StatelessWidget {
                   .doc(medicationMap['medicationId'])
                   .update(medicationMap)
                   .then((value) async {
-                    if(medicationMap['inventory']['quantity'] <= medicationMap['inventory']['reorderLevel']){
-                      TwilioFlutter twilioFlutter;
-                      final cred = await TwilioCred().readCred();
-                      if(role== 'dependent'){
-                        final guardian =
+                if (medicationMap['inventory']['quantity'] <=
+                    medicationMap['inventory']['reorderLevel']) {
+                  TwilioFlutter twilioFlutter;
+                  final cred = await TwilioCred().readCred();
+                  if (role == 'dependent') {
+                    final guardian =
                         await FirebaseCred().getGuardianData(userId);
-                        twilioFlutter = TwilioFlutter(
-                          accountSid: cred[0],
-                          authToken: cred[1],
-                          twilioNumber: cred[2],
-                        );
+                    twilioFlutter = TwilioFlutter(
+                      accountSid: cred[0],
+                      authToken: cred[1],
+                      twilioNumber: cred[2],
+                    );
 
-                        twilioFlutter.sendSMS(
-                          toNumber: '+91' + guardian['phoneNo'],
-                          messageBody:
+                    twilioFlutter.sendSMS(
+                      toNumber: '+91' + guardian['phoneNo'],
+                      messageBody:
                           "$quantity units of medicine $name remaining of your dependent!",
-                        );
-                      }else{
-                        final userData= await FirebaseFirestore.instance.collection('users').doc(userId).get();
-                        final userMap= userData.data() as Map<String, dynamic>;
-                        twilioFlutter = TwilioFlutter(
-                          accountSid: cred[0],
-                          authToken: cred[1],
-                          twilioNumber: cred[2],
-                        );
+                    );
+                  } else {
+                    final userData = await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(userId)
+                        .get();
+                    final userMap = userData.data() as Map<String, dynamic>;
+                    twilioFlutter = TwilioFlutter(
+                      accountSid: cred[0],
+                      authToken: cred[1],
+                      twilioNumber: cred[2],
+                    );
 
-                        twilioFlutter.sendSMS(
-                          toNumber: '+91' + userMap['phoneNo'],
-                          messageBody:
+                    twilioFlutter.sendSMS(
+                      toNumber: '+91' + userMap['phoneNo'],
+                      messageBody:
                           "$quantity units of medicine $name remaining!",
-                        );
-                      }
-
-                    }
+                    );
+                  }
+                }
                 Navigator.of(context).pop();
               });
             });
@@ -295,25 +299,114 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
+  // void _showCancelDialog(BuildContext context) {
+  //   TextEditingController reasonController = TextEditingController();
+  //   bool showError = false;
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Cancel Medication'),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             const Text('Why are you canceling this medication?'),
+  //             TextFormField(
+  //               maxLines: 3,
+  //               decoration: InputDecoration(
+  //                 hintText: 'Enter reason here',
+  //                 errorText: showError ? 'Please Enter a reason!' : null,
+  //               ),
+  //               controller: reasonController,
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: const Text('Cancel'),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: () async {
+  //               String reason = reasonController.text.toString();
+  //               if (reason.isNotEmpty) {
+  //                 alarmMap['skipReason'] = reason;
+  //                 alarmMap['status'] = 'Skipped';
+  //                 await FirebaseFirestore.instance
+  //                     .collection('alarms')
+  //                     .doc(alarmId)
+  //                     .update(alarmMap)
+  //                     .then((value) async {
+  //                   if (role == 'dependent') {
+  //                     final cred = await TwilioCred().readCred();
+  //                     final guardian =
+  //                         await FirebaseCred().getGuardianData(userId);
+  //                     TwilioFlutter twilioFlutter;
+  //                     if (guardian != null) {
+  //                       twilioFlutter = TwilioFlutter(
+  //                         accountSid: cred[0],
+  //                         authToken: cred[1],
+  //                         twilioNumber: cred[2],
+  //                       );
+
+  //                       twilioFlutter.sendSMS(
+  //                         toNumber: '+91' + guardian['phoneNo'],
+  //                         messageBody:
+  //                             "Your dependent did not take the medicine! \nReason: $reason",
+  //                       );
+  //                       print('done');
+  //                     } else {
+  //                       // Handle the case where guardian is null (e.g., show an error message).
+  //                       print('Guardian data is not available.');
+  //                     }
+  //                   }
+  //                   Navigator.of(context).pop();
+  //                   Navigator.of(context).pop();
+  //                 });
+  //               } else {
+  //                 showError = true;
+  //               }
+  //             },
+  //             child: const Text('Submit'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   void _showCancelDialog(BuildContext context) {
+    GlobalKey<FormState> formKey = GlobalKey<FormState>();
     TextEditingController reasonController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Cancel Medication'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Why are you canceling this medication?'),
-              TextFormField(
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: 'Enter reason here',
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Why are you canceling this medication?'),
+                TextFormField(
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Enter reason here',
+                  ),
+                  controller: reasonController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a reason';
+                    }
+                    return null;
+                  },
                 ),
-                controller: reasonController,
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -324,40 +417,15 @@ class ActionButtons extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                var reason = reasonController.text;
-                alarmMap['skipReason'] = reason;
-                alarmMap['status'] = 'Skipped';
-                await FirebaseFirestore.instance
-                    .collection('alarms')
-                    .doc(alarmId)
-                    .update(alarmMap)
-                    .then((value) async {
-                  if (role == 'dependent') {
-                    final cred = await TwilioCred().readCred();
-                    final guardian =
-                        await FirebaseCred().getGuardianData(userId);
-                    TwilioFlutter twilioFlutter;
-                    if (guardian != null) {
-                      twilioFlutter = TwilioFlutter(
-                        accountSid: cred[0],
-                        authToken: cred[1],
-                        twilioNumber: cred[2],
-                      );
-
-                      twilioFlutter.sendSMS(
-                        toNumber: '+91' + guardian['phoneNo'],
-                        messageBody:
-                            "Your dependent did not take the medicine! \nReason: $reason",
-                      );
-                      print('done');
-                    } else {
-                      // Handle the case where guardian is null (e.g., show an error message).
-                      print('Guardian data is not available.');
-                    }
-                  }
+                if (formKey.currentState!.validate()) {
+                  String reason = reasonController.text.trim();
+                  alarmMap['skipReason'] = reason;
+                  alarmMap['status'] = 'Skipped';
+                  // Rest of your logic here...
+                  // ...
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
-                });
+                }
               },
               child: const Text('Submit'),
             ),

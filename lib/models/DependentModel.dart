@@ -4,11 +4,15 @@ class DependentModel{
   final String name;
   final String userId;
   final String phoneNo;
+  final int noOfGuardian;
+  final List<String> guardians;
 
   DependentModel({
     required this.userId,
     required this.phoneNo,
-    required this.name
+    required this.name,
+    required this.noOfGuardian,
+    required this.guardians,
   });
 
   Map<String, dynamic> toMap(){
@@ -16,6 +20,8 @@ class DependentModel{
       'userId' : userId,
       'phoneNo' : phoneNo,
       'name' : name,
+      'dependents' : guardians,
+      'noOfDependents' : noOfGuardian,
     };
   }
 
@@ -25,6 +31,8 @@ class DependentModel{
       userId: data['userId'],
       name: data['name'],
       phoneNo: data['phoneNo'],
+      guardians: data['dependents'],
+      noOfGuardian: data['noOfDependents'],
     );
   }
 

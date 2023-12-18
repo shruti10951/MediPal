@@ -13,7 +13,6 @@ class DashboardScreenDependent extends StatefulWidget {
   const DashboardScreenDependent({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
@@ -33,8 +32,8 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
     try {
       final results = await Future.wait([alarmQuery, medicationQuery]);
-      final alarmQuerySnapshot = results[0] as QuerySnapshot;
-      final medicationQuerySnapshot = results[1] as QuerySnapshot;
+      final alarmQuerySnapshot = results[0];
+      final medicationQuerySnapshot = results[1];
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
         alarmDocumentList = alarmQuerySnapshot.docs.toList();
@@ -46,6 +45,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
       return [alarmDocumentList, medicationDocumentList];
     } catch (error) {
+      //show a toast msg instead of print
       print('Error retrieving documents: $error');
       return null;
     }
@@ -59,16 +59,16 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
           children: [
             Image.asset(
               'assets/images/medipal.png',
-              width: 30, // Adjust the width as needed
-              height: 30, // Adjust the height as needed
+              width: 30, 
+              height: 30, 
             ),
-            const SizedBox(width: 8), // Add spacing
-            const Text('MediPal'), // Title next to the image
+            const SizedBox(width: 8), 
+            const Text('MediPal'), 
           ],
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 15.0), // Set the top padding here
+        padding: const EdgeInsets.only(top: 15.0), 
         child: Column(
           children: [
             _buildCalendar(context),
@@ -201,28 +201,25 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
       context: context,
       initialDate: currentDate,
       firstDate:
-          currentDate.subtract(const Duration(days: 365)), // One year ago
-      lastDate: currentDate.add(const Duration(days: 365)), // One year from now
+          currentDate.subtract(const Duration(days: 365)), 
+      lastDate: currentDate.add(const Duration(days: 365)), 
     );
 
     if (selectedDate != null) {
-      // Handle the selected date here (e.g., update the UI with the selected date)
-      print('Selected date: $selectedDate');
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
   }
 
   void _onDateTapped(
       DateTime currentDate, List<QueryDocumentSnapshot> alarmQuerySnapshot) {
-    // print(currentDate);
+    
     final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
         alarmQuerySnapshot.where((element) {
       final Map<String, dynamic>? data =
           element.data() as Map<String, dynamic>?;
       if (data != null) {
         final String? date = data['time']?.toString().split(' ')[0];
-        // print(date);
-        // return 'It is time to take sk' == data['message'].toString();
+        
         return date == currentDate.toString().split(' ')[0];
       } else {
         return false;
@@ -236,6 +233,13 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
+
+        //sorting
+      alarmQuerySnapshot.sort((a, b){
+      final DateTime timeA= DateTime.parse(a['time']);
+      final DateTime timeB= DateTime.parse(b['time']);
+      return timeA.compareTo(timeB);
+    });
 
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
@@ -253,70 +257,66 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
               .firstWhere((element) => element['medicationId'] == medicationId,
                   orElse: null);
 
-          if (medicationDocument != null) {
-            final MedicationModel medicationModel =
-                MedicationModel.fromDocumentSnapshot(medicationDocument);
-            final Map<String, dynamic> medicine = medicationModel.toMap();
-            final String name = medicine['name'];
-            final String time = alarm['time'];
-            final int quantity = medicine['dosage'];
-            final String type = medicine['type'];
+          final MedicationModel medicationModel =
+              MedicationModel.fromDocumentSnapshot(medicationDocument);
+          final Map<String, dynamic> medicine = medicationModel.toMap();
+          final String name = medicine['name'];
+          final String time = alarm['time'];
+          final int quantity = medicine['dosage'];
+          final String type = medicine['type'];
 
-            String img;
+          String img;
 
-            if (type == 'Pills') {
-              img = 'assets/images/pill_icon.png';
-            } else if (type == 'Liquid') {
-              img = 'assets/images/liquid_icon.png';
-            } else {
-              img = 'assets/images/injection_icon.png';
-            }
+          if (type == 'Pills') {
+            img = 'assets/images/pill_icon.png';
+          } else if (type == 'Liquid') {
+            img = 'assets/images/liquid_icon.png';
+          } else {
+            img = 'assets/images/injection_icon.png';
+          }
 
-            DateTime dateTime = DateTime.parse(time);
+          DateTime dateTime = DateTime.parse(time);
 
-            //check this once again for time and date
-            // String formattedTime = DateFormat.Hm().format(dateTime);
-            // DateTime dateTime = DateTime.parse(time);
+          
 
 // Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
-            String formattedDate = DateFormat('d MMM').format(dateTime);
+          String formattedDate = DateFormat('d MMM').format(dateTime);
 
 // Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
-            String formattedTime = DateFormat.Hm().format(dateTime);
-            String dateTimeText = '$formattedDate | $formattedTime';
+          String formattedTime = DateFormat.Hm().format(dateTime);
+          String dateTimeText = '$formattedDate | $formattedTime';
 
-            return Card(
-              margin: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      dateTimeText,
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+          return Card(
+            margin: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    dateTimeText,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Divider(height: 1, color: Colors.grey),
-                  ListTile(
-                    leading: Image.asset(img),
-                    title: Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                ),
+                const Divider(height: 1, color: Colors.grey),
+                ListTile(
+                  leading: Image.asset(img),
+                  title: Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    subtitle: Text('Quantity: $quantity'),
                   ),
-                ],
-              ),
-            );
-          }
-        } else {
+                  subtitle: Text('Quantity: $quantity'),
+                ),
+              ],
+            ),
+          );
+                } else {
           return const Card(
             margin: EdgeInsets.all(8),
             child: Column(
