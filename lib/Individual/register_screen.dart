@@ -87,8 +87,7 @@ class RegisterScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                 // const SizedBox(height: 180.0),
-
+                // const SizedBox(height: 180.0),
               ],
             ),
           ),
@@ -110,8 +109,8 @@ class RegisterScreen extends StatelessWidget {
                   _buildNumericInputField(
                       Icons.phone_in_talk, 'Phone Number', phoneController),
                   const SizedBox(height: 16.0),
-                  _buildPasswordField(
-                      Icons.password_outlined, 'Password', passwordController, context),
+                  _buildPasswordField(Icons.password_outlined, 'Password',
+                      passwordController, context),
                   const SizedBox(height: 130.0),
                   ElevatedButton(
                     onPressed: () async {
@@ -199,9 +198,9 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordField(
-      IconData icon, String hintText, TextEditingController controller, BuildContext context) {
-    bool _isPasswordVisible = false;
+  Widget _buildPasswordField(IconData icon, String hintText,
+      TextEditingController controller, BuildContext context) {
+    bool isPasswordVisible = false;
 
     return Container(
       decoration: BoxDecoration(
@@ -212,7 +211,7 @@ class RegisterScreen extends StatelessWidget {
         child: Column(
           children: [
             TextField(
-              obscureText: !_isPasswordVisible,
+              obscureText: !isPasswordVisible,
               style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               decoration: InputDecoration(
                 hintText: hintText,

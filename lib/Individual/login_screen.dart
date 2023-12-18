@@ -6,8 +6,8 @@ import 'package:medipal/main.dart';
 import 'package:medipal/user_registration/forgot_password_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   LoginScreen({Key? key}) : super(key: key);
 
@@ -114,7 +114,7 @@ class LoginScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       TextButton(
@@ -151,7 +151,7 @@ class LoginScreen extends StatelessWidget {
         hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
         prefixIcon: Icon(
           icon,
-          color: Color.fromARGB(218, 41, 45, 92),
+          color: const Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
       ),
@@ -160,10 +160,10 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildPasswordField(IconData icon, String hintText) {
-    bool _isPasswordVisible = false;
+    bool isPasswordVisible = false;
 
-    return TextField(
-      obscureText: !_isPasswordVisible,
+    return TextFormField(
+      obscureText: !isPasswordVisible,
       style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
         hintText: hintText,
@@ -173,8 +173,17 @@ class LoginScreen extends StatelessWidget {
           color: const Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
+        errorText: _passwordController.text.length < 6
+            ? 'Password should be of at least 6 characters'
+            : null,
       ),
       controller: _passwordController,
+      validator: (value) {
+        if (value!.isEmpty || value.length < 6) {
+          return 'Password should be of at least 6 characters';
+        }
+        return null;
+      },
     );
   }
 
@@ -207,17 +216,10 @@ class LoginScreen extends StatelessWidget {
               msg: 'Please Verify your credentials',
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
-              backgroundColor: Color.fromARGB(255, 240, 91, 91),
-              textColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+              textColor: const Color.fromARGB(255, 255, 255, 255),
             );
           });
-          // Fluttertoast.showToast(
-          //               msg: 'Please Verify your credentials',
-          //               toastLength: Toast.LENGTH_SHORT,
-          //               gravity: ToastGravity.BOTTOM,
-          //               backgroundColor: Color.fromARGB(255, 240, 91, 91),
-          //               textColor: Color.fromARGB(255, 251, 249, 249),
-          //             );
         },
         style: ElevatedButton.styleFrom(
           primary: const Color.fromARGB(255, 41, 45, 92),

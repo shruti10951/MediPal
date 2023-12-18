@@ -1,40 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:medipal/Dependent/tab_change.dart';
 
-class DependentDetailsScreen extends StatefulWidget {
+class GuardianDetailsScreen extends StatefulWidget {
   @override
-  _DependentDetailsScreenState createState() => _DependentDetailsScreenState();
+  _GuardianDetailsScreenState createState() => _GuardianDetailsScreenState();
 }
 
-class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
+class _GuardianDetailsScreenState extends State<GuardianDetailsScreen> {
   final List<Map<String, dynamic>> dependentData = [];
 
   Future<List<Map<String, dynamic>>> fetchData() async {
     final user = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('dependent')
         .doc(FirebaseAuth.instance.currentUser?.uid.toString())
         .get();
 
     final userData = user.data() as Map<String, dynamic>;
 
-    List<String> dependentList = List<String>.from(userData['dependents']);
+    List<String> guardianList = List<String>.from(userData['guardians']);
 
-    List<Map<String, dynamic>> dependentsData = [];
-    for (var d in dependentList) {
+    List<Map<String, dynamic>> guardiansData = [];
+    for (var d in guardianList) {
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('dependent')
+          .collection('users')
           .where('userId', isEqualTo: d)
           .get();
       final documents = querySnapshot.docs;
       if (documents.isNotEmpty) {
-        final Map<String, dynamic> dependentData =
-            documents.first.data();
-        dependentsData.add(dependentData);
+        final Map<String, dynamic> guardianData = documents.first.data();
+        guardiansData.add(guardianData);
       }
     }
-    return dependentsData;
+    return guardiansData;
   }
 
   Widget _buildLoadingIndicator() {
@@ -65,7 +63,7 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dependent Details'),
+        title: const Text('Guardian Details'),
       ),
       body: Center(
           child: FutureBuilder(
@@ -78,13 +76,13 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
                   print(snapshot.error);
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  final dependentsData = snapshot;
+                  final guardiansData = snapshot;
                   return ListView.builder(
-                    itemCount: dependentsData.data?.length,
+                    itemCount: guardiansData.data?.length,
                     itemBuilder: (context, index) {
-                      final Map<String, dynamic>? dependent =
-                          dependentsData.data?[index];
-                      return _buildDependentCard(context, dependent!);
+                      final Map<String, dynamic>? guardian =
+                          guardiansData.data?[index];
+                      return _buildGuardianCard(context, guardian!);
                     },
                   );
                 }
@@ -92,7 +90,7 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
     );
   }
 
-  Widget _buildDependentCard(BuildContext context, Map<String, dynamic> data) {
+  Widget _buildGuardianCard(BuildContext context, Map<String, dynamic> data) {
     // List of image URLs for dependent profiles
     List<String> imageUrls = [
       'https://i.pinimg.com/564x/08/b7/03/08b7035e8a4a3b4dbde14f4707a0a19b.jpg',
@@ -107,15 +105,6 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
     String imageUrl = imageUrls[randomIndex];
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TabChange(
-                    dependentId: data['userId'],
-                  )),
-        );
-      },
       child: Card(
         elevation: 2.0,
         shape: RoundedRectangleBorder(
@@ -139,10 +128,6 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
             style: const TextStyle(
               color: Colors.grey,
             ),
-          ),
-          trailing: const Icon(
-            Icons.arrow_forward,
-            color: Colors.grey,
           ),
         ),
       ),

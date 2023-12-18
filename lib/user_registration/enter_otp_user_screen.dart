@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
-import 'package:flutter/material.dart';
 
 import '../Individual/bottom_navigation_individual.dart';
 
@@ -15,7 +14,7 @@ class OTPForUserPage extends StatelessWidget {
   final otpController = TextEditingController();
   final auth = FirebaseAuth.instance;
   CollectionReference collectionReference =
-  FirebaseFirestore.instance.collection('users');
+      FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +23,14 @@ class OTPForUserPage extends StatelessWidget {
         title: const Text('OTP'),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
               Color.fromARGB(255, 223, 238, 255),
-              Color.fromARGB(240, 183, 210, 253),],
+              Color.fromARGB(240, 183, 210, 253),
+            ],
           ),
         ),
         child: Center(
@@ -48,14 +48,17 @@ class OTPForUserPage extends StatelessWidget {
                 onPressed: () async {
                   try {
                     // Create a PhoneAuthCredential with the code
-                    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                    PhoneAuthCredential credential =
+                        PhoneAuthProvider.credential(
                       verificationId: verificationId,
                       smsCode: otpController.text,
                     );
 
                     User? user = FirebaseAuth.instance.currentUser;
 
-                    await user?.linkWithCredential(credential).then((value) async {
+                    await user
+                        ?.linkWithCredential(credential)
+                        .then((value) async {
                       Map<String, dynamic> userMap = userModel.toMap();
                       await collectionReference
                           .doc(auth.currentUser?.uid)
@@ -63,8 +66,10 @@ class OTPForUserPage extends StatelessWidget {
                           .then((value) {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => const BottomNavigationIndividual()),
-                              (Route<dynamic> route) => false,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BottomNavigationIndividual()),
+                          (Route<dynamic> route) => false,
                         );
                       });
                     });

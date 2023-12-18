@@ -10,11 +10,11 @@ class AlarmModel {
 
   AlarmModel(
       {required this.alarmId,
-        required this.skipReason,
-        required this.userId,
-        required this.time,
-        required this.status,
-        required this.medicationId});
+      required this.skipReason,
+      required this.userId,
+      required this.time,
+      required this.status,
+      required this.medicationId});
 
   factory AlarmModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;

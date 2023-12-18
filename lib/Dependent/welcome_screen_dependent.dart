@@ -60,7 +60,7 @@ class WelcomeScreenDependent extends StatelessWidget {
               'MEDIPAL',
               style: TextStyle(
                 fontSize: MediaQuery.of(context).size.width * 0.055,
-                color: Color.fromARGB(255, 36, 40, 81),
+                color: const Color.fromARGB(255, 36, 40, 81),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -74,7 +74,7 @@ class WelcomeScreenDependent extends StatelessWidget {
               'Your medicine, our responsibility!',
               style: TextStyle(
                 fontSize: MediaQuery.of(context).size.width * 0.042,
-                color: Color.fromARGB(255, 41, 45, 92),
+                color: const Color.fromARGB(255, 41, 45, 92),
                 fontWeight: FontWeight.bold,
                 fontStyle: FontStyle.italic,
               ),
@@ -96,14 +96,14 @@ class WelcomeScreenDependent extends StatelessWidget {
                           .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    child: _buildInputField(Icons.person_2_sharp,
-                        'Name', _nameController),
+                    child: _buildInputField(
+                        Icons.person_2_sharp, 'Name', _nameController),
                   ),
                   const SizedBox(height: 16.0),
                   Container(
                     decoration: BoxDecoration(
-                      color:
-                          Color.fromARGB(182, 255, 255, 255).withOpacity(0.6),
+                      color: const Color.fromARGB(182, 255, 255, 255)
+                          .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                     child: _buildPhoneNoField(
@@ -133,7 +133,8 @@ class WelcomeScreenDependent extends StatelessWidget {
           verify(context, number, name);
         },
         style: ElevatedButton.styleFrom(
-          primary: Color.fromARGB(255, 41,45,92),
+          //check this ui
+          primary: const Color.fromARGB(255, 41, 45, 92),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
           ),
@@ -151,7 +152,7 @@ class WelcomeScreenDependent extends StatelessWidget {
 
   void verify(BuildContext context, String phoneNumber, String name) async {
     await auth.verifyPhoneNumber(
-        phoneNumber: '+91' + phoneNumber,
+        phoneNumber: '+91$phoneNumber',
         verificationCompleted: (PhoneAuthCredential credential) {},
         verificationFailed: (FirebaseAuthException e) {},
         codeSent: (String verificationId, int? resendToken) {
@@ -167,37 +168,36 @@ class WelcomeScreenDependent extends StatelessWidget {
   }
 
   Widget _buildInputField(
-      IconData icon, String hintText, TextEditingController _nameController) {
+      IconData icon, String hintText, TextEditingController nameController) {
     return TextField(
-      style: const TextStyle(color: Color.fromARGB(255, 41,45,92)),
+      style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Color.fromARGB(255, 41,45,92)),
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
         prefixIcon: Icon(
           icon,
-          color: const Color.fromARGB(218, 41,45,92),
+          color: const Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
       ),
-      controller: _nameController,
+      controller: nameController,
     );
   }
 
   Widget _buildPhoneNoField(
-    IconData icon, String hintText, TextEditingController _phoneController) {
-  return TextField(
-    style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-    decoration: InputDecoration(
-      hintText: hintText,
-      hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-      prefixIcon: Icon(icon, color: Color.fromARGB(218, 41, 45, 92)),
-      border: InputBorder.none,
-    ),
-    controller: _phoneController,
-    keyboardType: TextInputType.number, // Only allow numeric input
-  );
-}
-
+      IconData icon, String hintText, TextEditingController phoneController) {
+    return TextField(
+      style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
+        prefixIcon: Icon(icon, color: const Color.fromARGB(218, 41, 45, 92)),
+        border: InputBorder.none,
+      ),
+      controller: phoneController,
+      keyboardType: TextInputType.number, // Only allow numeric input
+    );
+  }
 }
 
 class BackgroundPainter extends CustomPainter {
@@ -213,7 +213,7 @@ class BackgroundPainter extends CustomPainter {
         size.width * 0.65, size.height * 0.9, size.width, size.height * 0.9);
     path.lineTo(size.width, 0);
 
-    paint.color = Color.fromARGB(255, 202, 222, 255);
+    paint.color = const Color.fromARGB(255, 202, 222, 255);
     paint.style = PaintingStyle.fill;
 
     canvas.drawPath(path, paint);
@@ -225,26 +225,27 @@ class BackgroundPainter extends CustomPainter {
   }
 }
 
+//check this if not required pls remove
 Widget _buildLoadingIndicator() {
-return const Center(
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(
-          Color.fromARGB(255, 71, 78, 84),
+  return const Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            Color.fromARGB(255, 71, 78, 84),
+          ),
         ),
-      ),
-      SizedBox(height: 16.0),
-      Text(
-        'Loading...',
-        style: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey,
+        SizedBox(height: 16.0),
+        Text(
+          'Loading...',
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
         ),
-      ),
-    ],
-  ),
-);
+      ],
+    ),
+  );
 }
