@@ -34,8 +34,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     try {
       final results = await Future.wait([alarmQuery, medicationQuery]);
-      final alarmQuerySnapshot = results[0] as QuerySnapshot;
-      final medicationQuerySnapshot = results[1] as QuerySnapshot;
+      final alarmQuerySnapshot = results[0];
+      final medicationQuerySnapshot = results[1];
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
         alarmDocumentList = alarmQuerySnapshot.docs.toList();
@@ -226,8 +226,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
 
     if (selectedDate != null) {
-      // Handle the selected date here (e.g., update the UI with the selected date)
-      print('Selected date: $selectedDate');
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
   }
@@ -252,10 +250,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       filteredAlarms = alarmFilteredSnapshot;
     });
+
+    if (filteredAlarms.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No alarms scheduled for this day.'),
+        ),
+      );
+    }
   }
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
+
+    if(filteredAlarms.isEmpty){
+      DateTime currentDate= DateTime.now();
+      alarmQuerySnapshot= alarmQuerySnapshot.where((element) {
+        DateTime alarmTime= DateTime.parse(element['time']);
+        return alarmTime.isAfter(currentDate);
+      }).toList();
+    }
+
+    //sorting
     alarmQuerySnapshot.sort((a, b){
       final DateTime timeA= DateTime.parse(a['time']);
       final DateTime timeB= DateTime.parse(b['time']);

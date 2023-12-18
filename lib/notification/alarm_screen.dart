@@ -257,19 +257,26 @@ class ActionButtons extends StatelessWidget {
                   TwilioFlutter twilioFlutter;
                   final cred = await TwilioCred().readCred();
                   if (role == 'dependent') {
-                    final guardian =
+                    final guardians =
                         await FirebaseCred().getGuardianData(userId);
+
+                    final dependent = await FirebaseCred().getDependentData(userId);
+
+                    String dependentName= dependent['name'];
+
                     twilioFlutter = TwilioFlutter(
                       accountSid: cred[0],
                       authToken: cred[1],
                       twilioNumber: cred[2],
                     );
 
-                    twilioFlutter.sendSMS(
-                      toNumber: '+91' + guardian['phoneNo'],
-                      messageBody:
-                          "$quantity units of medicine $name remaining of your dependent!",
-                    );
+                    for(Map guardian in guardians){
+                      twilioFlutter.sendSMS(
+                        toNumber: '+91' + guardian['phoneNo'],
+                        messageBody:
+                        "$quantity units of medicine: $name remaining of your dependent: $dependentName!",
+                      );
+                    }
                   } else {
                     final userData = await FirebaseFirestore.instance
                         .collection('users')
@@ -350,24 +357,30 @@ class ActionButtons extends StatelessWidget {
                       .then((value) async {
                     if (role == 'dependent') {
                       final cred = await TwilioCred().readCred();
-                      final guardian =
+                      final guardians =
                       await FirebaseCred().getGuardianData(userId);
                       TwilioFlutter twilioFlutter;
-                      if (guardian != null) {
+                      if (guardians != null) {
                         twilioFlutter = TwilioFlutter(
                           accountSid: cred[0],
                           authToken: cred[1],
                           twilioNumber: cred[2],
                         );
 
-                        twilioFlutter.sendSMS(
-                          toNumber: '+91' + guardian['phoneNo'],
-                          messageBody:
-                          "Your dependent did not take the medicine! \nReason: $reason",
-                        );
-                        print('done');
+                        final dependent = await FirebaseCred().getDependentData(userId);
+
+                        String dependentName= dependent['name'];
+
+                        for(Map guardian in guardians){
+                          twilioFlutter.sendSMS(
+                            toNumber: '+91' + guardian['phoneNo'],
+                            messageBody:
+                            "Your dependent $dependentName did not take the medicine! \nReason: $reason",
+                          );
+                        }
                       } else {
                         // Handle the case where guardian is null (e.g., show an error message).
+                        //here show toast or snack-bar
                         print('Guardian data is not available.');
                       }
                     }
