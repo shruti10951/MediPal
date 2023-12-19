@@ -392,7 +392,8 @@ class ActionButtons extends StatelessWidget {
                           msg: 'Guardian data not available.',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
-                          backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                          backgroundColor:
+                              const Color.fromARGB(255, 240, 91, 91),
                           textColor: const Color.fromARGB(255, 255, 255, 255),
                         );
                       }
