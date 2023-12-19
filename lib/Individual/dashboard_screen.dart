@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'medicine_form.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -14,7 +15,6 @@ class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
@@ -46,9 +46,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
 
       return [alarmDocumentList, medicationDocumentList];
-
     } catch (error) {
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }
@@ -63,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(224, 249, 249, 249),
+      backgroundColor: const Color.fromARGB(224, 249, 249, 249),
       appBar: AppBar(
         title: Row(
           children: [
@@ -112,7 +117,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onPressed: () {
           _navigateToMedicineForm(context); // Call the navigation function
         },
-        backgroundColor: Color.fromARGB(255, 117, 116, 116),
+        backgroundColor: const Color.fromARGB(255, 117, 116, 116),
         child: const Icon(Icons.add), // Set the button background color
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -262,19 +267,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-
-    if(filteredAlarms.isEmpty){
-      DateTime currentDate= DateTime.now();
-      alarmQuerySnapshot= alarmQuerySnapshot.where((element) {
-        DateTime alarmTime= DateTime.parse(element['time']);
+    if (filteredAlarms.isEmpty) {
+      DateTime currentDate = DateTime.now();
+      alarmQuerySnapshot = alarmQuerySnapshot.where((element) {
+        DateTime alarmTime = DateTime.parse(element['time']);
         return alarmTime.isAfter(currentDate);
       }).toList();
     }
 
     //sorting
-    alarmQuerySnapshot.sort((a, b){
-      final DateTime timeA= DateTime.parse(a['time']);
-      final DateTime timeB= DateTime.parse(b['time']);
+    alarmQuerySnapshot.sort((a, b) {
+      final DateTime timeA = DateTime.parse(a['time']);
+      final DateTime timeB = DateTime.parse(b['time']);
       return timeA.compareTo(timeB);
     });
 
@@ -315,14 +319,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             DateTime dateTime = DateTime.parse(time);
 
-            //check this once again for time and date
-            // String formattedTime = DateFormat.Hm().format(dateTime);
-            // DateTime dateTime = DateTime.parse(time);
-
-// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+            // Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
             String formattedDate = DateFormat('d MMM').format(dateTime);
 
-// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
+            // Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
             String formattedTime = DateFormat.Hm().format(dateTime);
 
             String dateTimeText = '$formattedDate | $formattedTime';

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -37,7 +37,13 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
       }
       return medicationDocumentList;
     } catch (error) {
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }
@@ -58,15 +64,16 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Edit Medication'),
+              title: const Text('Edit Medication'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: InputDecoration(labelText: 'Medication Name'),
+                    decoration:
+                        const InputDecoration(labelText: 'Medication Name'),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   DropdownButton<String>(
                     value: type,
                     onChanged: (String? newValue) {
@@ -81,7 +88,7 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                         value: value,
                         child: Row(
                           children: [
-                           if (value == 'Pills')
+                            if (value == 'Pills')
                               Container(
                                 height: 24, // Specify the height you want
                                 width: 24, // Specify the width you want
@@ -102,17 +109,17 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                                 child: Image.asset(
                                     'assets/images/injection_icon.png'), // Replace 'assets/injection.png' with the actual image path
                               ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(value),
                           ],
                         ),
                       );
                     }).toList(),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: quantityController,
-                    decoration: InputDecoration(labelText: 'Quantity'),
+                    decoration: const InputDecoration(labelText: 'Quantity'),
                     keyboardType: TextInputType.number,
                   ),
                 ],
@@ -127,7 +134,7 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                     // Refresh the page after data is deleted
                     setState(() {});
                   },
-                  child: Text('Close'),
+                  child: const Text('Close'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -148,12 +155,21 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                         .collection('medications')
                         .doc(id)
                         .update(medicine)
-                        .then((value) => print('data updated'));
+                        .then(
+                          (value) => Fluttertoast.showToast(
+                            msg: 'Data updated',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Color.fromARGB(206, 2, 191, 34),
+                            textColor: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        );
+                    // print('data updated'));
                     Navigator.pop(context);
                     // Refresh the page after data is deleted
                     setState(() {});
                   },
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ),
               ],
             );

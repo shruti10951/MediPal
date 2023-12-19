@@ -3,18 +3,15 @@ import 'package:medipal/Individual/gaurdian_view_screen.dart';
 import 'package:medipal/Individual/inventory_dependet_guardian.dart';
 
 class TabChange extends StatefulWidget {
-  
   final dependentId;
 
   const TabChange({required this.dependentId});
 
   @override
   _TabChangeState createState() => _TabChangeState();
-
 }
 
 class _TabChangeState extends State<TabChange> {
-
   late final List<Widget> _tabs;
 
   @override
@@ -34,7 +31,9 @@ class _TabChangeState extends State<TabChange> {
         appBar: AppBar(
           toolbarHeight: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)), // Customize back button
+            icon: const Icon(Icons.arrow_back,
+                color: Color.fromARGB(255, 0, 0, 0)),
+            // Customize back button
             onPressed: () {
               Navigator.of(context).pop();
             },

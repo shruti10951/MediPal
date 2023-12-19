@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/tab_change.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class DependentDetailsScreen extends StatefulWidget {
   @override
@@ -29,8 +30,7 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
           .get();
       final documents = querySnapshot.docs;
       if (documents.isNotEmpty) {
-        final Map<String, dynamic> dependentData =
-            documents.first.data() as Map<String, dynamic>;
+        final Map<String, dynamic> dependentData = documents.first.data();
         dependentsData.add(dependentData);
       }
     }
@@ -74,7 +74,15 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
+                  Fluttertoast.showToast(
+                    msg: 'Error retrieving documents',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Color.fromARGB(255, 240, 91, 91),
+                    textColor: Color.fromARGB(255, 255, 255, 255),
+                  );
                   print(snapshot.error);
+
                   return Text('Error: ${snapshot.error}');
                 } else {
                   final dependentsData = snapshot;

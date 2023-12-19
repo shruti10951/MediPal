@@ -6,8 +6,8 @@ import 'package:medipal/main.dart';
 import 'package:medipal/user_registration/forgot_password_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   LoginScreen({Key? key}) : super(key: key);
 
@@ -114,7 +114,7 @@ class LoginScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       TextButton(
@@ -151,7 +151,7 @@ class LoginScreen extends StatelessWidget {
         hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
         prefixIcon: Icon(
           icon,
-          color: Color.fromARGB(218, 41, 45, 92),
+          color: const Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
       ),
@@ -162,22 +162,7 @@ class LoginScreen extends StatelessWidget {
   Widget _buildPasswordField(IconData icon, String hintText) {
     bool _isPasswordVisible = false;
 
-    // return TextField(
-    //   obscureText: !_isPasswordVisible,
-    //   style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-    //   decoration: InputDecoration(
-    //     hintText: hintText,
-    //     hintStyle: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
-    //     prefixIcon: Icon(
-    //       icon,
-    //       color: const Color.fromARGB(218, 41, 45, 92),
-    //     ),
-    //     border: InputBorder.none,
-    //   ),
-    //   controller: _passwordController,
-    // );
-
-    return TextFormField(
+    return TextField(
       obscureText: !_isPasswordVisible,
       style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
@@ -188,73 +173,152 @@ class LoginScreen extends StatelessWidget {
           color: const Color.fromARGB(218, 41, 45, 92),
         ),
         border: InputBorder.none,
-        errorText: _passwordController.text.length < 6
-            ? 'Password should be of at least 6 characters'
-            : null,
       ),
       controller: _passwordController,
-      validator: (value) {
-        if (value!.isEmpty || value.length < 6) {
-          return 'Password should be of at least 6 characters';
-        }
-        return null;
-      },
     );
   }
 
   Widget _buildSignInButton(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          final auth = FirebaseAuth.instance;
-          auth
-              .signInWithEmailAndPassword(
-                  email: _emailController.text,
-                  password: _passwordController.text)
-              .then((value) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const BottomNavigationIndividual()),
-              (Route<dynamic> route) => false,
-            );
-            Fluttertoast.showToast(
-              msg: 'Logged In Successfully!',
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-            );
-          }).catchError((error) {
-            Fluttertoast.showToast(
-              msg: 'Please Verify your credentials',
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              backgroundColor: Color.fromARGB(255, 240, 91, 91),
-              textColor: Color.fromARGB(255, 255, 255, 255),
-            );
-          });
-        },
-        style: ElevatedButton.styleFrom(
-          primary: const Color.fromARGB(255, 41, 45, 92),
-          onPrimary: Colors.white,
-          elevation: 3,
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0),
-          ),
+    return ElevatedButton(
+      onPressed: () {
+        final auth = FirebaseAuth.instance;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return _buildLoadingIndicator();
+          },
+        );
+
+        auth
+            .signInWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        )
+            .then((value) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const BottomNavigationIndividual(),
+            ),
+            (Route<dynamic> route) => false,
+          );
+          Fluttertoast.showToast(
+            msg: 'Logged In Successfully!',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+        }).catchError((error) {
+          Navigator.pop(context); // Dismiss the loading indicator
+          Fluttertoast.showToast(
+            msg: 'Please Verify your credentials',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+            textColor: const Color.fromARGB(255, 255, 255, 255),
+          );
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        primary: const Color.fromARGB(255, 41, 45, 92),
+        onPrimary: Colors.white,
+        elevation: 3,
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
         ),
-        child: const Text(
-          'Sign In',
-          style: TextStyle(
-            fontSize: 18.0,
-            color: Color.fromARGB(255, 255, 255, 255),
-          ),
+      ),
+      child: const Text(
+        'Sign In',
+        style: TextStyle(
+          fontSize: 18.0,
+          color: Color.fromARGB(255, 255, 255, 255),
         ),
       ),
     );
   }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: const AlwaysStoppedAnimation<Color>(
+              Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 16.0),
+          const Text(
+            'Loading...',
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget _buildSignInButton(BuildContext context) {
+  //   return Container(
+  //     width: double.infinity,
+  //     child: ElevatedButton(
+  //       onPressed: () {
+
+  //         final auth = FirebaseAuth.instance;
+
+  //         auth
+  //             .signInWithEmailAndPassword(
+  //                 email: _emailController.text,
+  //                 password: _passwordController.text)
+  //             .then((value) {
+  //           Navigator.pushAndRemoveUntil(
+  //             context,
+  //             MaterialPageRoute(
+  //                 builder: (context) => const BottomNavigationIndividual()),
+  //             (Route<dynamic> route) => false,
+  //           );
+  //           Fluttertoast.showToast(
+  //             msg: 'Logged In Successfully!',
+  //             toastLength: Toast.LENGTH_SHORT,
+  //             gravity: ToastGravity.BOTTOM,
+  //             backgroundColor: Colors.green,
+  //             textColor: Colors.white,
+  //           );
+  //         }).catchError((error) {
+  //           Fluttertoast.showToast(
+  //             msg: 'Please Verify your credentials',
+  //             toastLength: Toast.LENGTH_SHORT,
+  //             gravity: ToastGravity.BOTTOM,
+  //             backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+  //             textColor: const Color.fromARGB(255, 255, 255, 255),
+  //           );
+  //         });
+  //       },
+  //       style: ElevatedButton.styleFrom(
+  //         primary: const Color.fromARGB(255, 41, 45, 92),
+  //         onPrimary: Colors.white,
+  //         elevation: 3,
+  //         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(30.0),
+  //         ),
+  //       ),
+  //       child: const Text(
+  //         'Sign In',
+  //         style: TextStyle(
+  //           fontSize: 18.0,
+  //           color: Color.fromARGB(255, 255, 255, 255),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 class CustomShapeClipper extends CustomClipper<Path> {

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -10,6 +11,13 @@ class RegisterScreen extends StatelessWidget {
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
+
+  String? _validatePassword() {
+    if (passwordController.text.length < 6) {
+      return 'Password should be at least 6 characters long';
+    }
+    return null;
+  }
 
   final auth = FirebaseAuth.instance;
 
@@ -113,18 +121,44 @@ class RegisterScreen extends StatelessWidget {
                   const SizedBox(height: 16.0),
                   _buildPasswordField(Icons.password_outlined, 'Password',
                       passwordController, context),
-                  const SizedBox(height: 100.0),
+                  //JANA KRIPYA YAHA DEKHIYE
+                  if (_validatePassword() !=
+                      null) // Conditionally display the error message
+                    Text(
+                      _validatePassword() ?? '',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  const SizedBox(height: 130.0),
                   ElevatedButton(
                     onPressed: () async {
-                      try {
-                        await auth
-                            .createUserWithEmailAndPassword(
-                                email: emailController.text,
-                                password: passwordController.text)
-                            .then((value) =>
-                                verify(context, phoneController.text));
-                      } catch (e) {
-                        print(e);
+                      var error = _validatePassword(); // Validate the password
+                      if (error == null) {
+                        try {
+                          await auth
+                              .createUserWithEmailAndPassword(
+                                  email: emailController.text,
+                                  password: passwordController.text)
+                              .then((value) =>
+                                  verify(context, phoneController.text));
+                        } catch (e) {
+                          Fluttertoast.showToast(
+                            msg: 'Registration failed. Please try again.',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Color.fromARGB(255, 240, 91, 91),
+                            textColor: Color.fromARGB(255, 255, 255, 255),
+                          );
+                          return null;
+                          print(e);
+                        }
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: 'Password should be atleast 6 characters long!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Color.fromARGB(255, 240, 91, 91),
+                          textColor: Color.fromARGB(255, 255, 255, 255),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -132,16 +166,14 @@ class RegisterScreen extends StatelessWidget {
                       onPrimary: Colors.white,
                       elevation: 3,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 16),
+                          horizontal: 40, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Register',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                      ),
+                      style: TextStyle(fontSize: 20.0),
                     ),
                   ),
                 ],

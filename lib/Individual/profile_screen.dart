@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medipal/main.dart';
@@ -7,14 +6,14 @@ import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/Individual/dependent_details_screen.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 import 'package:qr_flutter/qr_flutter.dart'; // Replace with your screen for Dependent details
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
 
 Future<UserModel?> fetchData() async {
-  final userInfoQuery =
-      firestore.collection('users').doc(userId).get();
+  final userInfoQuery = firestore.collection('users').doc(userId).get();
 
   try {
     final userDoc = await userInfoQuery;
@@ -25,7 +24,13 @@ Future<UserModel?> fetchData() async {
       return null;
     }
   } catch (error) {
-    print('Error retrieving document: $error');
+    Fluttertoast.showToast(
+      msg: 'Error retrieving documents.',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+      textColor: const Color.fromARGB(255, 255, 255, 255),
+    );
     return null;
   }
 }
@@ -87,8 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 206, 205, 255)),
-                    
+                    const Color.fromARGB(255, 206, 205, 255)),
               ),
               onPressed: () {
                 // Close the dialog
@@ -97,10 +101,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () async{
+              onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
-                navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (context)=> ChooseScreen()), (route) => false);
+                navigatorKey.currentState?.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => ChooseScreen()),
+                    (route) => false);
               },
               child: const Text('Logout'),
             ),
@@ -128,12 +134,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Replace the GestureDetector with an Image.asset widget
-            // Image.asset(
-            //   'assets/images/medipal.png',
-            //   width: 160, // Adjust the width as needed
-            //   height: 160, // Adjust the height as needed
-            // ),
             QrImageView(
               data: userId ?? 'error',
               version: QrVersions.auto,
@@ -182,18 +182,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Color.fromARGB(255, 41, 45,
                                     92), // Set the icon color to grey
                               ),
-                              SizedBox(
-                                  width:
-                                      16), // Add spacing between icon and text
+                              SizedBox(width: 16),
+                              // Add spacing between icon and text
                               Text(
                                 'Dependent Details',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color.fromARGB(255, 41, 45, 92),
-            
                                 ),
                               ),
-                              Spacer(), // Add a spacer to push the icon to the end
+                              Spacer(),
+                              // Add a spacer to push the icon to the end
                               Icon(
                                 Icons.arrow_forward, // Your desired arrow icon
                               ),

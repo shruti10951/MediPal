@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = FirebaseAuth.instance.currentUser?.uid.toString();
 
 class InventoryDependent extends StatefulWidget {
-
   const InventoryDependent({super.key});
 
   @override
@@ -15,7 +15,6 @@ class InventoryDependent extends StatefulWidget {
 }
 
 class _InventoryDependent extends State<InventoryDependent> {
-
   @override
   void initState() {
     super.initState();
@@ -38,8 +37,13 @@ class _InventoryDependent extends State<InventoryDependent> {
       }
       return medicationDocumentList;
     } catch (error) {
-      //show toast msg
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }
@@ -58,22 +62,23 @@ class _InventoryDependent extends State<InventoryDependent> {
         children: [
           Expanded(
               child: FutureBuilder(
-                future: fetchData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildLoadingIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final medicationQuery = snapshot.data;
-                    return _buildInventoryCard(medicationQuery!);
-                  }
-                },
-              ))
+            future: fetchData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final medicationQuery = snapshot.data;
+                return _buildInventoryCard(medicationQuery!);
+              }
+            },
+          ))
         ],
       ),
     );
   }
+
   Widget _buildLoadingIndicator() {
     return const Center(
       child: Column(
@@ -104,9 +109,9 @@ class _InventoryDependent extends State<InventoryDependent> {
         itemCount: medicationQuerySnapshot.length,
         itemBuilder: (BuildContext context, int index) {
           final QueryDocumentSnapshot medicationDocumentSnapshot =
-          medicationQuerySnapshot[index];
+              medicationQuerySnapshot[index];
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
           final name = medication['name'];
           final type = medication['type'];
@@ -114,12 +119,12 @@ class _InventoryDependent extends State<InventoryDependent> {
 
           String img;
 
-          if(type=='Pills'){
-            img= 'assets/images/pill_icon.png';
-          }else if(type=='Liquid'){
-            img= 'assets/images/liquid_icon.png';
-          }else{
-            img= 'assets/images/injection_icon.png';
+          if (type == 'Pills') {
+            img = 'assets/images/pill_icon.png';
+          } else if (type == 'Liquid') {
+            img = 'assets/images/liquid_icon.png';
+          } else {
+            img = 'assets/images/injection_icon.png';
           }
 
           return Card(
@@ -143,7 +148,7 @@ class _InventoryDependent extends State<InventoryDependent> {
                       const Divider(height: 1, color: Colors.grey),
                       // Vertical line
                       const SizedBox(height: 8),
-                      
+
                       Text('Type: $type'),
                       Text('Quantity: $quantity'),
                       const SizedBox(height: 8),

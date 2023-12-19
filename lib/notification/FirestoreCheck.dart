@@ -2,10 +2,11 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:medipal/notification/notification_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class FireStoreCheck {
-
   Future<void> checkFirestore() async {
     await Firebase.initializeApp();
     final firestore = FirebaseFirestore.instance;
@@ -27,8 +28,8 @@ class FireStoreCheck {
 
           DateTime timestamp = DateTime.parse(time);
           DateTime timestamp2 = DateTime.now();
+
           if (timestamp.isBefore(timestamp2) && status == 'pending') {
-            print('Before calling');
             await NotificationService.showNotification(
                 title: 'Medipal',
                 body: 'This is a reminder',
@@ -38,18 +39,19 @@ class FireStoreCheck {
                 },
                 actionButtons: [
                   NotificationActionButton(
-                      key: 'key',
-                      label: 'Open',
-                      actionType: ActionType.Default)
+                      key: 'key', label: 'Open', actionType: ActionType.Default)
                 ]);
-            print('after calling');
-          } else {
-            print('No documents found in Firestore query.');
           }
         }
       }
     } catch (error) {
-      print('Error fetching alarms: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
     }
   }
 }
