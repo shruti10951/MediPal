@@ -102,11 +102,17 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
   Widget _buildDependentCard(BuildContext context, Map<String, dynamic> data) {
     // List of image URLs for dependent profiles
     List<String> imageUrls = [
-      'https://i.pinimg.com/564x/08/b7/03/08b7035e8a4a3b4dbde14f4707a0a19b.jpg',
-      'https://i.pinimg.com/236x/2b/66/db/2b66db81ba2345377152f9bdf35ce75f.jpg',
-      'https://i.pinimg.com/236x/4e/cd/d9/4ecdd9654fa08d8ccc11c4a5249c50da.jpg',
-      'https://i.pinimg.com/236x/cb/c6/c2/cbc6c217c0bb2575b9f93cbfa9895d24.jpg',
-      'https://i.pinimg.com/236x/fb/ee/ee/fbeeee5fbe06cef68c557b2b509a8c6e.jpg'
+      'assets/images/img1.jpg',
+      'assets/images/img2.jpg',
+      'assets/images/img3.jpg',
+      'assets/images/img4.jpg',
+      'assets/images/img5.jpg'
+
+      // 'https://i.pinimg.com/564x/08/b7/03/08b7035e8a4a3b4dbde14f4707a0a19b.jpg',
+      // 'https://i.pinimg.com/236x/2b/66/db/2b66db81ba2345377152f9bdf35ce75f.jpg',
+      // 'https://i.pinimg.com/236x/4e/cd/d9/4ecdd9654fa08d8ccc11c4a5249c50da.jpg',
+      // 'https://i.pinimg.com/236x/cb/c6/c2/cbc6c217c0bb2575b9f93cbfa9895d24.jpg',
+      // 'https://i.pinimg.com/236x/fb/ee/ee/fbeeee5fbe06cef68c557b2b509a8c6e.jpg'
     ];
 
     // Generate a random index to select an image URL
