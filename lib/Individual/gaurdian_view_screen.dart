@@ -38,9 +38,9 @@ class _GaurdianViewState extends State<GaurdianView> {
 
     try {
       final results =
-          await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
-      alarmQuerySnapshot = results[0] as QuerySnapshot;
-      final medicationQuerySnapshot = results[1] as QuerySnapshot;
+          await Future.wait([alarmQuery, medicationQuery]);
+      alarmQuerySnapshot = results[0];
+      final medicationQuerySnapshot = results[1];
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
         alarmDocumentList = alarmQuerySnapshot.docs.toList();
@@ -56,8 +56,8 @@ class _GaurdianViewState extends State<GaurdianView> {
         msg: 'Error retrieving documents',
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Color.fromARGB(255, 240, 91, 91),
-        textColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+        textColor: const Color.fromARGB(255, 255, 255, 255),
       );
       return null;
     }
@@ -159,6 +159,14 @@ class _GaurdianViewState extends State<GaurdianView> {
     setState(() {
       filteredAlarms = alarmFilteredSnapshot;
     });
+
+    if (filteredAlarms.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No alarms scheduled for this day.'),
+        ),
+      );
+    }
   }
 
   Widget _buildLoadingIndicator() {
@@ -187,11 +195,21 @@ class _GaurdianViewState extends State<GaurdianView> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
+
+    if (filteredAlarms.isEmpty) {
+      DateTime currentDate = DateTime.now();
+      alarmQuerySnapshot = alarmQuerySnapshot.where((element) {
+        DateTime alarmTime = DateTime.parse(element['time']);
+        return alarmTime.isAfter(currentDate);
+      }).toList();
+    }
+
     alarmQuerySnapshot.sort((a, b) {
       final DateTime timeA = DateTime.parse(a['time']);
       final DateTime timeB = DateTime.parse(b['time']);
       return timeA.compareTo(timeB);
     });
+
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
@@ -228,14 +246,10 @@ class _GaurdianViewState extends State<GaurdianView> {
 
           DateTime dateTime = DateTime.parse(time);
 
-          //check this once again for time and date
-          // String formattedTime = DateFormat.Hm().format(dateTime);
-          // DateTime dateTime = DateTime.parse(time);
-
-// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+          // Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
           String formattedDate = DateFormat('d MMM').format(dateTime);
 
-// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
+          // Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
           String formattedTime = DateFormat.Hm().format(dateTime);
 
           String dateTimeText = '$formattedDate | $formattedTime';
