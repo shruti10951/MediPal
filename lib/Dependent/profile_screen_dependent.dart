@@ -147,7 +147,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.hasError || !snapshot.hasData) {
-                  return const Text('Error: Unable to load user data');
+                  return const Text('Loading user data...');
                 }
 
                 final user = snapshot.data!;

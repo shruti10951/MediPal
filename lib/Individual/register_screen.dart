@@ -148,6 +148,14 @@ class RegisterScreen extends StatelessWidget {
                           return null;
                           print(e);
                         }
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: 'Password should be atleast 6 characters long!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Color.fromARGB(255, 240, 91, 91),
+                          textColor: Color.fromARGB(255, 255, 255, 255),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(

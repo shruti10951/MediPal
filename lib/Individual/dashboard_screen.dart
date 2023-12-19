@@ -47,7 +47,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       return [alarmDocumentList, medicationDocumentList];
     } catch (error) {
-      //add toast or snack-bar
       Fluttertoast.showToast(
         msg: 'Error retrieving documents',
         toastLength: Toast.LENGTH_SHORT,

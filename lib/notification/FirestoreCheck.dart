@@ -2,7 +2,9 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:medipal/notification/notification_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class FireStoreCheck {
   Future<void> checkFirestore() async {
@@ -43,8 +45,13 @@ class FireStoreCheck {
         }
       }
     } catch (error) {
-      //snack-bar
-      print('Error fetching alarms: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
     }
   }
 }

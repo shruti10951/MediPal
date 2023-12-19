@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:medipal/Individual/medicine_form_dependent.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dashboard_screen.dart';
 
 class GaurdianView extends StatefulWidget {
@@ -18,7 +18,6 @@ class GaurdianView extends StatefulWidget {
 }
 
 class _GaurdianViewState extends State<GaurdianView> {
-
   List<QueryDocumentSnapshot> filteredAlarms = [];
   // List<QueryDocumentSnapshot> alarmQuerySnapshot = [];
 
@@ -39,7 +38,7 @@ class _GaurdianViewState extends State<GaurdianView> {
 
     try {
       final results =
-      await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
+          await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
       alarmQuerySnapshot = results[0] as QuerySnapshot;
       final medicationQuerySnapshot = results[1] as QuerySnapshot;
 
@@ -53,7 +52,13 @@ class _GaurdianViewState extends State<GaurdianView> {
 
       return [alarmDocumentList, medicationDocumentList];
     } catch (error) {
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }
@@ -109,7 +114,9 @@ class _GaurdianViewState extends State<GaurdianView> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MedicineFormDependent(dependentId: widget.dependentId,),
+          builder: (context) => MedicineFormDependent(
+            dependentId: widget.dependentId,
+          ),
         ),
       );
     }
@@ -123,11 +130,11 @@ class _GaurdianViewState extends State<GaurdianView> {
       context: context,
       initialDate: currentDate,
       firstDate:
-      currentDate.subtract(const Duration(days: 365)), // One year ago
+          currentDate.subtract(const Duration(days: 365)), // One year ago
       lastDate: currentDate.add(const Duration(days: 365)), // One year from now
     );
 
-    if(selectedDate != null){
+    if (selectedDate != null) {
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
   }
@@ -136,9 +143,9 @@ class _GaurdianViewState extends State<GaurdianView> {
       DateTime currentDate, QuerySnapshot<Object?> alarmQuerySnapshot) {
     // print(currentDate);
     final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
-    alarmQuerySnapshot.docs.where((element) {
+        alarmQuerySnapshot.docs.where((element) {
       final Map<String, dynamic>? data =
-      element.data() as Map<String, dynamic>?;
+          element.data() as Map<String, dynamic>?;
       if (data != null) {
         final String? date = data['time']?.toString().split(' ')[0];
         // print(date);
@@ -180,29 +187,29 @@ class _GaurdianViewState extends State<GaurdianView> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-    alarmQuerySnapshot.sort((a, b){
-      final DateTime timeA= DateTime.parse(a['time']);
-      final DateTime timeB= DateTime.parse(b['time']);
+    alarmQuerySnapshot.sort((a, b) {
+      final DateTime timeA = DateTime.parse(a['time']);
+      final DateTime timeB = DateTime.parse(b['time']);
       return timeA.compareTo(timeB);
     });
     return ListView.builder(
       itemCount: alarmQuerySnapshot.length,
       itemBuilder: (BuildContext context, int index) {
         final QueryDocumentSnapshot alarmDocumentSnapshot =
-        alarmQuerySnapshot[index];
+            alarmQuerySnapshot[index];
 
         final AlarmModel alarmModel =
-        AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+            AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
         final Map<String, dynamic> alarm = alarmModel.toMap();
         final String medicationId = alarm['medicationId'];
 
         QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
             .firstWhere((element) => element['medicationId'] == medicationId,
-            orElse: null);
+                orElse: null);
 
         if (medicationDocument != null) {
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocument);
+              MedicationModel.fromDocumentSnapshot(medicationDocument);
           final Map<String, dynamic> medicine = medicationModel.toMap();
           final String name = medicine['name'];
           final String time = alarm['time'];
@@ -340,7 +347,6 @@ class _ExpandableFabState extends State<ExpandableFab>
       } else {
         _controller.reverse();
       }
-
     });
   }
 
@@ -388,8 +394,8 @@ class _ExpandableFabState extends State<ExpandableFab>
     final count = widget.children.length;
     final step = 90.0 / (count - 1);
     for (var i = 0, angleInDegrees = 0.0;
-    i < count;
-    i++, angleInDegrees += step) {
+        i < count;
+        i++, angleInDegrees += step) {
       children.add(
         _ExpandingActionButton(
           directionInDegrees: angleInDegrees,

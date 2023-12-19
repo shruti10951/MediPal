@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -36,8 +37,13 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
       }
       return medicationDocumentList;
     } catch (error) {
-      //toast
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }
@@ -149,7 +155,16 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                         .collection('medications')
                         .doc(id)
                         .update(medicine)
-                        .then((value) => print('data updated'));
+                        .then(
+                          (value) => Fluttertoast.showToast(
+                            msg: 'Data updated',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Color.fromARGB(206, 2, 191, 34),
+                            textColor: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        );
+                    // print('data updated'));
                     Navigator.pop(context);
                     // Refresh the page after data is deleted
                     setState(() {});

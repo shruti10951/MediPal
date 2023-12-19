@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -38,8 +39,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
       }
       return medicationDocumentList;
     } catch (error) {
-      //toast
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }
@@ -66,7 +72,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Medication Name'),
+                    decoration:
+                        const InputDecoration(labelText: 'Medication Name'),
                   ),
                   const SizedBox(height: 16),
                   DropdownButton<String>(
@@ -146,7 +153,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         .collection('medications')
                         .doc(id)
                         .update(medicine)
-                        .then((value) => print('data updated'));
+                        .then(
+                          (value) => Fluttertoast.showToast(
+                            msg: 'Data updated',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Color.fromARGB(206, 2, 191, 34),
+                            textColor: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        );
+                    // print('data updated'));
 
                     Navigator.pop(context);
 
@@ -226,18 +242,18 @@ class _InventoryScreenState extends State<InventoryScreen> {
         children: [
           Expanded(
               child: FutureBuilder(
-                future: fetchData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildLoadingIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final medicationQuery = snapshot.data;
-                    return _buildInventoryCard(medicationQuery!);
-                  }
-                },
-              ))
+            future: fetchData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final medicationQuery = snapshot.data;
+                return _buildInventoryCard(medicationQuery!);
+              }
+            },
+          ))
         ],
       ), // Create the inventory list view
     );
@@ -273,9 +289,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
         itemCount: medicationQuerySnapshot.length,
         itemBuilder: (BuildContext context, int index) {
           final QueryDocumentSnapshot medicationDocumentSnapshot =
-          medicationQuerySnapshot[index];
+              medicationQuerySnapshot[index];
           final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
           final name = medication['name'];
           final type = medication['type'];
@@ -350,4 +366,3 @@ class _InventoryScreenState extends State<InventoryScreen> {
         });
   }
 }
-

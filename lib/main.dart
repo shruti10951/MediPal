@@ -13,13 +13,12 @@ import 'package:medipal/notification/FirestoreCheck.dart';
 
 import 'Dependent/bottom_navigation_dependent.dart';
 
-
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
   await check.checkFirestore();
 }
 
-final GlobalKey<NavigatorState> navigatorKey= GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,25 +51,24 @@ class MyApp extends StatelessWidget {
       title: 'MediPal',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
-          backgroundColor:
-              Color.fromARGB(255, 241, 239, 239), // Set the app bar background color to white
+          backgroundColor: Color.fromARGB(
+              255, 241, 239, 239), // Set the app bar background color to white
           iconTheme:
               IconThemeData(color: Colors.black), // Set the icon color to black
           titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              ), // Set the title text color to black
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ), // Set the title text color to black
           //centerTitle: true, // Center the title within the app bar
           toolbarHeight: 60, // Set the height of the app bar
         ),
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: const Color.fromARGB(255,41,45,92)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 41, 45, 92)),
         // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
-      home:
-          MyHomePage(),
+      home: MyHomePage(),
       //  const BottomNavigationDependent(),
       // AddGuardian(),
       //AlarmScreen(),
@@ -113,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var user;
 
     FirebaseCred().getData().then((value) {
-      user= value[0];
+      user = value[0];
       userRole = value[1];
       Timer(const Duration(seconds: 2), () {
         if (user != null) {

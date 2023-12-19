@@ -4,7 +4,7 @@ import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import '../credentials/twilio_cred.dart';
 
 class AlarmScreen extends StatefulWidget {
@@ -382,8 +382,13 @@ class ActionButtons extends StatelessWidget {
                         }
                       } else {
                         // Handle the case where guardian is null (e.g., show an error message).
-                        //here show toast or snack-bar
-                        print('Guardian data is not available.');
+                        Fluttertoast.showToast(
+                          msg: 'Guardian data not available.',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Color.fromARGB(255, 240, 91, 91),
+                          textColor: Color.fromARGB(255, 255, 255, 255),
+                        );
                       }
                     }
                     Navigator.of(context).pop();
