@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
           // Background Gradient with Curved Middle
@@ -241,24 +241,24 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            valueColor: const AlwaysStoppedAnimation<Color>(
+            valueColor: AlwaysStoppedAnimation<Color>(
               Colors.grey,
             ),
           ),
-          const SizedBox(height: 16.0),
-          const Text(
-            'Loading...',
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
+          SizedBox(height: 16.0),
+          // Text(
+          //   'Loading...',
+          //   style: TextStyle(
+          //     fontSize: 16.0,
+          //     fontWeight: FontWeight.bold,
+          //     color: Colors.grey,
+          //   ),
+          // ),
         ],
       ),
     );

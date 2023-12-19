@@ -122,6 +122,12 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                     decoration: const InputDecoration(labelText: 'Quantity'),
                     keyboardType: TextInputType.number,
                   ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    decoration:
+                        const InputDecoration(labelText: 'Dosage Quantity'),
+                    keyboardType: TextInputType.number,
+                  ),
                 ],
               ),
               actions: [
