@@ -5,7 +5,6 @@ import 'package:medipal/main.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 class AddGuardian extends StatefulWidget {
   const AddGuardian({super.key});
 
