@@ -61,7 +61,7 @@ class WelcomeScreen extends StatelessWidget {
             left: 0.38 * MediaQuery.of(context).size.width,
             top: 0.35 * MediaQuery.of(context).size.height,
             child: Text(
-              'MEDIPAL',
+              'MediPal',
               style: TextStyle(
                 fontSize: 0.07 * MediaQuery.of(context).size.width,
                 color: const Color.fromARGB(255, 41, 45, 92),

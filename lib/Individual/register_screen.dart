@@ -104,7 +104,7 @@ class RegisterScreen extends StatelessWidget {
 
           // Registration Form
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.35,
+            top: MediaQuery.of(context).size.height * 0.37,
             left: MediaQuery.of(context).size.width * 0.05,
             right: MediaQuery.of(context).size.width * 0.05,
             child: SingleChildScrollView(
@@ -152,7 +152,10 @@ class RegisterScreen extends StatelessWidget {
                           print(e);
                         }
                       } else {
+                        const SizedBox(height: 50.0);
+
                         Fluttertoast.showToast(
+
                           msg: 'Password should be atleast 6 characters long!',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,

@@ -93,14 +93,14 @@ class ChooseScreen extends StatelessWidget {
           ),
           // Medipal Logo
           Positioned(
-            top: 130.0,
-            left: 140.0,
+            top: MediaQuery.of(context).size.height * 0.1,
+            left: MediaQuery.of(context).size.width * 0.3,
             child: Column(
               children: [
                 Image.asset(
                   'assets/images/medipal.png', // Path to Medipal logo
-                  width: 100.0,
-                  height: 100.0,
+                  width: MediaQuery.of(context).size.width * 0.4,
+              height: MediaQuery.of(context).size.width * 0.35,
                 ),
                 const SizedBox(height: 15.0), // Add some spacing
                 const Text(

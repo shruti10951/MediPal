@@ -29,7 +29,7 @@ class WelcomeScreenDependent extends StatelessWidget {
             child: Image.asset(
               'assets/images/medipal.png',
               width: MediaQuery.of(context).size.width * 0.4,
-              height: MediaQuery.of(context).size.width * 0.4,
+              height: MediaQuery.of(context).size.width * 0.35,
             ),
           ),
 
@@ -55,9 +55,9 @@ class WelcomeScreenDependent extends StatelessWidget {
           ),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.28,
-            left: MediaQuery.of(context).size.width * 0.38,
+            left: MediaQuery.of(context).size.width * 0.41,
             child: Text(
-              'MEDIPAL',
+              'MediPal',
               style: TextStyle(
                 fontSize: MediaQuery.of(context).size.width * 0.055,
                 color: const Color.fromARGB(255, 36, 40, 81),
@@ -69,7 +69,7 @@ class WelcomeScreenDependent extends StatelessWidget {
           // Quote Text at the Left Side
           Positioned(
             top: MediaQuery.of(context).size.height * 0.33,
-            left: MediaQuery.of(context).size.width * 0.18,
+            left: MediaQuery.of(context).size.width * 0.20,
             child: Text(
               'Your medicine, our responsibility!',
               style: TextStyle(
