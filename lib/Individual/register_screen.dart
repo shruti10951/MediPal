@@ -87,17 +87,6 @@ class RegisterScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                // const SizedBox(height: 25),
-                // const Text(
-                //   "Registration form",
-                //   style: TextStyle(
-                //     fontSize: 16.0,
-                //     fontStyle: FontStyle.italic,
-                //     color: Color.fromARGB(255, 41, 45, 92),
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
-                // const SizedBox(height: 180.0),
               ],
             ),
           ),
@@ -128,7 +117,7 @@ class RegisterScreen extends StatelessWidget {
                       null) // Conditionally display the error message
                     Text(
                       _validatePassword() ?? '',
-                      style: TextStyle(color: Colors.red),
+                      style: const TextStyle(color: Colors.red),
                     ),
                   const SizedBox(height: 130.0),
                   ElevatedButton(
@@ -147,19 +136,17 @@ class RegisterScreen extends StatelessWidget {
                             msg: 'Registration failed. Please try again.',
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            backgroundColor: Color.fromARGB(255, 240, 91, 91),
-                            textColor: Color.fromARGB(255, 255, 255, 255),
+                            backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                            textColor: const Color.fromARGB(255, 255, 255, 255),
                           );
-                          return null;
-                          print(e);
                         }
                       } else {
                         Fluttertoast.showToast(
                           msg: 'Password should be atleast 6 characters long!',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Color.fromARGB(255, 240, 91, 91),
-                          textColor: Color.fromARGB(255, 255, 255, 255),
+                          backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                          textColor: const Color.fromARGB(255, 255, 255, 255),
                         );
                       }
                     },
@@ -173,7 +160,7 @@ class RegisterScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Register',
                       style: TextStyle(fontSize: 20.0),
                     ),
@@ -236,7 +223,7 @@ class RegisterScreen extends StatelessWidget {
 
   Widget _buildPasswordField(IconData icon, String hintText,
       TextEditingController controller, BuildContext context) {
-    bool _isPasswordVisible = false;
+    bool isPasswordVisible = false;
 
     return Container(
       decoration: BoxDecoration(
@@ -247,7 +234,7 @@ class RegisterScreen extends StatelessWidget {
         child: Column(
           children: [
             TextField(
-              obscureText: !_isPasswordVisible,
+              obscureText: !isPasswordVisible,
               style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               decoration: InputDecoration(
                 hintText: hintText,

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -43,8 +42,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
         msg: 'Error retrieving documents',
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Color.fromARGB(255, 240, 91, 91),
-        textColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+        textColor: const Color.fromARGB(255, 255, 255, 255),
       );
       return null;
     }
@@ -53,12 +52,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController typeController = TextEditingController();
+  TextEditingController dosageController = TextEditingController();
 
   // Function to open an edit dialog for a specific item
-  void _openEditDialog(String id, String name, String type, int quantity) {
+  void _openEditDialog(String id, String name, String type, int quantity, int dosage) {
     nameController.text = name;
     quantityController.text = quantity.toString();
     typeController.text = type;
+    dosageController.text = dosage.toString();
 
     showDialog(
       context: context,
@@ -126,6 +127,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   ),
                   const SizedBox(height: 16),
                   TextField(
+                   controller: dosageController,
                     decoration:
                         const InputDecoration(labelText: 'Dosage Quantity'),
                     keyboardType: TextInputType.number,
@@ -148,11 +150,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     String updatedType = typeController.text;
                     int updatedQuantity =
                         int.tryParse(quantityController.text) ?? 0;
+                    int updatedDosage =
+                        int.tryParse(dosageController.text) ?? 0;
 
                     Map<String, dynamic> medicine = {
                       'name': updatedName,
                       'inventory.quantity': updatedQuantity,
-                      'type': type
+                      'type': type,
+                      'dosage' : updatedDosage,
                     };
 
                     firestore
@@ -164,8 +169,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             msg: 'Data updated',
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            backgroundColor: Color.fromARGB(206, 2, 191, 34),
-                            textColor: Color.fromARGB(255, 255, 255, 255),
+                            backgroundColor: const Color.fromARGB(206, 2, 191, 34),
+                            textColor: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         );
                     // print('data updated'));
@@ -302,6 +307,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           final name = medication['name'];
           final type = medication['type'];
           final medicationId = medication['medicationId'];
+          final dosage = medication['dosage'];
           final quantity = medication['inventory']['quantity'];
 
           String img;
@@ -351,7 +357,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             onPressed: () {
                               // Open the edit dialog when the edit button is pressed
                               _openEditDialog(
-                                  medicationId, name, type, quantity);
+                                  medicationId, name, type, quantity, dosage);
                             },
                           ),
                           IconButton(

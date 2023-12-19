@@ -105,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
                 navigatorKey.currentState?.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => ChooseScreen()),
+                    MaterialPageRoute(builder: (context) => const ChooseScreen()),
                     (route) => false);
               },
               child: const Text('Logout'),

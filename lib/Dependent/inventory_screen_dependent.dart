@@ -41,8 +41,8 @@ class _InventoryDependent extends State<InventoryDependent> {
         msg: 'Error retrieving documents',
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Color.fromARGB(255, 240, 91, 91),
-        textColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+        textColor: const Color.fromARGB(255, 255, 255, 255),
       );
       return null;
     }

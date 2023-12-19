@@ -75,7 +75,7 @@ class _AddGuardianState extends State<AddGuardian> {
                 msg: 'Guardian is already added!',
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.BOTTOM,
-                backgroundColor: Color.fromARGB(255, 255, 0, 0),
+                backgroundColor: const Color.fromARGB(255, 255, 0, 0),
                 textColor: Colors.white,
               );
             } else {

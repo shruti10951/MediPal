@@ -160,10 +160,10 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildPasswordField(IconData icon, String hintText) {
-    bool _isPasswordVisible = false;
+    bool isPasswordVisible = false;
 
     return TextField(
-      obscureText: !_isPasswordVisible,
+      obscureText: !isPasswordVisible,
       style: const TextStyle(color: Color.fromARGB(255, 41, 45, 92)),
       decoration: InputDecoration(
         hintText: hintText,

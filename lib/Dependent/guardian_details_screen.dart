@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class GuardianDetailsScreen extends StatefulWidget {
   @override
@@ -72,8 +73,13 @@ class _GuardianDetailsScreenState extends State<GuardianDetailsScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return _buildLoadingIndicator();
                 } else if (snapshot.hasError) {
-                  //toast
-                  print(snapshot.error);
+                  Fluttertoast.showToast(
+                    msg: 'Error retrieving documents',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                    textColor: const Color.fromARGB(255, 255, 255, 255),
+                  );
                   return Text('Error: ${snapshot.error}');
                 } else {
                   final guardiansData = snapshot;
