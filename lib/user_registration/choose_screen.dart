@@ -66,6 +66,7 @@ class _MyCardState extends State<MyCard> {
     );
   }
 }
+
 class ChooseScreen extends StatelessWidget {
   const ChooseScreen({Key? key});
 
@@ -94,13 +95,13 @@ class ChooseScreen extends StatelessWidget {
           // Medipal Logo
           Positioned(
             top: MediaQuery.of(context).size.height * 0.1,
-            left: MediaQuery.of(context).size.width * 0.3,
+            left: MediaQuery.of(context).size.width * 0.2,
             child: Column(
               children: [
                 Image.asset(
                   'assets/images/medipal.png', // Path to Medipal logo
                   width: MediaQuery.of(context).size.width * 0.4,
-              height: MediaQuery.of(context).size.width * 0.35,
+                  height: MediaQuery.of(context).size.width * 0.35,
                 ),
                 const SizedBox(height: 15.0), // Add some spacing
                 const Text(
@@ -111,12 +112,23 @@ class ChooseScreen extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+                const SizedBox(height: 16.0), // Add some spacing
+                Text(
+                  'Your medicine, our responsibility!',
+                  style: TextStyle(
+                    fontSize: 0.043 * MediaQuery.of(context).size.width,
+                    color: const Color.fromARGB(255, 41, 45, 92),
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
               ],
             ),
           ),
+
           // Horizontal Cards
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.45,
+            top: MediaQuery.of(context).size.height * 0.46,
             left: 0,
             right: 0,
             child: Padding(

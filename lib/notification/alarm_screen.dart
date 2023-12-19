@@ -35,9 +35,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
         future: loadData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error.toString()}');
+            return Center(
+              child: Text('Error: ${snapshot.error.toString()}'),
+            );
           } else {
             return buildUI();
           }
@@ -80,67 +84,69 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   Widget buildUI() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Large Alarm Icon
-          AlarmIcon(),
-          const SizedBox(height: 10),
-          Text(
-            alarmMap['time']
-                    .toString()
-                    .split(' ')
-                    .last
-                    .split(':')
-                    .sublist(0, 2)
-                    .join(':') ??
-                'No time available',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Large Alarm Icon
+            AlarmIcon(),
+            const SizedBox(height: 10),
+            Text(
+              alarmMap['time']
+                      .toString()
+                      .split(' ')
+                      .last
+                      .split(':')
+                      .sublist(0, 2)
+                      .join(':') ??
+                  'No time available',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // Medicine Type Icon
-          MedicineTypeIcon(medicineType: medicationMap['type'] ?? 'Pills'),
-          const SizedBox(height: 10),
+            // Medicine Type Icon
+            MedicineTypeIcon(medicineType: medicationMap['type'] ?? 'Pills'),
+            const SizedBox(height: 10),
 
-          // Medicine Name
-          Text(
-            medicationMap['name'] ?? 'No medication name available',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+            // Medicine Name
+            Text(
+              medicationMap['name'] ?? 'No medication name available',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
-          // Add some space below the Medicine Name
-          const SizedBox(height: 10),
-          // Medicine Description
-          MedicineDescription(
-              description:
-                  medicationMap['description'] ?? 'No description available'),
-          // Add some space below the Medicine Description
-          const SizedBox(height: 10),
-          // Quantity of Medicine
-          Text(
-            'Quantity: ${medicationMap['dosage'] ?? 0}',
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black,
+            // Add some space below the Medicine Name
+            const SizedBox(height: 10),
+            // Medicine Description
+            MedicineDescription(
+                description:
+                    medicationMap['description'] ?? 'No description available'),
+            // Add some space below the Medicine Description
+            const SizedBox(height: 10),
+            // Quantity of Medicine
+            Text(
+              'Quantity: ${medicationMap['dosage'] ?? 0}',
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              ),
             ),
-          ),
-          const SizedBox(height: 200),
-          // Action Buttons
-          ActionButtons(
-              alarmId: widget.alarmId,
-              alarmMap: alarmMap,
-              medicationMap: medicationMap,
-              userId: user.uid,
-              role: role),
-        ],
+            const SizedBox(height: 200),
+            // Action Buttons
+            ActionButtons(
+                alarmId: widget.alarmId,
+                alarmMap: alarmMap,
+                medicationMap: medicationMap,
+                userId: user.uid,
+                role: role),
+          ],
+        ),
       ),
     );
   }
@@ -386,8 +392,8 @@ class ActionButtons extends StatelessWidget {
                           msg: 'Guardian data not available.',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Color.fromARGB(255, 240, 91, 91),
-                          textColor: Color.fromARGB(255, 255, 255, 255),
+                          backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                          textColor: const Color.fromARGB(255, 255, 255, 255),
                         );
                       }
                     }

@@ -9,10 +9,11 @@ class OTPForDependentPage extends StatelessWidget {
   final String name;
   final String phoneNo;
 
-  OTPForDependentPage(
-      {required this.verificationId,
-      required this.name,
-      required this.phoneNo});
+  OTPForDependentPage({
+    required this.verificationId,
+    required this.name,
+    required this.phoneNo,
+  });
 
   final otpController = TextEditingController();
 
@@ -42,16 +43,18 @@ class OTPForDependentPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'OTP',
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'OTP',
+                  ),
+                  controller: otpController,
                 ),
-                controller: otpController,
               ),
               const SizedBox(height: 48.0),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                // Adjust margin as needed
                 child: ElevatedButton(
                   onPressed: () async {
                     try {
@@ -61,36 +64,37 @@ class OTPForDependentPage extends StatelessWidget {
                         smsCode: otpController.text,
                       );
 
-                      await auth
-                          .signInWithCredential(credential)
-                          .then((value) async {
-                        User? user = FirebaseAuth.instance.currentUser;
+                      await auth.signInWithCredential(credential).then(
+                        (value) async {
+                          User? user = FirebaseAuth.instance.currentUser;
 
-                        final userDoc =
-                            await collectionReference.doc(user?.uid).get();
-                        if (!userDoc.exists) {
-                          DependentModel dependentModel = DependentModel(
-                            userId: user!.uid,
-                            name: name,
-                            phoneNo: phoneNo,
-                            guardians: [],
-                            noOfGuardian: 0,
-                          );
+                          final userDoc =
+                              await collectionReference.doc(user?.uid).get();
+                          if (!userDoc.exists) {
+                            DependentModel dependentModel = DependentModel(
+                              userId: user!.uid,
+                              name: name,
+                              phoneNo: phoneNo,
+                              guardians: [],
+                              noOfGuardian: 0,
+                            );
 
-                          Map<String, dynamic> dependent =
-                              dependentModel.toMap();
-                          await collectionReference
-                              .doc(user.uid)
-                              .set(dependent);
-                        }
+                            Map<String, dynamic> dependent =
+                                dependentModel.toMap();
+                            await collectionReference
+                                .doc(user.uid)
+                                .set(dependent);
+                          }
 
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
                               builder: (builder) =>
-                                  const BottomNavigationDependent()),
-                          (route) => false,
-                        );
-                      });
+                                  const BottomNavigationDependent(),
+                            ),
+                            (route) => false,
+                          );
+                        },
+                      );
                     } catch (e) {
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
                       scaffoldMessenger.showSnackBar(

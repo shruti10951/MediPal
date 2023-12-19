@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
           // Background Gradient with Curved Middle
@@ -241,84 +241,19 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            valueColor: const AlwaysStoppedAnimation<Color>(
+            valueColor: AlwaysStoppedAnimation<Color>(
               Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          const Text(
-            'Loading...',
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
             ),
           ),
         ],
       ),
     );
   }
-
-  // Widget _buildSignInButton(BuildContext context) {
-  //   return Container(
-  //     width: double.infinity,
-  //     child: ElevatedButton(
-  //       onPressed: () {
-
-  //         final auth = FirebaseAuth.instance;
-
-  //         auth
-  //             .signInWithEmailAndPassword(
-  //                 email: _emailController.text,
-  //                 password: _passwordController.text)
-  //             .then((value) {
-  //           Navigator.pushAndRemoveUntil(
-  //             context,
-  //             MaterialPageRoute(
-  //                 builder: (context) => const BottomNavigationIndividual()),
-  //             (Route<dynamic> route) => false,
-  //           );
-  //           Fluttertoast.showToast(
-  //             msg: 'Logged In Successfully!',
-  //             toastLength: Toast.LENGTH_SHORT,
-  //             gravity: ToastGravity.BOTTOM,
-  //             backgroundColor: Colors.green,
-  //             textColor: Colors.white,
-  //           );
-  //         }).catchError((error) {
-  //           Fluttertoast.showToast(
-  //             msg: 'Please Verify your credentials',
-  //             toastLength: Toast.LENGTH_SHORT,
-  //             gravity: ToastGravity.BOTTOM,
-  //             backgroundColor: const Color.fromARGB(255, 240, 91, 91),
-  //             textColor: const Color.fromARGB(255, 255, 255, 255),
-  //           );
-  //         });
-  //       },
-  //       style: ElevatedButton.styleFrom(
-  //         primary: const Color.fromARGB(255, 41, 45, 92),
-  //         onPrimary: Colors.white,
-  //         elevation: 3,
-  //         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(30.0),
-  //         ),
-  //       ),
-  //       child: const Text(
-  //         'Sign In',
-  //         style: TextStyle(
-  //           fontSize: 18.0,
-  //           color: Color.fromARGB(255, 255, 255, 255),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
 
 class CustomShapeClipper extends CustomClipper<Path> {

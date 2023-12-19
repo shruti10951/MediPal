@@ -14,7 +14,7 @@ class RegisterScreen extends StatelessWidget {
 
   String? _validatePassword() {
     if (passwordController.text.length < 6) {
-      return 'Password should be at least 6 characters long';
+      return 'Password must be atleast 6 characters';
     }
     return null;
   }
@@ -121,6 +121,8 @@ class RegisterScreen extends StatelessWidget {
                   const SizedBox(height: 16.0),
                   _buildPasswordField(Icons.password_outlined, 'Password',
                       passwordController, context),
+                  const SizedBox(height: 10.0),
+
                   //JANA KRIPYA YAHA DEKHIYE
                   if (_validatePassword() !=
                       null) // Conditionally display the error message
@@ -152,10 +154,7 @@ class RegisterScreen extends StatelessWidget {
                           print(e);
                         }
                       } else {
-                        const SizedBox(height: 50.0);
-
                         Fluttertoast.showToast(
-
                           msg: 'Password should be atleast 6 characters long!',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,

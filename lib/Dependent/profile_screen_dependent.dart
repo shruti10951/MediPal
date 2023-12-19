@@ -139,10 +139,10 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
           children: [
             Image.asset(
               'assets/images/medipal.png',
-              width: 160,
-              height: 160,
+              width: MediaQuery.of(context).size.width * 0.4,
+              height: MediaQuery.of(context).size.width * 0.4,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             FutureBuilder<Map<String, dynamic>?>(
               future: fetchData(),
               builder: (context, snapshot) {
@@ -202,7 +202,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -212,6 +212,7 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                           ),
                         );
                       },
+                      
                       style: ElevatedButton.styleFrom(
                         //check this once
                         primary: const Color.fromARGB(255, 41, 45, 92),
