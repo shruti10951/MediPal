@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'medicine_form.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -47,7 +48,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return [alarmDocumentList, medicationDocumentList];
     } catch (error) {
       //add toast or snack-bar
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Color.fromARGB(255, 240, 91, 91),
+        textColor: Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }

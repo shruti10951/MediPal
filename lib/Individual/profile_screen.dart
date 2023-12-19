@@ -6,6 +6,7 @@ import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/Individual/dependent_details_screen.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 import 'package:qr_flutter/qr_flutter.dart'; // Replace with your screen for Dependent details
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -23,8 +24,13 @@ Future<UserModel?> fetchData() async {
       return null;
     }
   } catch (error) {
-    //toast
-    print('Error retrieving document: $error');
+    Fluttertoast.showToast(
+      msg: 'Error retrieving documents.',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+      textColor: const Color.fromARGB(255, 255, 255, 255),
+    );
     return null;
   }
 }
