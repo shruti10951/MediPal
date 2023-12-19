@@ -64,38 +64,39 @@ class RegisterScreen extends StatelessWidget {
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
-                  height: MediaQuery.of(context).size.width * 0.4,
+                  height: MediaQuery.of(context).size.width * 0.3,
                   child: Image.asset(
                     'assets/images/medipal.png',
                   ),
                 ),
+                const SizedBox(height: 20.0),
+
                 const Text(
-                  "MEDIPAL",
+                  "Welcome To MediPal",
                   style: TextStyle(
                     fontSize: 24.0,
                     color: Color.fromARGB(255, 41, 45, 92),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 25),
-                const Text(
-                  "Registration form",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontStyle: FontStyle.italic,
-                    color: Color.fromARGB(255, 41, 45, 92),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                 // const SizedBox(height: 180.0),
-
+                // const SizedBox(height: 25),
+                // const Text(
+                //   "Registration form",
+                //   style: TextStyle(
+                //     fontSize: 16.0,
+                //     fontStyle: FontStyle.italic,
+                //     color: Color.fromARGB(255, 41, 45, 92),
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                // const SizedBox(height: 180.0),
               ],
             ),
           ),
 
           // Registration Form
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.40,
+            top: MediaQuery.of(context).size.height * 0.35,
             left: MediaQuery.of(context).size.width * 0.05,
             right: MediaQuery.of(context).size.width * 0.05,
             child: SingleChildScrollView(
@@ -110,9 +111,9 @@ class RegisterScreen extends StatelessWidget {
                   _buildNumericInputField(
                       Icons.phone_in_talk, 'Phone Number', phoneController),
                   const SizedBox(height: 16.0),
-                  _buildPasswordField(
-                      Icons.password_outlined, 'Password', passwordController, context),
-                  const SizedBox(height: 130.0),
+                  _buildPasswordField(Icons.password_outlined, 'Password',
+                      passwordController, context),
+                  const SizedBox(height: 100.0),
                   ElevatedButton(
                     onPressed: () async {
                       try {
@@ -199,8 +200,8 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordField(
-      IconData icon, String hintText, TextEditingController controller, BuildContext context) {
+  Widget _buildPasswordField(IconData icon, String hintText,
+      TextEditingController controller, BuildContext context) {
     bool _isPasswordVisible = false;
 
     return Container(

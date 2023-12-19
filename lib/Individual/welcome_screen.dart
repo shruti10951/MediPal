@@ -27,11 +27,11 @@ class WelcomeScreen extends StatelessWidget {
           ),
           // Medipal Circular Image (Position it at the very top)
           Positioned(
-            top: 0.14 * MediaQuery.of(context).size.height,
-            left: 0.32 * MediaQuery.of(context).size.width,
+            top: 0.15 * MediaQuery.of(context).size.height,
+            left: 0.34 * MediaQuery.of(context).size.width,
             child: Image.asset(
               'assets/images/medipal.png', // Replace with your image path
-              width: 0.40 * MediaQuery.of(context).size.width,
+              width: 0.35 * MediaQuery.of(context).size.width,
               height: 0.40 * MediaQuery.of(context).size.width,
             ),
           ),

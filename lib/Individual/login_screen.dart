@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(234, 255, 255, 255),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
           // Background Gradient with Curved Middle
@@ -56,10 +56,10 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.15,
-            left: MediaQuery.of(context).size.width * 0.25,
+            top: MediaQuery.of(context).size.height * 0.16,
+            left: MediaQuery.of(context).size.width * 0.35,
             child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
+              width: MediaQuery.of(context).size.width * 0.3,
               height: MediaQuery.of(context).size.width * 0.4,
               child: Image.asset('assets/images/medipal.png'),
             ),
