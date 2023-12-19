@@ -33,57 +33,65 @@ class OTPForUserPage extends StatelessWidget {
             ],
           ),
         ),
+        padding: const EdgeInsets.all(20.0), // Added padding for the whole body
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'OTP',
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'OTP',
+                  ),
+                  controller: otpController,
                 ),
-                controller: otpController,
               ),
               const SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    // Create a PhoneAuthCredential with the code
-                    PhoneAuthCredential credential =
-                        PhoneAuthProvider.credential(
-                      verificationId: verificationId,
-                      smsCode: otpController.text,
-                    );
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      // Create a PhoneAuthCredential with the code
+                      PhoneAuthCredential credential =
+                          PhoneAuthProvider.credential(
+                        verificationId: verificationId,
+                        smsCode: otpController.text,
+                      );
 
-                    User? user = FirebaseAuth.instance.currentUser;
+                      User? user = FirebaseAuth.instance.currentUser;
 
-                    await user
-                        ?.linkWithCredential(credential)
-                        .then((value) async {
-                      Map<String, dynamic> userMap = userModel.toMap();
-                      await collectionReference
-                          .doc(auth.currentUser?.uid)
-                          .set(userMap)
-                          .then((value) {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const BottomNavigationIndividual()),
-                          (Route<dynamic> route) => false,
-                        );
+                      await user
+                          ?.linkWithCredential(credential)
+                          .then((value) async {
+                        Map<String, dynamic> userMap = userModel.toMap();
+                        await collectionReference
+                            .doc(auth.currentUser?.uid)
+                            .set(userMap)
+                            .then((value) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const BottomNavigationIndividual()),
+                            (Route<dynamic> route) => false,
+                          );
+                        });
                       });
-                    });
-                  } catch (e) {
-                    final scaffoldMessenger = ScaffoldMessenger.of(context);
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(
-                        content: Text(e.toString()),
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                  }
-                },
-                child: const Text('Verify'),
+                    } catch (e) {
+                      final scaffoldMessenger = ScaffoldMessenger.of(context);
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString()),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Verify'),
+                ),
               ),
             ],
           ),
