@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/models/AppointmentModel.dart';
 
 class AppointmentForm extends StatefulWidget {
   const AppointmentForm({super.key});
@@ -92,7 +95,7 @@ class _AppointmentFormState extends State<AppointmentForm> {
                       ),
                       controller: _selectedDate != null
                           ? TextEditingController(
-                              text: dateFormat.format(_selectedDate!))
+                          text: dateFormat.format(_selectedDate!))
                           : null,
                     ),
                   ),
@@ -110,14 +113,20 @@ class _AppointmentFormState extends State<AppointmentForm> {
                       ),
                       controller: _selectedTime != null
                           ? TextEditingController(
-                              text: timeFormat.format(DateTime(
-                                DateTime.now().year,
-                                DateTime.now().month,
-                                DateTime.now().day,
-                                _selectedTime!.hour,
-                                _selectedTime!.minute,
-                              )),
-                            )
+                        text: timeFormat.format(DateTime(
+                          DateTime
+                              .now()
+                              .year,
+                          DateTime
+                              .now()
+                              .month,
+                          DateTime
+                              .now()
+                              .day,
+                          _selectedTime!.hour,
+                          _selectedTime!.minute,
+                        )),
+                      )
                           : null,
                     ),
                   ),
@@ -142,14 +151,39 @@ class _AppointmentFormState extends State<AppointmentForm> {
                 const SizedBox(height: 42.0),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Handle form submission, save data, etc.
-                      // You can access the entered data via _doctorNameController.text, _selectedDate, _selectedTime, _locationController.text, _descriptionController.text
+                    onPressed: () async {
+                      DocumentReference documentReference= FirebaseFirestore.instance
+                      .collection('appointments')
+                      .doc();
+
+                      DateTime combinedDateTime = DateTime(
+                        _selectedDate!.year,
+                        _selectedDate!.month,
+                        _selectedDate!.day,
+                        _selectedTime!.hour,
+                        _selectedTime!.minute,
+                      );
+
+                      String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(combinedDateTime);
+
+                      AppointmentModel appointmentModel = AppointmentModel(
+                          userId: FirebaseAuth.instance.currentUser!.uid.toString(),
+                          appointmentId: documentReference.id,
+                          doctorName: _doctorNameController.text,
+                          location: _locationController.text,
+                          status: 'pending',
+                          appointmentTime: formattedDateTime,
+                          description: _descriptionController.text);
+
+                      documentReference.set(appointmentModel.toMap()).then((value) =>
+                      print('done'));
+
                     },
                     style: ElevatedButton.styleFrom(
-                      
+
                       onPrimary: Colors.white, // Text color
-                      padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 38, vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),

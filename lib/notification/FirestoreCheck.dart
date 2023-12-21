@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:medipal/credentials/twilio_cred.dart';
+import 'package:medipal/models/DependentModel.dart';
+import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/notification/notification_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
@@ -61,7 +63,7 @@ class FireStoreCheck {
 
     try {
       QuerySnapshot appointmentSnapshot = await firestore
-          .collection('appointment')
+          .collection('appointments')
           .where('userId', isEqualTo: user?.uid)
           .get();
       if (appointmentSnapshot.docs.isNotEmpty) {
@@ -73,7 +75,7 @@ class FireStoreCheck {
           DateTime currentTime = DateTime.now();
 
           Duration difference = timestamp.difference(currentTime);
-          if (difference.inHours <= 24) {
+          if (difference.inHours <= 24 && data['status']== 'pending') {
             final cred = await TwilioCred().readCred();
             TwilioFlutter twilioFlutter = TwilioFlutter(accountSid: cred[0],
                 authToken: cred[1],
@@ -81,30 +83,67 @@ class FireStoreCheck {
 
             final user= await FirebaseCred().getData();
             String role= user[1];
-            Map<String, dynamic> userData = user[0];
+
+            Map<String, dynamic> userData={};
+
+            DateTime appointmentDateTime= DateTime.parse(data['appointmentTime']);
 
             String doctorName= data['doctorName'];
             String location= data['location'];
             String description= data['description'];
-            String date= DateFormat('d MMM').format(data['appointmentTime']);
-            String time= DateFormat.Hm().format(data['appointmentTime']);
+            String date= DateFormat('d MMM yyyy').format(appointmentDateTime).toString();
+            String time= DateFormat.Hm().format(appointmentDateTime).toString();
+
+            String msg= 'This is a reminder of your upcoming appointment: \nDoctor: $doctorName \nLocation: $location \nDescription: $description \nDate: $date \nTime: $time \n\nPlease ensure that you arrive on time. \nBest regards, \nMediPal : Your Own Reminder App';
 
             if(role== 'dependent'){
-              var guardians= await FirebaseCred().getGuardianData(userData['userId']);
-              for(Map<String, dynamic> guardian in guardians){
-                twilioFlutter.sendSMS(toNumber: guardian['phoneNo'], messageBody: 'Appointment');
+              QuerySnapshot snapshots= await FirebaseFirestore.instance.collection('dependent').where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid.toString()).get();
+              if(snapshots.docs.isNotEmpty){
+                for(QueryDocumentSnapshot snapshot in snapshots.docs){
+                  DependentModel dependentModel= DependentModel.fromDocumentSnapshot(snapshot);
+                  userData= dependentModel.toMap();
+                }
               }
-              twilioFlutter.sendSMS(toNumber: userData['phoneNo'], messageBody: 'your appointment');
+              var guardians= await FirebaseCred().getGuardianData(userData['userId']);
+              String msgForGuardian= 'This is a reminder of your dependent $userData["name"]\'s upcoming appointment: \nDoctor: $doctorName \nLocation: $location \nDescription: $description \nDate: $date \nTime: $time \n\nPlease ensure that you arrive on time. \nBest regards, \nMediPal : Your Own Reminder App';
+
+              for(Map<String, dynamic> guardian in guardians){
+                await twilioFlutter.sendSMS(toNumber: "+91" + guardian['phoneNo'], messageBody: msgForGuardian);
+              }
+              await twilioFlutter.sendSMS(toNumber: "+91" + userData['phoneNo'], messageBody: msg);
+
+              data['status']= 'sent';
+
+              await FirebaseFirestore.instance
+              .collection('appointments')
+              .doc(data['appointmentId'])
+              .update(data).then((value) => print('updated'));
+
             }else{
-              twilioFlutter.sendSMS(toNumber: userData['phoneNo'], messageBody: 'your appointment');
+              QuerySnapshot snapshots= await FirebaseFirestore.instance.collection('users').where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid.toString()).get();
+              if(snapshots.docs.isNotEmpty){
+                for(QueryDocumentSnapshot snapshot in snapshots.docs){
+                  UserModel userModel= UserModel.fromDocumentSnapshot(snapshot);
+                  userData= userModel.toMap();
+                }
+              }
+              await twilioFlutter.sendSMS(toNumber: "+91" + userData['phoneNo'], messageBody: msg);
+
+              data['status']= 'sent';
+
+              await FirebaseFirestore.instance
+                  .collection('appointments')
+                  .doc(data['appointmentId'])
+                  .update(data).then((value) => print('updated'));
             }
 
           }
         }
       }
     } catch (e) {
+      print(e.toString());
       Fluttertoast.showToast(
-        msg: 'Error retrieving documents',
+        msg: e.toString(),
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: const Color.fromARGB(255, 240, 91, 91),
