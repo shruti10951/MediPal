@@ -1,8 +1,7 @@
-import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:medipal/Individual/appoin_form_screen.dart';
+import 'package:medipal/Individual/appoin_form_dependent_screen.dart';
 import 'package:medipal/Individual/medicine_form_dependent.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
@@ -120,7 +119,7 @@ class _GaurdianViewState extends State<GaurdianView> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const AppointmentForm(),
+          builder: (context) => const AppointmentDependentForm(),
         ),
       );
     }
