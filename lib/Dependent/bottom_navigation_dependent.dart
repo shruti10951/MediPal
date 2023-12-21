@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medipal/Dependent/appoin_details_dependent_screen.dart';
 import 'package:medipal/Dependent/dashboard_screen_dependent.dart';
 import 'package:medipal/Dependent/inventory_screen_dependent.dart';
 import 'package:medipal/Dependent/profile_screen_dependent.dart';
@@ -30,9 +31,16 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
     );
   }
 
-  void _navigateToProfile() {
+void _navigateToAppDetails() {
     _pageController.animateToPage(
       2, // Index of the Profile tab
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+  }
+  void _navigateToProfile() {
+    _pageController.animateToPage(
+      3, // Index of the Profile tab
       duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
@@ -55,6 +63,7 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
           DashboardScreenDependent(),
           InventoryDependent(),
           ProfileScreenDependent(),
+          AppointmentDependentScreen(),
         ],
         onPageChanged: (index) {
           setState(() {
@@ -72,6 +81,10 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
             icon: Icon(Icons.inventory),
             label: 'Inventory',
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.medical_services),
+              label: 'Appoinmnent',
+            ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
@@ -94,6 +107,9 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
               _navigateToInventory();
               break;
             case 2:
+              _navigateToAppDetails();
+              break;
+            case 3:
               _navigateToProfile();
               break;
           }

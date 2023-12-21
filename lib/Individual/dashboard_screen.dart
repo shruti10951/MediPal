@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/Individual/appoin_form_screen.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'expandable_tab.dart';
 import 'medicine_form.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -113,15 +115,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
 
       //add action button
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _navigateToMedicineForm(context); // Call the navigation function
-        },
-        backgroundColor: const Color.fromARGB(255, 117, 116, 116),
-        child: const Icon(Icons.add), // Set the button background color
+      floatingActionButton: ExpandableFab(
+        distance: 100,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.medical_information),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.pending_actions_rounded),
+          ),
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
+  }
+
+  void _showAction(BuildContext context, int index) {
+    if (index == 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AppointmentForm()));
+    } else if (index == 1) {
+      // Open Medicine Form screen here
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MedicineForm(),
+        ),
+      );
+    }
+    // Add additional conditions for other action buttons if needed
   }
 
   Widget _buildLoadingIndicator() {

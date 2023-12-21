@@ -130,6 +130,13 @@ class WelcomeScreenDependent extends StatelessWidget {
       height: 50.0,
       child: ElevatedButton(
         onPressed: () {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return _buildLoadingIndicator();
+            },
+          );
           verify(context, number, name);
         },
         style: ElevatedButton.styleFrom(
@@ -225,7 +232,6 @@ class BackgroundPainter extends CustomPainter {
   }
 }
 
-//check this if not required pls remove
 Widget _buildLoadingIndicator() {
   return const Center(
     child: Column(
@@ -233,16 +239,7 @@ Widget _buildLoadingIndicator() {
       children: [
         CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(
-            Color.fromARGB(255, 71, 78, 84),
-          ),
-        ),
-        SizedBox(height: 16.0),
-        Text(
-          'Loading...',
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
+            Color.fromARGB(255, 150, 161, 170),
           ),
         ),
       ],

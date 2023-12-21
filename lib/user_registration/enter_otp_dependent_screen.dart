@@ -57,6 +57,13 @@ class OTPForDependentPage extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: ElevatedButton(
                   onPressed: () async {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return _buildLoadingIndicator();
+                      },
+                    );
                     try {
                       PhoneAuthCredential credential =
                           PhoneAuthProvider.credential(
@@ -111,6 +118,21 @@ class OTPForDependentPage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color.fromARGB(255, 150, 161, 170),
+            ),
+          ),
+        ],
       ),
     );
   }

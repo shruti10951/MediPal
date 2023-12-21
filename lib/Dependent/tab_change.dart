@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medipal/Individual/appoinment_dependet_screen.dart';
 import 'package:medipal/Individual/gaurdian_view_screen.dart';
 import 'package:medipal/Individual/inventory_dependet_guardian.dart';
 
@@ -20,6 +21,8 @@ class _TabChangeState extends State<TabChange> {
     _tabs = [
       GaurdianView(dependentId: widget.dependentId),
       InventoryDependentGuardian(dependentId: widget.dependentId),
+      AppointmentGaurdianScreen(),
+
     ];
   }
 
@@ -54,6 +57,13 @@ class _TabChangeState extends State<TabChange> {
                   color: Color.fromRGBO(41, 45, 92, 1.0),
                 ),
                 text: 'Inventory',
+              ),
+              Tab(
+                icon: Icon(
+                  Icons.medical_information,
+                  color: Color.fromRGBO(41, 45, 92, 1.0),
+                ),
+                text: 'Appoinment',
               )
             ],
           ),
