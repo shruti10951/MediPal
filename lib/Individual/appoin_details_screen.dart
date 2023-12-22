@@ -79,15 +79,78 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   decoration:
                       const InputDecoration(labelText: 'Doctor\'s Name'),
                 ),
-                const SizedBox(height: 12.0),
+                // time and date related chnages HERE 
+                SizedBox(height: 12.0),
                 TextField(
+                  readOnly: true,
                   controller: dateController,
-                  decoration: const InputDecoration(labelText: 'Date'),
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2100),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        dateController.text =
+                            DateFormat('yyyy-MM-dd').format(pickedDate);
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Date',
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        final DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            dateController.text =
+                                DateFormat('yyyy-MM-dd').format(pickedDate);
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.calendar_today),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 12.0),
+                SizedBox(height: 12.0),
                 TextField(
+                  readOnly: true,
                   controller: timeController,
-                  decoration: const InputDecoration(labelText: 'Time'),
+                  onTap: () async {
+                    final TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(DateTime.now()),
+                    );
+                    if (pickedTime != null) {
+                      setState(() {
+                        timeController.text = pickedTime.format(context);
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Time',
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        final TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(DateTime.now()),
+                        );
+                        if (pickedTime != null) {
+                          setState(() {
+                            timeController.text = pickedTime.format(context);
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.access_time),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12.0),
                 TextField(
