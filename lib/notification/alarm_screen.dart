@@ -246,6 +246,10 @@ class ActionButtons extends StatelessWidget {
             medicationMap['inventory']['quantity'] = medicationMap['inventory']
                     ['quantity'] -
                 medicationMap['dosage'];
+
+            if(medicationMap['inventory']['quantity']<= 0){
+              medicationMap['inventory']['quantity']= 0;
+            }
             var quantity = medicationMap['inventory']['quantity'];
             var name = medicationMap['name'];
             await FirebaseFirestore.instance

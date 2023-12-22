@@ -346,8 +346,18 @@ class _MedicineFormState extends State<MedicineForm> {
                       );
 
                       Map<String, dynamic> medicationModel = medication.toMap();
+                      
+                      QuerySnapshot medicineSnapshots= await FirebaseFirestore.instance
+                          .collection('medications').where('name', isEqualTo: medicationModel['name']).get();
 
-                      await medicationDocumentReference.set(medicationModel);
+                      if(medicineSnapshots.docs.isNotEmpty){
+                        QueryDocumentSnapshot medicineSnapshot= medicineSnapshots.docs.first;
+                        final medicineId = medicineSnapshot.id;
+                        medicationModel['medicationId']= medicineId.toString();
+                        await FirebaseFirestore.instance.collection('medications').doc(medicineId).set(medicationModel);
+                      }else{
+                        await medicationDocumentReference.set(medicationModel);
+                      }
 
                       for (var date = _startDate;
                           date!
@@ -373,7 +383,7 @@ class _MedicineFormState extends State<MedicineForm> {
                                   userId: auth.currentUser!.uid.toString(),
                                   time: dateTime.toString(),
                                   status: 'pending',
-                                  medicationId: medicationDocumentReference.id);
+                                  medicationId: medicationModel['medicationId']);
 
                               Map<String, dynamic> alarm = alarmModel.toMap();
                               await alarmDocumentReference.set(alarm);
