@@ -330,7 +330,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             final int quantity = medicine['dosage'];
             final String type = medicine['type'];
 
-            String img;
+            String img; 
 
             if(medicine['medicationImg'] ==''){
               if (type == 'Pills') {

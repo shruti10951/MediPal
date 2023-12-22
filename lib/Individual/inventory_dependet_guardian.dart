@@ -54,7 +54,8 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
   TextEditingController dosageController = TextEditingController();
 
   // Function to open an edit dialog for a specific item
-  void _openEditDialog(String id, String name, String type, int quantity, int dosage) {
+  void _openEditDialog(
+      String id, String name, String type, int quantity, int dosage) {
     nameController.text = name;
     quantityController.text = quantity.toString();
     dosageController.text = dosage.toString();
@@ -160,7 +161,7 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                       'name': updatedName,
                       'inventory.quantity': updatedQuantity,
                       'type': type,
-                      'dosage' : updatedDosage,
+                      'dosage': updatedDosage,
                     };
 
                     firestore
@@ -172,7 +173,8 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                             msg: 'Data updated',
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            backgroundColor: const Color.fromARGB(206, 2, 191, 34),
+                            backgroundColor:
+                                const Color.fromARGB(206, 2, 191, 34),
                             textColor: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         );
@@ -311,12 +313,19 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
 
           String img;
 
-          if (type == 'Pills') {
-            img = 'assets/images/pill_icon.png';
-          } else if (type == 'Liquid') {
-            img = 'assets/images/liquid_icon.png';
+          if (medication['medicationImg'] == '') {
+            if (type == 'Pills') {
+              img =
+                  'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+            } else if (type == 'Liquid') {
+              img =
+                  'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+            } else {
+              img =
+                  'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+            }
           } else {
-            img = 'assets/images/injection_icon.png';
+            img = medication['medicationImg'];
           }
 
           // Add this in UI
@@ -329,7 +338,7 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: Image.asset(img),
+                  leading: Image.network(img),
                   // Replace with your image asset
                   title: Text(
                     name,
