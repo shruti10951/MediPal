@@ -335,7 +335,7 @@ class AppointmentCardHolder extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Expanded(
-            child: Text(value),
+            child: Text(value), 
           ),
         ],
       ),

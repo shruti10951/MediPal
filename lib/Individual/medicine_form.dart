@@ -7,6 +7,9 @@ import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as Img;
+import 'dart:io';
 
 class MedicineForm extends StatefulWidget {
   const MedicineForm({super.key});
@@ -67,6 +70,40 @@ class _MedicineFormState extends State<MedicineForm> {
       });
     }
   }
+
+  //image
+  File? _selectedImage; // Variable to store the selected image file
+
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedImage != null) {
+        _selectedImage = File(pickedImage.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+  // Future<void> _getImage() async {
+  //   final picker = ImagePicker();
+  //   final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+  //   if (pickedImage != null) {
+  //     File selectedFile = File(pickedImage.path);
+
+  //     final decodedImage = Img.decodeImage(selectedFile.readAsBytesSync());
+  //     final resizedImage = Img.copyResize(decodedImage!, width: 128, height: 128);
+
+  //     setState(() {
+  //       _selectedImage = File('${Directory.systemTemp.path}/resized_image.png')
+  //         ..writeAsBytesSync(Img.encodePng(resizedImage));
+  //     });
+  //   } else {
+  //     //print('No image selected.');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +183,39 @@ class _MedicineFormState extends State<MedicineForm> {
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  Center(
+                    child: InkWell(
+                      onTap: () {
+                        _getImage(); // Call the method to pick an image
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _selectedImage != null
+                              ? Image.file(_selectedImage!)
+                              : Container(
+                                  width: 100,
+                                  height: 100,
+                                  color: Colors.grey[200],
+                                  child: const Icon(Icons.add_a_photo),
+                                ),
+                          const SizedBox(
+                              height: 8), // Add some space between image and text
+                          Text(
+                            _selectedImage != null
+                                ? 'Change Image'
+                                : 'Select Image for Your Medicine',
+                            style: const TextStyle(
+                              color: Colors
+                                  .blue, // You can adjust the color as needed
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16.0),
@@ -399,7 +469,8 @@ class _MedicineFormState extends State<MedicineForm> {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => BottomNavigationIndividual()),
+                            builder: (context) =>
+                                const BottomNavigationIndividual()),
                         (Route<dynamic> route) => false,
                       );
 
