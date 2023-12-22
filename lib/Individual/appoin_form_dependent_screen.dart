@@ -1,11 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/models/AppointmentModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+FirebaseFirestore user = FirebaseFirestore.instance;
 
 class AppointmentDependentForm extends StatefulWidget {
-  const AppointmentDependentForm({super.key});
+  final dependentId;
 
+  const AppointmentDependentForm({super.key, required this.dependentId});
   @override
-  _AppointmentDependentFormState createState() => _AppointmentDependentFormState();
+  _AppointmentDependentFormState createState() =>
+      _AppointmentDependentFormState();
 }
 
 class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
@@ -143,13 +151,40 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle form submission, save data, etc.
-                      // You can access the entered data via _doctorNameController.text, _selectedDate, _selectedTime, _locationController.text, _descriptionController.text
+                      DocumentReference documentReference = FirebaseFirestore
+                          .instance
+                          .collection('appointments')
+                          .doc();
+
+                      DateTime combinedDateTime = DateTime(
+                        _selectedDate!.year,
+                        _selectedDate!.month,
+                        _selectedDate!.day,
+                        _selectedTime!.hour,
+                        _selectedTime!.minute,
+                      );
+
+                      String formattedDateTime =
+                          DateFormat('yyyy-MM-dd HH:mm:ss')
+                              .format(combinedDateTime);
+
+                      AppointmentModel appointmentModel = AppointmentModel(
+                          userId: widget.dependentId,
+                          appointmentId: documentReference.id,
+                          doctorName: _doctorNameController.text,
+                          location: _locationController.text,
+                          status: 'pending',
+                          appointmentTime: formattedDateTime,
+                          description: _descriptionController.text);
+
+                      documentReference
+                          .set(appointmentModel.toMap())
+                          .then((value) => print('done'));
                     },
                     style: ElevatedButton.styleFrom(
-                      
                       onPrimary: Colors.white, // Text color
-                      padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 38, vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),

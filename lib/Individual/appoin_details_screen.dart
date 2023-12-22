@@ -1,4 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:medipal/models/AppointmentModel.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+
+FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseFirestore firestore = FirebaseFirestore.instance;
+final userId = auth.currentUser?.uid;
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({super.key});
@@ -8,136 +17,52 @@ class AppointmentScreen extends StatefulWidget {
 }
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
-  List<AppointmentData> appointmentList = [
-    AppointmentData(
-      doctorName: 'Dr. John Doe',
-      date: 'December 25, 2023',
-      time: '10:00 AM',
-      location: 'Hospital XYZ',
-      description: 'Regular check-up',
-    ),
-    AppointmentData(
-      doctorName: 'Dr. Jane Smith',
-      date: 'January 5, 2024',
-      time: '2:30 PM',
-      location: 'Clinic ABC',
-      description: 'Consultation for allergy',
-    ),
-    AppointmentData(
-      doctorName: 'Dr. Minal Smith',
-      date: 'January 5, 2024',
-      time: '2:30 PM',
-      location: 'Clinic ABC',
-      description: 'Consultation for allergy',
-    ),
-    AppointmentData(
-      doctorName: 'Dr. Reshma Smith',
-      date: 'January 5, 2024',
-      time: '2:30 PM',
-      location: 'Clinic ABC',
-      description: 'Consultation for allergy',
-    ),
-    AppointmentData(
-      doctorName: 'Dr. Shruti Smith',
-      date: 'January 5, 2024',
-      time: '2:30 PM',
-      location: 'Clinic ABC',
-      description: 'Consultation for allergy',
-    ),
-    AppointmentData(
-      doctorName: 'Dr. Janhavi Smith',
-      date: 'January 5, 2024',
-      time: '2:30 PM',
-      location: 'Clinic ABC',
-      description: 'Consultation for allergy',
-    ),
-    AppointmentData(
-      doctorName: 'Dr. NAmita ',
-      date: 'January 5, 2024',
-      time: '2:30 PM',
-      location: 'Clinic ABC',
-      description: 'Consultation for allergy',
-    ),
-    // Add more appointments here as needed
-  ];
-
-  List<AppointmentData> filteredAppointments = [];
-
-  TextEditingController searchController = TextEditingController();
-
   @override
   void initState() {
-    filteredAppointments = appointmentList;
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Appointments'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                hintText: 'Search by Doctor Name',
-                suffixIcon: Icon(Icons.search),
-              ),
-              onChanged: (value) {
-                _filterAppointments(value);
-              },
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredAppointments.length,
-              itemBuilder: (BuildContext context, int index) {
-                return AppointmentCardHolder(
-                  appointmentData: filteredAppointments[index],
-                  onDelete: () {
-                    _showDeleteDialog(index);
-                  },
-                  onEdit: () {
-                    _showEditDialog(index);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Future<List<QueryDocumentSnapshot>?> fetchData() async {
+    final appointQuery = firestore
+        .collection('appointments')
+        .where('userId', isEqualTo: userId)
+        .get();
 
-  void _filterAppointments(String query) {
-    setState(() {
-      if (query.isNotEmpty) {
-        filteredAppointments = appointmentList
-            .where((appointment) => appointment.doctorName
-                .toLowerCase()
-                .contains(query.toLowerCase()))
-            .toList();
-      } else {
-        filteredAppointments = appointmentList;
+    List<QueryDocumentSnapshot> appointmentDocumentList = [];
+
+    try {
+      final results = await Future.wait([appointQuery]);
+      final appointQuerySnapshot = results[0];
+
+      if (appointQuerySnapshot.docs.isNotEmpty) {
+        appointmentDocumentList = appointQuerySnapshot.docs.toList();
       }
-    });
+      return appointmentDocumentList;
+    } catch (error) {
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+        textColor: const Color.fromARGB(255, 255, 255, 255),
+      );
+      return null;
+    }
   }
 
-  void _showEditDialog(int index) {
-    TextEditingController doctorNameController =
-        TextEditingController(text: appointmentList[index].doctorName);
-    TextEditingController dateController =
-        TextEditingController(text: appointmentList[index].date);
-    TextEditingController timeController =
-        TextEditingController(text: appointmentList[index].time);
-    TextEditingController locationController =
-        TextEditingController(text: appointmentList[index].location);
-    TextEditingController descriptionController =
-        TextEditingController(text: appointmentList[index].description);
+  TextEditingController doctorNameController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+
+  void _showEditDialog(String id, String name, String date, String time,
+      String location, String description) {
+    doctorNameController.text = name;
+    dateController.text = date;
+    timeController.text = time;
+    locationController.text = location;
+    descriptionController.text = description;
 
     showDialog(
       context: context,
@@ -151,7 +76,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               children: [
                 TextField(
                   controller: doctorNameController,
-                  decoration: const InputDecoration(labelText: 'Doctor\'s Name'),
+                  decoration:
+                      const InputDecoration(labelText: 'Doctor\'s Name'),
                 ),
                 const SizedBox(height: 12.0),
                 TextField(
@@ -186,18 +112,31 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     const SizedBox(width: 8.0),
                     ElevatedButton(
                       onPressed: () {
-                        // Update appointmentList with the edited values
-                        setState(() {
-                          appointmentList[index].doctorName =
-                              doctorNameController.text;
-                          appointmentList[index].date = dateController.text;
-                          appointmentList[index].time = timeController.text;
-                          appointmentList[index].location =
-                              locationController.text;
-                          appointmentList[index].description =
-                              descriptionController.text;
-                        });
+                        Map<String, dynamic> appointment = {
+                          'doctorName': doctorNameController.text,
+                          'appointmentTime': time,
+                          'location': locationController.text,
+                          'description': descriptionController.text,
+                        };
+
+                        firestore
+                            .collection('appointments')
+                            .doc(id)
+                            .update(appointment)
+                            .then(
+                              (value) => Fluttertoast.showToast(
+                                msg: 'Data updated',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor:
+                                    const Color.fromARGB(206, 2, 191, 34),
+                                textColor:
+                                    const Color.fromARGB(255, 255, 255, 255),
+                              ),
+                            );
+
                         Navigator.pop(context);
+                        setState(() {});
                       },
                       child: const Text('Save'),
                     ),
@@ -211,7 +150,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     );
   }
 
-  void _showDeleteDialog(int index) {
+  void _showDeleteDialog(String id) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -236,10 +175,18 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             ),
             TextButton(
               onPressed: () {
-                setState(() {
-                  appointmentList.removeAt(index);
+                firestore
+                    .collection('appointments')
+                    .doc(id)
+                    .delete()
+                    .then((value) async {
+                  print("deleted");
                 });
-                Navigator.of(context).pop();
+
+                Navigator.pop(context);
+
+                // Refresh the page after data is deleted
+                setState(() {});
               },
               child: const Text('Delete'),
             ),
@@ -248,79 +195,105 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       },
     );
   }
-}
-
-class AppointmentData {
-  late final String doctorName;
-  late final String date;
-  late final String time;
-  late final String location;
-  late final String description;
-
-  AppointmentData({
-    required this.doctorName,
-    required this.date,
-    required this.time,
-    required this.location,
-    required this.description,
-  });
-}
-
-class AppointmentCardHolder extends StatelessWidget {
-  final AppointmentData appointmentData;
-  final VoidCallback onDelete;
-  final VoidCallback onEdit;
-
-  const AppointmentCardHolder({
-    required this.appointmentData,
-    required this.onDelete,
-    required this.onEdit,
-  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        elevation: 3,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Appointments'),
+        ),
+        body: Column(
           children: [
-            ListTile(
-              title: Text(
-                appointmentData.doctorName,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildInfoRow('Date', appointmentData.date),
-                  _buildInfoRow('Time', appointmentData.time),
-                  _buildInfoRow('Location', appointmentData.location),
-                  _buildInfoRow('Description', appointmentData.description),
-                ],
-              ),
-            ),
-            ButtonBar(
-              alignment: MainAxisAlignment.end,
+            Expanded(
+                child: FutureBuilder(
+              future: fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  print("Loading...");
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  final appointmentQuery = snapshot.data;
+                  return _buildAppointmentCard(appointmentQuery!);
+                }
+              },
+            ))
+          ],
+        ));
+  }
+
+  Widget _buildAppointmentCard(
+      List<QueryDocumentSnapshot> appointmentQuerySnapshot) {
+    return ListView.builder(
+      itemCount: appointmentQuerySnapshot.length,
+      itemBuilder: (BuildContext context, int index) {
+        final QueryDocumentSnapshot appointmentDocumentSnapshot =
+            appointmentQuerySnapshot[index];
+        final AppointmentModel appointmentModel =
+            AppointmentModel.fromDocumentSnapshot(appointmentDocumentSnapshot);
+        final Map<String, dynamic> appointment = appointmentModel.toMap();
+        final appointmentId = appointment['appointmentId'];
+        final name = appointment['doctorName'];
+        final String appointmentTimeString = appointment['appointmentTime'];
+        final DateTime appointmentDateTime =
+            DateTime.parse(appointmentTimeString);
+
+        final date = DateFormat('d MMM yyyy').format(appointmentDateTime);
+        final time = DateFormat.Hm().format(appointmentDateTime);
+        final location = appointment['location'];
+        final description = appointment['description'];
+
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            elevation: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: onEdit,
+                ListTile(
+                  title: Text(
+                    name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: onDelete,
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildInfoRow('Date', date),
+                      _buildInfoRow('Time', time),
+                      _buildInfoRow('Location', location),
+                      _buildInfoRow('Description', description),
+                    ],
+                  ),
+                ),
+                ButtonBar(
+                  alignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        // Open the edit dialog when the edit button is pressed
+                        _showEditDialog(appointmentId, name, date, time,
+                            location, description);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        _showDeleteDialog(appointmentId);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

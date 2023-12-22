@@ -55,7 +55,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
   TextEditingController dosageController = TextEditingController();
 
   // Function to open an edit dialog for a specific item
-  void _openEditDialog(String id, String name, String type, int quantity, int dosage) {
+  void _openEditDialog(
+      String id, String name, String type, int quantity, int dosage) {
     nameController.text = name;
     quantityController.text = quantity.toString();
     typeController.text = type;
@@ -127,7 +128,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   ),
                   const SizedBox(height: 16),
                   TextField(
-                   controller: dosageController,
+                    controller: dosageController,
                     decoration:
                         const InputDecoration(labelText: 'Dosage Quantity'),
                     keyboardType: TextInputType.number,
@@ -157,7 +158,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       'name': updatedName,
                       'inventory.quantity': updatedQuantity,
                       'type': type,
-                      'dosage' : updatedDosage,
+                      'dosage': updatedDosage,
                     };
 
                     firestore
@@ -169,11 +170,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             msg: 'Data updated',
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            backgroundColor: const Color.fromARGB(206, 2, 191, 34),
+                            backgroundColor:
+                                const Color.fromARGB(206, 2, 191, 34),
                             textColor: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         );
-                    // print('data updated'));
 
                     Navigator.pop(context);
 
