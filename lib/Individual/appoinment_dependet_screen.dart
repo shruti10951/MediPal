@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:medipal/models/AppointmentModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -60,10 +59,35 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
   void _showEditDialog(String id, String name, String date, String time,
       String location, String description) {
     doctorNameController.text = name;
-    dateController.text = date;
-    timeController.text = time;
     locationController.text = location;
     descriptionController.text = description;
+
+    final inputDateFormat = DateFormat('dd MMM yyyy');
+    DateTime inputDate = inputDateFormat.parse(date);
+
+    final outputDateFormat = DateFormat('yyyy-MM-dd');
+    String formattedDate = outputDateFormat.format(inputDate);
+
+    dateController.text = formattedDate;
+
+    DateTime initialdate = DateTime.parse(formattedDate);
+    DateTime firstDate;
+
+    if (initialdate.isBefore(DateTime.now())) {
+      firstDate = initialdate;
+    } else {
+      firstDate = DateTime.now();
+    }
+
+    final inputTimeFormat = DateFormat('HH:mm');
+    DateTime inputTime = inputTimeFormat.parse(time);
+
+    final outputFormat = DateFormat('HH:mm:ss');
+    String formattedTime = outputFormat.format(inputTime);
+
+    DateTime initialTime = DateTime.parse("$formattedDate $formattedTime");
+
+    timeController.text = time;
 
     showDialog(
       context: context,
@@ -80,15 +104,77 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
                   decoration:
                       const InputDecoration(labelText: 'Doctor\'s Name'),
                 ),
-                const SizedBox(height: 12.0),
+                SizedBox(height: 12.0),
                 TextField(
+                  readOnly: true,
                   controller: dateController,
-                  decoration: const InputDecoration(labelText: 'Date'),
+                  onTap: () async {
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: initialdate,
+                      firstDate: firstDate,
+                      lastDate: DateTime(2100),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        dateController.text =
+                            DateFormat('yyyy-MM-dd').format(pickedDate);
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Date',
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        final DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: initialdate,
+                          firstDate: firstDate,
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            dateController.text =
+                                DateFormat('yyyy-MM-dd').format(pickedDate);
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.calendar_today),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 12.0),
+                SizedBox(height: 12.0),
                 TextField(
+                  readOnly: true,
                   controller: timeController,
-                  decoration: const InputDecoration(labelText: 'Time'),
+                  onTap: () async {
+                    final TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(initialTime),
+                    );
+                    if (pickedTime != null) {
+                      setState(() {
+                        timeController.text = pickedTime.format(context);
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Time',
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        final TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(initialTime),
+                        );
+                        if (pickedTime != null) {
+                          setState(() {
+                            timeController.text = pickedTime.format(context);
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.access_time),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12.0),
                 TextField(
@@ -112,21 +198,24 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
                     ),
                     const SizedBox(width: 8.0),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Map<String, dynamic> appointment = {
                           'doctorName': doctorNameController.text,
-                          'appointmentTime': time,
+                          'appointmentTime': dateController.text +
+                              " " +
+                              timeController.text +
+                              ':00',
                           'location': locationController.text,
                           'description': descriptionController.text,
                         };
 
-                        firestore
+                        await firestore
                             .collection('appointments')
                             .doc(id)
                             .update(appointment)
                             .then(
                               (value) => Fluttertoast.showToast(
-                                msg: 'Data updated',
+                                msg: 'Appointment updated',
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 backgroundColor:
@@ -175,13 +264,19 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                firestore
+              onPressed: () async {
+                await firestore
                     .collection('appointments')
                     .doc(id)
                     .delete()
                     .then((value) async {
-                  print("deleted");
+                  Fluttertoast.showToast(
+                    msg: 'Appointment deleted!',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: const Color.fromARGB(206, 2, 191, 34),
+                    textColor: const Color.fromARGB(255, 255, 255, 255),
+                  );
                 });
 
                 Navigator.pop(context);
@@ -200,9 +295,6 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Appointments'),
-        ),
         body: Column(
           children: [
             Expanded(

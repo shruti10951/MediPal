@@ -216,7 +216,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             .update(appointment)
                             .then(
                               (value) => Fluttertoast.showToast(
-                                msg: 'Data updated',
+                                msg: 'Appointment updated',
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 backgroundColor:
@@ -265,14 +265,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                firestore
+              onPressed: () async {
+                await firestore
                     .collection('appointments')
                     .doc(id)
                     .delete()
                     .then((value) async {
                   Fluttertoast.showToast(
-                    msg: 'Data updated',
+                    msg: 'Appointment deleted!',
                     toastLength: Toast.LENGTH_SHORT,
                     gravity: ToastGravity.BOTTOM,
                     backgroundColor: const Color.fromARGB(206, 2, 191, 34),
