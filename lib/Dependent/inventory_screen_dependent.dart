@@ -141,7 +141,22 @@ class _InventoryDependent extends State<InventoryDependent> {
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: Image.network(img),
+                  leading: Container(
+                    //changes done here HEREE
+                    width:
+                        80, // Adjust the width of the Container to define the size of the circular image
+                    height:
+                        80, // Adjust the height of the Container to define the size of the circular image
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      
+                      image: DecorationImage(
+                        fit: BoxFit.fitHeight,
+                        image: NetworkImage(
+                            img), // Replace 'img' with your image URL
+                      ),
+                    ),
+                  ), //image n/w
                   title: Text(
                     name,
                     style: const TextStyle(

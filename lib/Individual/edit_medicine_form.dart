@@ -12,14 +12,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class MedicineForm extends StatefulWidget {
-  const MedicineForm({super.key});
+class MedicineFormEdit extends StatefulWidget {
+  const MedicineFormEdit({super.key});
 
   @override
-  _MedicineFormState createState() => _MedicineFormState();
+  _MedicineFormEditState createState() => _MedicineFormEditState();
 }
 
-class _MedicineFormState extends State<MedicineForm> {
+class _MedicineFormEditState extends State<MedicineFormEdit> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dosageController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -192,10 +192,10 @@ class _MedicineFormState extends State<MedicineForm> {
                                       height: 100,
                                     ),
                                   )
-                                : const Icon(
+                                : Icon(
                                     Icons.add_a_photo,
                                     size: 50,
-                                    color: Color.fromARGB(255, 18, 26, 33),
+                                    color: Colors.blue,
                                   ),
                           ),
                           const SizedBox(

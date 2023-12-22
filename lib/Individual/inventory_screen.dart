@@ -322,6 +322,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           // }
 
           if (medication['medicationImg'] == '') {
+        
             if (type == 'Pills') {
               img =
                   'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
@@ -346,7 +347,22 @@ class _InventoryScreenState extends State<InventoryScreen> {
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: Image.network(img), //image n/w
+                  leading: Container(
+                    //changes done here HEREE
+                    width:
+                        80, // Adjust the width of the Container to define the size of the circular image
+                    height:
+                        80, // Adjust the height of the Container to define the size of the circular image
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                            img), // Replace 'img' with your image URL
+                      ),
+                    ),
+                  ), //image n/w
                   title: Text(
                     name,
                     style: const TextStyle(
