@@ -332,12 +332,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             String img;
 
-            if (type == 'Pills') {
-              img = 'assets/images/pill_icon.png';
-            } else if (type == 'Liquid') {
-              img = 'assets/images/liquid_icon.png';
-            } else {
-              img = 'assets/images/injection_icon.png';
+            if(medicine['medicationImg'] ==''){
+              if (type == 'Pills') {
+                img = 'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+              } else if (type == 'Liquid') {
+                img = 'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+              } else {
+                img = 'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+              }
+            }else{
+              img = medicine['medicationImg'];
             }
 
             DateTime dateTime = DateTime.parse(time);
@@ -366,7 +370,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const Divider(height: 1, color: Colors.grey),
                   ListTile(
-                    leading: Image.asset(img),
+                    leading: Image.network(img),
                     title: Text(
                       name,
                       style: const TextStyle(

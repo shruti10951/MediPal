@@ -21,7 +21,7 @@ class _TabChangeState extends State<TabChange> {
     _tabs = [
       GaurdianView(dependentId: widget.dependentId),
       InventoryDependentGuardian(dependentId: widget.dependentId),
-      AppointmentGaurdianScreen(dependentId: widget.dependentId),
+      AppointmentGaurdianScreen(dependentId:  widget.dependentId),
     ];
   }
 

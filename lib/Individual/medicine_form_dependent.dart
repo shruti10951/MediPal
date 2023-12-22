@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class MedicineFormDependent extends StatefulWidget {
   final dependentId;
@@ -39,6 +42,9 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
   FirebaseAuth auth = FirebaseAuth.instance;
   bool isLoading = false; // Add this to control the loading indicator
 
+  //image
+  File? _selectedImage; // Variable to store the selected image file
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -66,6 +72,20 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
         }
       });
     }
+  }
+
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedImage != null) {
+        // cropImage(File(pickedImage.path));
+        _selectedImage = File(pickedImage.path);
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override
@@ -142,6 +162,39 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16.0),
+                        Center(
+                          child: InkWell(
+                            onTap: () {
+                              _getImage(); // Call the method to pick an image
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _selectedImage != null
+                                    ? Image.file(_selectedImage!)
+                                    : Container(
+                                  width: 100,
+                                  height: 100,
+                                  color: Colors.grey[200],
+                                  child: const Icon(Icons.add_a_photo),
+                                ),
+                                const SizedBox(
+                                    height: 8), // Add some space between image and text
+                                Text(
+                                  _selectedImage != null
+                                      ? 'Change Image'
+                                      : 'Select Image for Your Medicine',
+                                  style: const TextStyle(
+                                    color: Colors
+                                        .blue, // You can adjust the color as needed
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16.0),
@@ -310,6 +363,8 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                             DocumentReference medicationDocumentReference =
                                 medicationCollectionRef.doc();
 
+                            final imageUrl= await uploadImage(_selectedImage, _nameController.text);
+
                             MedicationModel medication = MedicationModel(
                               medicationId: medicationDocumentReference.id,
                               name: _nameController.text,
@@ -341,6 +396,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                                   : "",
                               userId: widget.dependentId,
                               description: _descriptionController.text,
+                              medicationImg: imageUrl,
                             );
 
                             Map<String, dynamic> medicationModel =
@@ -410,6 +466,24 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
               ),
             ),
     );
+  }
+
+  Future<String> uploadImage(File? selectedImage, String name) async{
+
+    final userId= widget.dependentId;
+
+    Reference storageReference =
+    FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
+
+    // Upload the file to Firebase Storage
+    UploadTask uploadTask = storageReference.putFile(selectedImage!);
+
+    // Await the completion of the upload
+    await uploadTask.whenComplete(() => print("Image uploaded"));
+
+    // Get the download URL for the image
+    String downloadURL = await storageReference.getDownloadURL();
+    return downloadURL;
   }
 }
 

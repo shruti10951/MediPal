@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -8,7 +9,6 @@ import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image/image.dart' as Img;
 import 'dart:io';
 
 class MedicineForm extends StatefulWidget {
@@ -42,6 +42,9 @@ class _MedicineFormState extends State<MedicineForm> {
 
   bool isSubmitting = false; // Track the submitting state
 
+  //image
+  File? _selectedImage; // Variable to store the selected image file
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -71,39 +74,19 @@ class _MedicineFormState extends State<MedicineForm> {
     }
   }
 
-  //image
-  File? _selectedImage; // Variable to store the selected image file
-
   Future<void> _getImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedImage != null) {
+        // cropImage(File(pickedImage.path));
         _selectedImage = File(pickedImage.path);
       } else {
         print('No image selected.');
       }
     });
   }
-  // Future<void> _getImage() async {
-  //   final picker = ImagePicker();
-  //   final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-
-  //   if (pickedImage != null) {
-  //     File selectedFile = File(pickedImage.path);
-
-  //     final decodedImage = Img.decodeImage(selectedFile.readAsBytesSync());
-  //     final resizedImage = Img.copyResize(decodedImage!, width: 128, height: 128);
-
-  //     setState(() {
-  //       _selectedImage = File('${Directory.systemTemp.path}/resized_image.png')
-  //         ..writeAsBytesSync(Img.encodePng(resizedImage));
-  //     });
-  //   } else {
-  //     //print('No image selected.');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -383,6 +366,13 @@ class _MedicineFormState extends State<MedicineForm> {
                       DocumentReference medicationDocumentReference =
                           medicationCollectionRef.doc();
 
+                      String imageUrl;
+
+                      if(_selectedImage!=null){
+                        imageUrl= await uploadImage(_selectedImage, _nameController.text);
+                      }else{
+                        imageUrl='';
+                      }
                       MedicationModel medication = MedicationModel(
                         medicationId: medicationDocumentReference.id,
                         name: _nameController.text,
@@ -413,6 +403,7 @@ class _MedicineFormState extends State<MedicineForm> {
                             : "",
                         userId: auth.currentUser!.uid.toString(),
                         description: _descriptionController.text,
+                        medicationImg: imageUrl,
                       );
 
                       Map<String, dynamic> medicationModel = medication.toMap();
@@ -500,6 +491,26 @@ class _MedicineFormState extends State<MedicineForm> {
           : null, // Show loading indicator based on isSubmitting
     );
   }
+
+  Future<String> uploadImage(File? selectedImage, String name) async{
+
+    final userId= auth.currentUser!.uid.toString();
+
+    Reference storageReference =
+    FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
+
+    // Upload the file to Firebase Storage
+    UploadTask uploadTask = storageReference.putFile(selectedImage!);
+
+    // Await the completion of the upload
+    await uploadTask.whenComplete(() => print("Image uploaded"));
+
+    // Get the download URL for the image
+    String downloadURL = await storageReference.getDownloadURL();
+    return downloadURL;
+  }
+
+
 }
 
 Widget _buildLoadingIndicator() {
