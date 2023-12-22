@@ -59,10 +59,35 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   void _showEditDialog(String id, String name, String date, String time,
       String location, String description) {
     doctorNameController.text = name;
-    dateController.text = date;
-    timeController.text = time;
     locationController.text = location;
     descriptionController.text = description;
+
+    final inputDateFormat = DateFormat('dd MMM yyyy');
+    DateTime inputDate = inputDateFormat.parse(date);
+
+    final outputDateFormat = DateFormat('yyyy-MM-dd');
+    String formattedDate = outputDateFormat.format(inputDate);
+
+    dateController.text = formattedDate;
+
+    DateTime initialdate = DateTime.parse(formattedDate);
+    DateTime firstDate;
+
+    if (initialdate.isBefore(DateTime.now())) {
+      firstDate = initialdate;
+    } else {
+      firstDate = DateTime.now();
+    }
+
+    final inputTimeFormat = DateFormat('HH:mm');
+    DateTime inputTime = inputTimeFormat.parse(time);
+
+    final outputFormat = DateFormat('HH:mm:ss');
+    String formattedTime = outputFormat.format(inputTime);
+
+    DateTime initialTime = DateTime.parse("$formattedDate $formattedTime");
+
+    timeController.text = time;
 
     showDialog(
       context: context,
@@ -79,7 +104,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   decoration:
                       const InputDecoration(labelText: 'Doctor\'s Name'),
                 ),
-                // time and date related chnages HERE 
+                // time and date related chnages HERE
                 SizedBox(height: 12.0),
                 TextField(
                   readOnly: true,
@@ -87,8 +112,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   onTap: () async {
                     final DateTime? pickedDate = await showDatePicker(
                       context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
+                      initialDate: initialdate,
+                      firstDate: firstDate,
                       lastDate: DateTime(2100),
                     );
                     if (pickedDate != null) {
@@ -104,8 +129,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       onPressed: () async {
                         final DateTime? pickedDate = await showDatePicker(
                           context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
+                          initialDate: initialdate,
+                          firstDate: firstDate,
                           lastDate: DateTime(2100),
                         );
                         if (pickedDate != null) {
@@ -126,7 +151,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   onTap: () async {
                     final TimeOfDay? pickedTime = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(initialTime),
                     );
                     if (pickedTime != null) {
                       setState(() {
@@ -140,7 +165,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       onPressed: () async {
                         final TimeOfDay? pickedTime = await showTimePicker(
                           context: context,
-                          initialTime: TimeOfDay.fromDateTime(DateTime.now()),
+                          initialTime: TimeOfDay.fromDateTime(initialTime),
                         );
                         if (pickedTime != null) {
                           setState(() {
@@ -174,15 +199,18 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     ),
                     const SizedBox(width: 8.0),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Map<String, dynamic> appointment = {
                           'doctorName': doctorNameController.text,
-                          'appointmentTime': time,
+                          'appointmentTime': dateController.text +
+                              " " +
+                              timeController.text +
+                              ':00',
                           'location': locationController.text,
                           'description': descriptionController.text,
                         };
 
-                        firestore
+                        await firestore
                             .collection('appointments')
                             .doc(id)
                             .update(appointment)
@@ -243,7 +271,13 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     .doc(id)
                     .delete()
                     .then((value) async {
-                  print("deleted");
+                  Fluttertoast.showToast(
+                    msg: 'Data updated',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: const Color.fromARGB(206, 2, 191, 34),
+                    textColor: const Color.fromARGB(255, 255, 255, 255),
+                  );
                 });
 
                 Navigator.pop(context);
