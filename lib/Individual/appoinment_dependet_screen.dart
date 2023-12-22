@@ -4,7 +4,8 @@ class AppointmentGaurdianScreen extends StatefulWidget {
   const AppointmentGaurdianScreen({super.key});
 
   @override
-  _AppointmentGaurdianScreenState createState() => _AppointmentGaurdianScreenState();
+  _AppointmentGaurdianScreenState createState() =>
+      _AppointmentGaurdianScreenState();
 }
 
 class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
@@ -148,7 +149,8 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
               children: [
                 TextField(
                   controller: doctorNameController,
-                  decoration: const InputDecoration(labelText: 'Doctor\'s Name'),
+                  decoration:
+                      const InputDecoration(labelText: 'Doctor\'s Name'),
                 ),
                 const SizedBox(height: 12.0),
                 TextField(

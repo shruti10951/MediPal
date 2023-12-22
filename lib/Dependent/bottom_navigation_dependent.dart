@@ -31,13 +31,14 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
     );
   }
 
-void _navigateToAppDetails() {
+  void _navigateToAppDetails() {
     _pageController.animateToPage(
       2, // Index of the Profile tab
       duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
   }
+
   void _navigateToProfile() {
     _pageController.animateToPage(
       3, // Index of the Profile tab
@@ -59,7 +60,7 @@ void _navigateToAppDetails() {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        children: const <Widget>[
+        children: <Widget>[
           DashboardScreenDependent(),
           InventoryDependent(),
           ProfileScreenDependent(),
@@ -82,9 +83,9 @@ void _navigateToAppDetails() {
             label: 'Inventory',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.medical_services),
-              label: 'Appoinmnent',
-            ),
+            icon: Icon(Icons.medical_services),
+            label: 'Appoinmnent',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',

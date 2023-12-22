@@ -11,8 +11,8 @@ import 'expandable_tab.dart';
 
 class GaurdianView extends StatefulWidget {
   final dependentId;
-
-  const GaurdianView({super.key, required this.dependentId});
+  GaurdianView({Key? key, required this.dependentId}) : super(key: key);
+  //  const GaurdianView({super.key, required this.dependentId});
 
   @override
   _GaurdianViewState createState() => _GaurdianViewState();
@@ -38,8 +38,7 @@ class _GaurdianViewState extends State<GaurdianView> {
     List<QueryDocumentSnapshot> medicationDocumentList = [];
 
     try {
-      final results =
-          await Future.wait([alarmQuery, medicationQuery]);
+      final results = await Future.wait([alarmQuery, medicationQuery]);
       alarmQuerySnapshot = results[0];
       final medicationQuerySnapshot = results[1];
 
@@ -119,11 +118,12 @@ class _GaurdianViewState extends State<GaurdianView> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const AppointmentDependentForm(),
+          builder: (context) => AppointmentDependentForm(
+            dependentId: widget.dependentId,
+          ),
         ),
       );
-    }
-    else if (index == 2) {
+    } else if (index == 2) {
       // Open Medicine Form screen here
       Navigator.push(
         context,
@@ -209,7 +209,6 @@ class _GaurdianViewState extends State<GaurdianView> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-
     if (filteredAlarms.isEmpty) {
       DateTime currentDate = DateTime.now();
       alarmQuerySnapshot = alarmQuerySnapshot.where((element) {
@@ -322,4 +321,3 @@ class _GaurdianViewState extends State<GaurdianView> {
     );
   }
 }
-
