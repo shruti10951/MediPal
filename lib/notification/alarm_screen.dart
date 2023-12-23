@@ -109,7 +109,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             const SizedBox(height: 20),
 
             // Medicine Type Icon
-            MedicineTypeIcon(medicineType: medicationMap['type'] ?? 'Pills'),
+            MedicineTypeIcon(medicineType: medicationMap['type'] ?? 'Pills', medicinceImg: medicationMap['medicationImg']),
             const SizedBox(height: 10),
 
             // Medicine Name
@@ -184,27 +184,32 @@ class AlarmIcon extends StatelessWidget {
 
 class MedicineTypeIcon extends StatelessWidget {
   final String medicineType;
+  final String medicinceImg;
 
-  MedicineTypeIcon({required this.medicineType});
+  MedicineTypeIcon({required this.medicineType, required this.medicinceImg});
 
   @override
   Widget build(BuildContext context) {
     String imagePath;
-    if (medicineType == 'Pills') {
-      imagePath = 'assets/images/pill_icon.png';
-    } else if (medicineType == 'Liquid') {
-      imagePath = 'assets/images/liquid_icon.png';
-    } else if (medicineType == 'Injection') {
-      imagePath = 'assets/images/injection_icon.png';
+    if (medicinceImg == '') {
+      if (medicineType == 'Pills') {
+        imagePath =
+        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+      } else if (medicineType == 'Liquid') {
+        imagePath =
+        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+      } else {
+        imagePath =
+        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+      }
     } else {
-      imagePath =
-          'assets/images/default.png'; // Default image for unknown medicine type
+      imagePath = medicinceImg;
     }
 
-    return Image.asset(
+    return Image.network(
       imagePath,
-      width: 50, // Adjust the width as needed
-      height: 50, // Adjust the height as needed
+      width: 128, // Adjust the width as needed
+      height: 128, // Adjust the height as needed
     );
   }
 }
