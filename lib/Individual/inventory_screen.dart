@@ -335,6 +335,30 @@ class _InventoryScreenState extends State<InventoryScreen> {
           } else {
             img = medication['medicationImg'];
           }
+          // aPPLIED MY BRAIN HERE-JANA
+          Widget Imgbuild(BuildContext context) {
+            double width = 80.0;
+            double height = 80.0;
+            if (medication['medicationImg'] == '') {
+              width = 64.0;
+              height = 64.0;
+              return Image(image: NetworkImage(img));
+            } else {
+              width = 80.0;
+              height = 80.0;
+              return Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fitWidth,
+                    image: NetworkImage(img),
+                  ),
+                ),
+              );
+            }
+          }
 
           // Add this in UI
           final recorder = medication['inventory']['recorderLevel'];
@@ -346,19 +370,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: Container(
-                    //changes done here HEREE
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        image: NetworkImage(
-                            img),
-                      ),
-                    ),
-                  ), //image n/w
+                  leading: Imgbuild(context), //image n/w
                   title: Text(
                     name,
                     style: const TextStyle(

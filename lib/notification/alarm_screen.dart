@@ -88,9 +88,19 @@ class _AlarmScreenState extends State<AlarmScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Large Alarm Icon
-            AlarmIcon(),
-            const SizedBox(height: 10),
+            // Alarm Icon positioned at top-left
+            // Align(
+            //   alignment: Alignment.topRight,
+            //   child: Padding(
+            //     padding: const EdgeInsets.only(top: 0.0, left: 320.0),
+            AlarmIcon(
+              medicineType: medicationMap['type'] ?? 'Pills',
+              medicinceImg: medicationMap['medicationImg'],
+            ),
+            //   ),
+            // ),
+            const SizedBox(height: 16),
+            // Displaying alarm time
             Text(
               alarmMap['time']
                       .toString()
@@ -108,8 +118,15 @@ class _AlarmScreenState extends State<AlarmScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Medicine Type Icon
-            MedicineTypeIcon(medicineType: medicationMap['type'] ?? 'Pills', medicinceImg: medicationMap['medicationImg']),
+            // Medicine Type Icon with specified size
+            Container(
+              // width: 300, // Set width as needed
+              // height: 300, // Set height as needed
+              child: MedicineTypeIcon(
+                medicineType: medicationMap['type'] ?? 'Pills',
+                medicinceImg: medicationMap['medicationImg'],
+              ),
+            ),
             const SizedBox(height: 10),
 
             // Medicine Name
@@ -123,12 +140,15 @@ class _AlarmScreenState extends State<AlarmScreen> {
             ),
             // Add some space below the Medicine Name
             const SizedBox(height: 10),
+
             // Medicine Description
             MedicineDescription(
-                description:
-                    medicationMap['description'] ?? 'No description available'),
+              description:
+                  medicationMap['description'] ?? 'No description available',
+            ),
             // Add some space below the Medicine Description
             const SizedBox(height: 10),
+
             // Quantity of Medicine
             Text(
               'Quantity: ${medicationMap['dosage'] ?? 0}',
@@ -137,14 +157,16 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 200),
+            const SizedBox(height: 100),
+
             // Action Buttons
             ActionButtons(
-                alarmId: widget.alarmId,
-                alarmMap: alarmMap,
-                medicationMap: medicationMap,
-                userId: user.uid,
-                role: role),
+              alarmId: widget.alarmId,
+              alarmMap: alarmMap,
+              medicationMap: medicationMap,
+              userId: user.uid,
+              role: role,
+            ),
           ],
         ),
       ),
@@ -171,14 +193,35 @@ class MedicineDescription extends StatelessWidget {
 }
 
 class AlarmIcon extends StatelessWidget {
+  final String medicineType;
+  final String medicinceImg;
+
   @override
+  AlarmIcon({required this.medicineType, required this.medicinceImg});
+
   Widget build(BuildContext context) {
-    // Replace 'image_path' with the actual path to your image asset.
-    return Image.asset(
-      'assets/images/medipal.png',
-      width: 120,
-      height: 120,
-    );
+    if (medicinceImg == '') {
+      return Image.asset(
+        'assets/images/medipal.png',
+        width: 130,
+        height: 130,
+      );
+    } else {
+      return Image.asset(
+        'assets/images/medipal.png',
+        width: 50,
+        height: 50,
+      );
+    }
+    // return Padding(
+    //   padding: EdgeInsets.only(top: 0, right: 0),
+    //   child: Row(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+
+    //     ],
+    //   ),
+    // );
   }
 }
 
@@ -191,26 +234,40 @@ class MedicineTypeIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String imagePath;
+    double width, height;
     if (medicinceImg == '') {
+      width = 64;
+      height = 64;
       if (medicineType == 'Pills') {
         imagePath =
-        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
       } else if (medicineType == 'Liquid') {
         imagePath =
-        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
       } else {
         imagePath =
-        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
       }
+      return Image.network(
+      imagePath,
+      width: width, // Adjust the width as needed
+      height: height, // Adjust the height as needed
+    );
     } else {
       imagePath = medicinceImg;
+      width = 128;
+      height = 128;
+      return ClipOval(
+      child: Image.network(
+        imagePath,
+        width: width, // Adjust the width as needed
+        height: height, // Adjust the height as needed
+        fit: BoxFit.cover, // Adjust the fit property as needed
+      ),
+    );
     }
 
-    return Image.network(
-      imagePath,
-      width: 128, // Adjust the width as needed
-      height: 128, // Adjust the height as needed
-    );
+    
   }
 }
 
@@ -252,8 +309,8 @@ class ActionButtons extends StatelessWidget {
                     ['quantity'] -
                 medicationMap['dosage'];
 
-            if(medicationMap['inventory']['quantity']<= 0){
-              medicationMap['inventory']['quantity']= 0;
+            if (medicationMap['inventory']['quantity'] <= 0) {
+              medicationMap['inventory']['quantity'] = 0;
             }
             var quantity = medicationMap['inventory']['quantity'];
             var name = medicationMap['name'];

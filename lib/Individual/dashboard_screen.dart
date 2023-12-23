@@ -347,6 +347,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
               } else {
                 img = medicine['medicationImg'];
               }
+              // aPPLIED MY BRAIN HERE-JANA
+              Widget Imgbuild(BuildContext context) {
+                double width;
+                double height;
+                if (medicine['medicationImg'] == '') {
+                  return Image(image: NetworkImage(img));
+                } else {
+                  width = 80.0;
+                  height = 80.0;
+                  return Container(
+                    width: width,
+                    height: height,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.fitWidth,
+                        image: NetworkImage(img),
+                      ),
+                    ),
+                  );
+                }
+              }
 
               DateTime dateTime = DateTime.parse(time);
 
@@ -379,21 +401,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const Divider(height: 1, color: Colors.grey),
                       ListTile(
-                        leading: Container(
-                    width:
-                        60, // Adjust the width of the Container to define the size of the circular image
-                    height:
-                        60, // Adjust the height of the Container to define the size of the circular image
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      
-                      image: DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        image: NetworkImage(
-                            img), // Replace 'img' with your image URL
-                      ),
-                    ),
-                  ), //image n/w
+                        leading: Imgbuild(context), //image n/w
                         title: Text(
                           name,
                           style: const TextStyle(
