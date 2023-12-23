@@ -11,16 +11,20 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class MedicineFormEdit extends StatefulWidget {
-  final String medicationId;
+import 'gaurdian_view_screen.dart';
+import 'inventory_dependet_guardian.dart';
 
-  const MedicineFormEdit({super.key, required this.medicationId});
+class DependentMedicineFormEdit extends StatefulWidget {
+  final String medicationId;
+  final String dependentId;
+
+  const DependentMedicineFormEdit({super.key, required this.medicationId, required this.dependentId});
 
   @override
-  _MedicineFormEditState createState() => _MedicineFormEditState();
+  _DependentMedicineFormEditState createState() => _DependentMedicineFormEditState();
 }
 
-class _MedicineFormEditState extends State<MedicineFormEdit> {
+class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dosageController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -37,10 +41,10 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
   String? _selectedDosageType; // Stores the selected dosage type
 
   CollectionReference medicationCollectionRef =
-      FirebaseFirestore.instance.collection('medications');
+  FirebaseFirestore.instance.collection('medications');
   CollectionReference alarmCollectionRef =
-      FirebaseFirestore.instance.collection('alarms');
-  FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore.instance.collection('alarms');
+  // FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<Map<String, dynamic>?> loadData() async {
     final medicineSnapshots = await medicationCollectionRef
@@ -48,7 +52,7 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
         .get();
     for (QueryDocumentSnapshot snapshot in medicineSnapshots.docs) {
       MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(snapshot);
+      MedicationModel.fromDocumentSnapshot(snapshot);
       Map<String, dynamic> medication = medicationModel.toMap();
 
       _nameController.text = medication['name'];
@@ -188,10 +192,10 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
   }
 
   Future<String> uploadImage(File? selectedImage, String name) async {
-    final userId = auth.currentUser!.uid.toString();
+    final userId = widget.dependentId;
 
     Reference storageReference =
-        FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
+    FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
 
     // Upload the file to Firebase Storage
     UploadTask uploadTask = storageReference.putFile(selectedImage!);
@@ -221,7 +225,7 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
               // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
               color:
-                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+              Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Liquid'),
@@ -237,7 +241,7 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
               // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
               color:
-                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+              Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Pills'),
@@ -253,7 +257,7 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
               // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
               color:
-                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+              Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Injection'),
@@ -311,27 +315,27 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                     backgroundColor: Colors.grey[200],
                                     child: _selectedImage != null
                                         ? ClipOval(
-                                            child: Image.file(
-                                              _selectedImage!,
-                                              fit: BoxFit.cover,
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          )
+                                      child: Image.file(
+                                        _selectedImage!,
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                        height: 100,
+                                      ),
+                                    )
                                         : (data?['medicationImg'] != ""
-                                            ? ClipOval(
-                                                child: Image.network(
-                                                  data?['medicationImg'],
-                                                  fit: BoxFit.cover,
-                                                  width: 100,
-                                                  height: 100,
-                                                ),
-                                              )
-                                            : const Icon(
-                                                Icons.add_a_photo,
-                                                size: 50,
-                                                color: Colors.blue,
-                                              )),
+                                        ? ClipOval(
+                                      child: Image.network(
+                                        data?['medicationImg'],
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                        height: 100,
+                                      ),
+                                    )
+                                        : const Icon(
+                                      Icons.add_a_photo,
+                                      size: 50,
+                                      color: Colors.blue,
+                                    )),
                                   ),
                                   const SizedBox(
                                     height: 8,
@@ -548,10 +552,10 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                 },
                                 inventory: {
                                   'quantity':
-                                      int.tryParse(_quantityController.text) ??
-                                          0,
+                                  int.tryParse(_quantityController.text) ??
+                                      0,
                                   'reorderLevel': int.tryParse(
-                                          _reorderLevelController.text) ??
+                                      _reorderLevelController.text) ??
                                       0,
                                 },
                                 startDate: _startDate != null
@@ -560,13 +564,13 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                 endDate: _endDate != null
                                     ? dateFormat.format(_endDate!)
                                     : dateFormat.format(data?['endDate']).toString() ?? "",
-                                userId: auth.currentUser!.uid.toString(),
+                                userId: widget.dependentId,
                                 description: _descriptionController.text,
                                 medicationImg: imageUrl,
                               );
 
                               Map<String, dynamic> medicationModel =
-                                  medication.toMap();
+                              medication.toMap();
 
                               await FirebaseFirestore.instance
                                   .collection('medications')
@@ -579,17 +583,17 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                     .instance
                                     .collection('alarms')
                                     .where('medicationId',
-                                        isEqualTo:
-                                            medicationModel['medicationId'])
+                                    isEqualTo:
+                                    medicationModel['medicationId'])
                                     .get();
                                 for (final doc in snapshots.docs) {
                                   await doc.reference.delete();
                                 }
 
                                 for (var date = _startDate ?? data?['startDate'];
-                                    date!.isBefore(
-                                        _endDate ?? data?['endDate']!.add(const Duration(days: 1)));
-                                    date = date.add(const Duration(days: 1))) {
+                                date!.isBefore(
+                                    _endDate ?? data?['endDate']!.add(const Duration(days: 1)));
+                                date = date.add(const Duration(days: 1))) {
                                   for (var key in medication.schedule.keys) {
                                     final value = medication.schedule[key];
                                     if (value != null && value.isNotEmpty) {
@@ -602,8 +606,8 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                             date.month, date.day, hr, min);
 
                                         DocumentReference
-                                            alarmDocumentReference =
-                                            alarmCollectionRef.doc();
+                                        alarmDocumentReference =
+                                        alarmCollectionRef.doc();
 
                                         String medicineName =
                                             _nameController.text;
@@ -612,15 +616,14 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                         AlarmModel alarmModel = AlarmModel(
                                             alarmId: alarmDocumentReference.id,
                                             skipReason: '',
-                                            userId: auth.currentUser!.uid
-                                                .toString(),
+                                            userId: widget.dependentId,
                                             time: dateTime.toString(),
                                             status: 'pending',
                                             medicationId: medicationModel[
-                                                'medicationId']);
+                                            'medicationId']);
 
                                         Map<String, dynamic> alarm =
-                                            alarmModel.toMap();
+                                        alarmModel.toMap();
                                         await alarmDocumentReference.set(alarm);
                                       }
                                     }
@@ -634,7 +637,7 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 backgroundColor:
-                                    const Color.fromARGB(255, 48, 48, 48),
+                                const Color.fromARGB(255, 48, 48, 48),
                                 textColor: Colors.white,
                               );
 
@@ -643,13 +646,14 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                                 isSubmitting = false;
                               });
 
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BottomNavigationIndividual()),
-                                (Route<dynamic> route) => false,
-                              );
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) =>
+                              //           GaurdianView(dependentId: widget.dependentId)),
+                              // );
+
+                              Navigator.pop(context);
 
                             },
                             child: const Text('Submit'),
@@ -661,7 +665,7 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
                 ),
               ),
               bottomNavigationBar:
-                  isSubmitting ? _buildLoadingIndicator() : null,
+              isSubmitting ? _buildLoadingIndicator() : null,
             );
           }
         });

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Individual/edit_medicine_depedent_form.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -386,8 +387,12 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                             icon: const Icon(Icons.edit),
                             onPressed: () {
                               // Open the edit dialog when the edit button is pressed
-                              _openEditDialog(
-                                  medicationId, name, type, quantity, dosage);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DependentMedicineFormEdit(medicationId: medicationId, dependentId: widget.dependentId,),
+                                ),
+                              );
                             },
                           ),
                           IconButton(

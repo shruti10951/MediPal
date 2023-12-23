@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medipal/Individual/edit_medicine_form.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '../main.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -313,14 +316,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
           String img;
 
-          // if (type == 'Pills') {
-          //   img = 'assets/images/pill_icon.png';
-          // } else if (type == 'Liquid') {
-          //   img = 'assets/images/liquid_icon.png';
-          // } else {
-          //   img = 'assets/images/injection_icon.png';
-          // }
-
           if (medication['medicationImg'] == '') {
             if (type == 'Pills') {
               img =
@@ -395,8 +390,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             icon: const Icon(Icons.edit),
                             onPressed: () {
                               // Open the edit dialog when the edit button is pressed
-                              _openEditDialog(
-                                  medicationId, name, type, quantity, dosage);
+                              // _openEditDialog(
+                              //     medicationId, name, type, quantity, dosage);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MedicineFormEdit(medicationId: medicationId),
+                                ),
+                              );
                             },
                           ),
                           IconButton(
