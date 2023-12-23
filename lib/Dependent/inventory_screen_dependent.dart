@@ -133,6 +133,29 @@ class _InventoryDependent extends State<InventoryDependent> {
           } else {
             img = medication['medicationImg'];
           }
+            Widget Imgbuild(BuildContext context) {
+            double width = 80.0;
+            double height = 80.0;
+            if (medication['medicationImg'] == '') {
+              width = 64.0;
+              height = 64.0;
+              return Image(image: NetworkImage(img));
+            } else {
+              width = 80.0;
+              height = 80.0;
+              return Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fitWidth,
+                    image: NetworkImage(img),
+                  ),
+                ),
+              );
+            }
+          }
 
           return Card(
             margin: const EdgeInsets.all(8),
@@ -141,22 +164,7 @@ class _InventoryDependent extends State<InventoryDependent> {
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: Container(
-                    //changes done here HEREE
-                    width:
-                        80, // Adjust the width of the Container to define the size of the circular image
-                    height:
-                        80, // Adjust the height of the Container to define the size of the circular image
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      
-                      image: DecorationImage(
-                        fit: BoxFit.fitHeight,
-                        image: NetworkImage(
-                            img), // Replace 'img' with your image URL
-                      ),
-                    ),
-                  ), //image n/w
+                  leading:Imgbuild(context), //image n/w
                   title: Text(
                     name,
                     style: const TextStyle(

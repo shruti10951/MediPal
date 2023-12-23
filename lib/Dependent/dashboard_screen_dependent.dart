@@ -298,6 +298,29 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
             } else {
               img = medicine['medicationImg'];
             }
+          Widget Imgbuild(BuildContext context) {
+            double width = 80.0;
+            double height = 80.0;
+            if (medicine['medicationImg'] == '') {
+              width = 64.0;
+              height = 64.0;
+              return Image(image: NetworkImage(img));
+            } else {
+              width = 80.0;
+              height = 80.0;
+              return Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fitWidth,
+                    image: NetworkImage(img),
+                  ),
+                ),
+              );
+            }
+          }
 
             DateTime dateTime = DateTime.parse(time);
 
@@ -330,18 +353,7 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
                     ),
                     const Divider(height: 1, color: Colors.grey),
                     ListTile(
-                      leading: Container(
-                        //changes done here HEREE
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            fit: BoxFit.fitWidth,
-                            image: NetworkImage(img),
-                          ),
-                        ),
-                      ), //image n/w
+                      leading: Imgbuild(context), //image n/w
                       title: Text(
                         name,
                         style: const TextStyle(
