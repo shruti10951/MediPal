@@ -22,6 +22,13 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
     super.dispose();
   }
 
+void _navigateToDashboard() {
+    _pageController.animateToPage(
+      0, // Index of the Dashboard tab
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+  }
   // Function to navigate to the Inventory page
   void _navigateToInventory() {
     _pageController.animateToPage(
@@ -47,24 +54,19 @@ class _BottomNavigationDependentState extends State<BottomNavigationDependent> {
     );
   }
 
-  void _navigateToDashboard() {
-    _pageController.animateToPage(
-      0, // Index of the Dashboard tab
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.ease,
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        children: <Widget>[
+        children: const <Widget>[
           DashboardScreenDependent(),
           InventoryDependent(),
-          ProfileScreenDependent(),
           AppointmentDependentScreen(),
+          ProfileScreenDependent(),
+
         ],
         onPageChanged: (index) {
           setState(() {

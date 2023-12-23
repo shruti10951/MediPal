@@ -187,7 +187,7 @@ class _MedicineFormState extends State<MedicineForm> {
                                 ? ClipOval(
                                     child: Image.file(
                                       _selectedImage!,
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.fitWidth,
                                       width: 100,
                                       height: 100,
                                     ),

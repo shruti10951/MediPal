@@ -388,7 +388,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       shape: BoxShape.circle,
                       
                       image: DecorationImage(
-                        fit: BoxFit.contain,
+                        fit: BoxFit.fitWidth,
                         image: NetworkImage(
                             img), // Replace 'img' with your image URL
                       ),

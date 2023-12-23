@@ -330,7 +330,18 @@ class _DashboardScreenState extends State<DashboardScreenDependent> {
                     ),
                     const Divider(height: 1, color: Colors.grey),
                     ListTile(
-                      leading: Image.network(img),
+                      leading: Container(
+                        //changes done here HEREE
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.fitWidth,
+                            image: NetworkImage(img),
+                          ),
+                        ),
+                      ), //image n/w
                       title: Text(
                         name,
                         style: const TextStyle(

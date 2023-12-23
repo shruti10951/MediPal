@@ -180,10 +180,9 @@ class _AppointmentFormState extends State<AppointmentForm> {
 
                     },
                     style: ElevatedButton.styleFrom(
-
                       onPrimary: Colors.white, // Text color
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 38, vertical: 14),
+                          horizontal: 34, vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),

@@ -346,9 +346,8 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
                         80, // Adjust the height of the Container to define the size of the circular image
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      
                       image: DecorationImage(
-                        fit: BoxFit.fitHeight,
+                        fit: BoxFit.fitWidth,
                         image: NetworkImage(
                             img), // Replace 'img' with your image URL
                       ),
