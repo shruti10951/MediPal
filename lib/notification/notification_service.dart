@@ -84,7 +84,6 @@ class NotificationService {
           displayOnForeground: true,
           notificationLayout: notificationLayout,
           payload: payload,
-          autoDismissible: false,
         ),
         actionButtons: actionButtons);
   }

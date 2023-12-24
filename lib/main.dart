@@ -39,8 +39,9 @@ Future main() async {
   await AndroidAlarmManager.periodic(
       const Duration(minutes: 1), helloAlarmID, checkFirestoreTask);
 
+  const int snoozeAlarmID = 1;
   await AndroidAlarmManager.periodic(
-      const Duration(minutes: 5), helloAlarmID, checkFirestoreForSnooze);
+      const Duration(minutes: 5), snoozeAlarmID, checkFirestoreForSnooze);
 
   TwilioCred().writeCred();
 

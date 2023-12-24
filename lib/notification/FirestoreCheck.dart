@@ -19,6 +19,8 @@ class FireStoreCheck {
     final firestore = FirebaseFirestore.instance;
     final user = FirebaseAuth.instance.currentUser;
 
+    print('we');
+
     try {
       QuerySnapshot querySnapshot = await firestore
           .collection('alarms')
@@ -156,6 +158,8 @@ class FireStoreCheck {
     await Firebase.initializeApp();
     final firestore = FirebaseFirestore.instance;
     final user = FirebaseAuth.instance.currentUser;
+
+    print('goooo');
 
     try{
       QuerySnapshot querySnapshot = await firestore
