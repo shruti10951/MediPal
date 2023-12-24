@@ -103,12 +103,12 @@ class _AlarmScreenState extends State<AlarmScreen> {
             // Displaying alarm time
             Text(
               alarmMap['time']
-                      .toString()
-                      .split(' ')
-                      .last
-                      .split(':')
-                      .sublist(0, 2)
-                      .join(':') ??
+                  .toString()
+                  .split(' ')
+                  .last
+                  .split(':')
+                  .sublist(0, 2)
+                  .join(':') ??
                   'No time available',
               style: const TextStyle(
                 fontSize: 24,
@@ -144,7 +144,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             // Medicine Description
             MedicineDescription(
               description:
-                  medicationMap['description'] ?? 'No description available',
+              medicationMap['description'] ?? 'No description available',
             ),
             // Add some space below the Medicine Description
             const SizedBox(height: 10),
@@ -231,34 +231,32 @@ class MedicineTypeIcon extends StatelessWidget {
       height = 64;
       if (medicineType == 'Pills') {
         imagePath =
-            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
       } else if (medicineType == 'Liquid') {
         imagePath =
-            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
       } else {
         imagePath =
-            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+        'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
       }
       return Image.network(
-      imagePath,
-      width: width, // Adjust the width as needed
-      height: height, // Adjust the height as needed
-    );
+        imagePath,
+        width: width, // Adjust the width as needed
+        height: height, // Adjust the height as needed
+      );
     } else {
       imagePath = medicinceImg;
       width = 128;
       height = 128;
       return ClipOval(
-      child: Image.network(
-        imagePath,
-        width: width, // Adjust the width as needed
-        height: height, // Adjust the height as needed
-        fit: BoxFit.cover, // Adjust the fit property as needed
-      ),
-    );
+        child: Image.network(
+          imagePath,
+          width: width, // Adjust the width as needed
+          height: height, // Adjust the height as needed
+          fit: BoxFit.cover, // Adjust the fit property as needed
+        ),
+      );
     }
-
-    
   }
 }
 
@@ -269,12 +267,11 @@ class ActionButtons extends StatelessWidget {
   Map<String, dynamic> alarmMap;
   Map<String, dynamic> medicationMap;
 
-  ActionButtons(
-      {required this.alarmId,
-      required this.alarmMap,
-      required this.medicationMap,
-      required this.userId,
-      required this.role});
+  ActionButtons({required this.alarmId,
+    required this.alarmMap,
+    required this.medicationMap,
+    required this.userId,
+    required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -290,23 +287,27 @@ class ActionButtons extends StatelessWidget {
           },
           color: Colors.red,
         ),
-        const SizedBox(width: 80), // Add space between icons
-          CircularButton(
+        const SizedBox(width: 60), // Add space between icons
+        CircularButton(
           icon: Icons.snooze,
           label: 'Snooze',
-          onPressed: () {
-            
+          onPressed: () async {
+            alarmMap['status'] = 'snoozed';
+            await FirebaseFirestore.instance.collection('alarms')
+                .doc(alarmId)
+                .update(alarmMap).then((value) => Navigator.of(context).pop()
+            );
           },
           color: Color.fromARGB(255, 244, 174, 54),
         ),
-        const SizedBox(width: 80),
+        const SizedBox(width: 60),
         CircularButton(
           icon: Icons.check,
           label: 'Take',
           onPressed: () async {
             alarmMap['status'] = 'taken';
             medicationMap['inventory']['quantity'] = medicationMap['inventory']
-                    ['quantity'] -
+            ['quantity'] -
                 medicationMap['dosage'];
 
             if (medicationMap['inventory']['quantity'] <= 0) {
@@ -330,10 +331,10 @@ class ActionButtons extends StatelessWidget {
                   final cred = await TwilioCred().readCred();
                   if (role == 'dependent') {
                     final guardians =
-                        await FirebaseCred().getGuardianData(userId);
+                    await FirebaseCred().getGuardianData(userId);
 
                     final dependent =
-                        await FirebaseCred().getDependentData(userId);
+                    await FirebaseCred().getDependentData(userId);
 
                     String dependentName = dependent['name'];
 
@@ -347,7 +348,7 @@ class ActionButtons extends StatelessWidget {
                       twilioFlutter.sendSMS(
                         toNumber: '+91' + guardian['phoneNo'],
                         messageBody:
-                            "$quantity units of medicine: $name remaining of your dependent: $dependentName!",
+                        "$quantity units of medicine: $name remaining of your dependent: $dependentName!",
                       );
                     }
                   } else {
@@ -365,7 +366,7 @@ class ActionButtons extends StatelessWidget {
                     twilioFlutter.sendSMS(
                       toNumber: '+91' + userMap['phoneNo'],
                       messageBody:
-                          "$quantity units of medicine $name remaining!",
+                      "$quantity units of medicine $name remaining!",
                     );
                   }
                 }
@@ -431,7 +432,7 @@ class ActionButtons extends StatelessWidget {
                     if (role == 'dependent') {
                       final cred = await TwilioCred().readCred();
                       final guardians =
-                          await FirebaseCred().getGuardianData(userId);
+                      await FirebaseCred().getGuardianData(userId);
                       TwilioFlutter twilioFlutter;
                       if (guardians != null) {
                         twilioFlutter = TwilioFlutter(
@@ -441,7 +442,7 @@ class ActionButtons extends StatelessWidget {
                         );
 
                         final dependent =
-                            await FirebaseCred().getDependentData(userId);
+                        await FirebaseCred().getDependentData(userId);
 
                         String dependentName = dependent['name'];
 
@@ -449,7 +450,7 @@ class ActionButtons extends StatelessWidget {
                           twilioFlutter.sendSMS(
                             toNumber: '+91' + guardian['phoneNo'],
                             messageBody:
-                                "Your dependent $dependentName did not take the medicine! \nReason: $reason",
+                            "Your dependent $dependentName did not take the medicine! \nReason: $reason",
                           );
                         }
                       } else {
@@ -459,7 +460,7 @@ class ActionButtons extends StatelessWidget {
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
                           backgroundColor:
-                              const Color.fromARGB(255, 240, 91, 91),
+                          const Color.fromARGB(255, 240, 91, 91),
                           textColor: const Color.fromARGB(255, 255, 255, 255),
                         );
                       }

@@ -18,6 +18,11 @@ Future<void> checkFirestoreTask() async {
   await check.checkFirestore();
 }
 
+Future<void> checkFirestoreForSnooze() async {
+  FireStoreCheck check = new FireStoreCheck();
+  await check.checkFirestoreForSnooze();
+}
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future main() async {
@@ -33,6 +38,9 @@ Future main() async {
   const int helloAlarmID = 0;
   await AndroidAlarmManager.periodic(
       const Duration(minutes: 1), helloAlarmID, checkFirestoreTask);
+
+  await AndroidAlarmManager.periodic(
+      const Duration(minutes: 5), helloAlarmID, checkFirestoreForSnooze);
 
   TwilioCred().writeCred();
 
