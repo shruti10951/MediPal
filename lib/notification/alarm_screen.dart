@@ -291,6 +291,15 @@ class ActionButtons extends StatelessWidget {
           color: Colors.red,
         ),
         const SizedBox(width: 80), // Add space between icons
+          CircularButton(
+          icon: Icons.snooze,
+          label: 'Snooze',
+          onPressed: () {
+            
+          },
+          color: Color.fromARGB(255, 244, 174, 54),
+        ),
+        const SizedBox(width: 80),
         CircularButton(
           icon: Icons.check,
           label: 'Take',
