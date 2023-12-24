@@ -83,11 +83,11 @@ class _ExpandableFabState extends State<ExpandableFab>
           elevation: 4,
           child: InkWell(
             onTap: _toggle,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
+            child: const Padding(
+              padding: EdgeInsets.all(8),
               child: Icon(
                 Icons.close,
-                color: Theme.of(context).primaryColor,
+                color: Color.fromARGB(255, 41, 45, 92),
               ),
             ),
           ),
@@ -134,6 +134,7 @@ class _ExpandableFabState extends State<ExpandableFab>
           child: FloatingActionButton(
             onPressed: _toggle,
             child: const Icon(Icons.create),
+            backgroundColor: Color.fromARGB(255, 41, 45, 92), // Background color
           ),
         ),
       ),
@@ -196,7 +197,7 @@ class ActionButton extends StatelessWidget {
     return Material(
       shape: const CircleBorder(),
       clipBehavior: Clip.antiAlias,
-      color: theme.colorScheme.secondary,
+      color: Color.fromARGB(255, 41, 45, 92),
       elevation: 4,
       child: IconButton(
         onPressed: onPressed,
@@ -220,9 +221,9 @@ class FakeItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       height: isBig ? 128 : 36,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-        color: Colors.grey.shade300,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+        color: Color.fromARGB(255, 41, 45, 92),
       ),
     );
   }
