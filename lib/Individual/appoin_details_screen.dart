@@ -371,15 +371,15 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   alignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit),
+                      icon: const Icon(Icons.edit,color: Color.fromARGB(255, 120, 120, 120),),
                       onPressed: () {
                         // Open the edit dialog when the edit button is pressed
                         _showEditDialog(appointmentId, name, date, time,
                             location, description);
                       },
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
+                    IconButton( 
+                      icon: const Icon(Icons.delete,color: Color.fromARGB(255, 120, 120, 120),),
                       onPressed: () {
                         _showDeleteDialog(appointmentId);
                       },

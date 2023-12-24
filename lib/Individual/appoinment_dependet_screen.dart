@@ -296,24 +296,24 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
-          children: [
-            Expanded(
-                child: FutureBuilder(
-              future: fetchData(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  print("Loading...");
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  final appointmentQuery = snapshot.data;
-                  return _buildAppointmentCard(appointmentQuery!);
-                }
-              },
-            ))
-          ],
-        ));
+      children: [
+        Expanded(
+            child: FutureBuilder(
+          future: fetchData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              print("Loading...");
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final appointmentQuery = snapshot.data;
+              return _buildAppointmentCard(appointmentQuery!);
+            }
+          },
+        ))
+      ],
+    ));
   }
 
   Widget _buildAppointmentCard(
@@ -368,6 +368,7 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit),
+                      color: Color.fromARGB(255, 120, 120, 120),
                       onPressed: () {
                         // Open the edit dialog when the edit button is pressed
                         _showEditDialog(appointmentId, name, date, time,
@@ -376,6 +377,7 @@ class _AppointmentGaurdianScreenState extends State<AppointmentGaurdianScreen> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
+                      color: Color.fromARGB(255, 120, 120, 120),
                       onPressed: () {
                         _showDeleteDialog(appointmentId);
                       },
