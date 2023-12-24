@@ -18,10 +18,12 @@ class DependentMedicineFormEdit extends StatefulWidget {
   final String medicationId;
   final String dependentId;
 
-  const DependentMedicineFormEdit({super.key, required this.medicationId, required this.dependentId});
+  const DependentMedicineFormEdit(
+      {super.key, required this.medicationId, required this.dependentId});
 
   @override
-  _DependentMedicineFormEditState createState() => _DependentMedicineFormEditState();
+  _DependentMedicineFormEditState createState() =>
+      _DependentMedicineFormEditState();
 }
 
 class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
@@ -41,9 +43,9 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
   String? _selectedDosageType; // Stores the selected dosage type
 
   CollectionReference medicationCollectionRef =
-  FirebaseFirestore.instance.collection('medications');
+      FirebaseFirestore.instance.collection('medications');
   CollectionReference alarmCollectionRef =
-  FirebaseFirestore.instance.collection('alarms');
+      FirebaseFirestore.instance.collection('alarms');
   // FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<Map<String, dynamic>?> loadData() async {
@@ -52,7 +54,7 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
         .get();
     for (QueryDocumentSnapshot snapshot in medicineSnapshots.docs) {
       MedicationModel medicationModel =
-      MedicationModel.fromDocumentSnapshot(snapshot);
+          MedicationModel.fromDocumentSnapshot(snapshot);
       Map<String, dynamic> medication = medicationModel.toMap();
 
       _nameController.text = medication['name'];
@@ -72,35 +74,35 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
       TimeOfDay? evening;
 
       String morningTimeString = medication['schedule']['morning'];
-      if(morningTimeString.isNotEmpty){
+      if (morningTimeString.isNotEmpty) {
         List<String> morningTimeParts = morningTimeString.split(':');
         int hours = int.parse(morningTimeParts[0]);
         int minutes = int.parse(morningTimeParts[1]);
 
         morning = TimeOfDay(hour: hours, minute: minutes);
-      }else{
+      } else {
         morning = null;
       }
 
       String noonTimeString = medication['schedule']['noon'];
-      if(noonTimeString.isNotEmpty){
+      if (noonTimeString.isNotEmpty) {
         List<String> noonTimeParts = noonTimeString.split(':');
         int hours = int.parse(noonTimeParts[0]);
         int minutes = int.parse(noonTimeParts[1]);
 
         noon = TimeOfDay(hour: hours, minute: minutes);
-      }else{
+      } else {
         noon = null;
       }
 
       String eveningTimeString = medication['schedule']['morning'];
-      if(eveningTimeString.isNotEmpty){
+      if (eveningTimeString.isNotEmpty) {
         List<String> eveningTimeParts = eveningTimeString.split(':');
         int hours = int.parse(eveningTimeParts[0]);
         int minutes = int.parse(eveningTimeParts[1]);
 
         evening = TimeOfDay(hour: hours, minute: minutes);
-      }else{
+      } else {
         evening = null;
       }
 
@@ -109,9 +111,9 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
         'endDate': endDate,
         'type': type,
         'medicationImg': medication['medicationImg'],
-        'morning' : morning,
-        'noon' : noon,
-        'evening' : evening
+        'morning': morning,
+        'noon': noon,
+        'evening': evening
       };
 
       return data;
@@ -195,7 +197,7 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
     final userId = widget.dependentId;
 
     Reference storageReference =
-    FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
+        FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
 
     // Upload the file to Firebase Storage
     UploadTask uploadTask = storageReference.putFile(selectedImage!);
@@ -225,7 +227,7 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
               // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
               color:
-              Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Liquid'),
@@ -241,7 +243,7 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
               // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
               color:
-              Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Pills'),
@@ -257,7 +259,7 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
               // Replace 'assets/icon.png' with the path to your image
               size: 28, // Specify the size of the icon
               color:
-              Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Injection'),
@@ -315,27 +317,27 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                                     backgroundColor: Colors.grey[200],
                                     child: _selectedImage != null
                                         ? ClipOval(
-                                      child: Image.file(
-                                        _selectedImage!,
-                                        fit: BoxFit.cover,
-                                        width: 100,
-                                        height: 100,
-                                      ),
-                                    )
+                                            child: Image.file(
+                                              _selectedImage!,
+                                              fit: BoxFit.cover,
+                                              width: 100,
+                                              height: 100,
+                                            ),
+                                          )
                                         : (data?['medicationImg'] != ""
-                                        ? ClipOval(
-                                      child: Image.network(
-                                        data?['medicationImg'],
-                                        fit: BoxFit.cover,
-                                        width: 100,
-                                        height: 100,
-                                      ),
-                                    )
-                                        : const Icon(
-                                      Icons.add_a_photo,
-                                      size: 50,
-                                      color: Colors.blue,
-                                    )),
+                                            ? ClipOval(
+                                                child: Image.network(
+                                                  data?['medicationImg'],
+                                                  fit: BoxFit.cover,
+                                                  width: 100,
+                                                  height: 100,
+                                                ),
+                                              )
+                                            : const Icon(
+                                                Icons.add_a_photo,
+                                                size: 50,
+                                                color: Colors.blue,
+                                              )),
                                   ),
                                   const SizedBox(
                                     height: 8,
@@ -431,8 +433,12 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                             onShowPicker: (context, currentValue) async {
                               final date = await showDatePicker(
                                 context: context,
-                                initialDate: _startDate ?? data?['startDate'] ?? DateTime.now(),
-                                firstDate: _startDate ?? data?['startDate'] ?? DateTime.now(),
+                                initialDate: _startDate ??
+                                    data?['startDate'] ??
+                                    DateTime.now(),
+                                firstDate: _startDate ??
+                                    data?['startDate'] ??
+                                    DateTime.now(),
                                 lastDate: DateTime(2100),
                               );
                               return date;
@@ -452,8 +458,12 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                             onShowPicker: (context, currentValue) async {
                               final date = await showDatePicker(
                                 context: context,
-                                initialDate: _endDate ?? data?['endDate'] ?? DateTime.now(),
-                                firstDate: _endDate ?? data?['endDate'] ?? DateTime.now(),
+                                initialDate: _endDate ??
+                                    data?['endDate'] ??
+                                    DateTime.now(),
+                                firstDate: _endDate ??
+                                    data?['endDate'] ??
+                                    DateTime.now(),
                                 lastDate: DateTime(2100),
                               );
                               return date;
@@ -529,10 +539,10 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                               if (_selectedImage != null) {
                                 imageUrl = await uploadImage(
                                     _selectedImage, _nameController.text);
-                              } else if(data?['medicationImg'] != null) {
+                              } else if (data?['medicationImg'] != null) {
                                 imageUrl = data?['medicationImg'];
-                              }else{
-                                imageUrl='';
+                              } else {
+                                imageUrl = '';
                               }
                               MedicationModel medication = MedicationModel(
                                 medicationId: widget.medicationId,
@@ -552,48 +562,55 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                                 },
                                 inventory: {
                                   'quantity':
-                                  int.tryParse(_quantityController.text) ??
-                                      0,
+                                      int.tryParse(_quantityController.text) ??
+                                          0,
                                   'reorderLevel': int.tryParse(
-                                      _reorderLevelController.text) ??
+                                          _reorderLevelController.text) ??
                                       0,
                                 },
                                 startDate: _startDate != null
                                     ? dateFormat.format(_startDate!)
-                                    : dateFormat.format(data?['startDate']).toString() ?? "",
+                                    : dateFormat
+                                            .format(data?['startDate'])
+                                            .toString() ??
+                                        "",
                                 endDate: _endDate != null
                                     ? dateFormat.format(_endDate!)
-                                    : dateFormat.format(data?['endDate']).toString() ?? "",
+                                    : dateFormat
+                                            .format(data?['endDate'])
+                                            .toString() ??
+                                        "",
                                 userId: widget.dependentId,
                                 description: _descriptionController.text,
                                 medicationImg: imageUrl,
                               );
 
                               Map<String, dynamic> medicationModel =
-                              medication.toMap();
+                                  medication.toMap();
 
                               await FirebaseFirestore.instance
                                   .collection('medications')
                                   .doc(medicationModel['medicationId'])
                                   .set(medicationModel)
                                   .then((value) async {
-
                                 //delete existing alarms
                                 final snapshots = await FirebaseFirestore
                                     .instance
                                     .collection('alarms')
                                     .where('medicationId',
-                                    isEqualTo:
-                                    medicationModel['medicationId'])
+                                        isEqualTo:
+                                            medicationModel['medicationId'])
                                     .get();
                                 for (final doc in snapshots.docs) {
                                   await doc.reference.delete();
                                 }
 
-                                for (var date = _startDate ?? data?['startDate'];
-                                date!.isBefore(
-                                    _endDate ?? data?['endDate']!.add(const Duration(days: 1)));
-                                date = date.add(const Duration(days: 1))) {
+                                for (var date =
+                                        _startDate ?? data?['startDate'];
+                                    date!.isBefore(_endDate ??
+                                        data?['endDate']!
+                                            .add(const Duration(days: 1)));
+                                    date = date.add(const Duration(days: 1))) {
                                   for (var key in medication.schedule.keys) {
                                     final value = medication.schedule[key];
                                     if (value != null && value.isNotEmpty) {
@@ -606,8 +623,8 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                                             date.month, date.day, hr, min);
 
                                         DocumentReference
-                                        alarmDocumentReference =
-                                        alarmCollectionRef.doc();
+                                            alarmDocumentReference =
+                                            alarmCollectionRef.doc();
 
                                         String medicineName =
                                             _nameController.text;
@@ -620,10 +637,10 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                                             time: dateTime.toString(),
                                             status: 'pending',
                                             medicationId: medicationModel[
-                                            'medicationId']);
+                                                'medicationId']);
 
                                         Map<String, dynamic> alarm =
-                                        alarmModel.toMap();
+                                            alarmModel.toMap();
                                         await alarmDocumentReference.set(alarm);
                                       }
                                     }
@@ -637,7 +654,7 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 backgroundColor:
-                                const Color.fromARGB(255, 48, 48, 48),
+                                    const Color.fromARGB(255, 48, 48, 48),
                                 textColor: Colors.white,
                               );
 
@@ -654,7 +671,6 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                               // );
 
                               Navigator.pop(context);
-
                             },
                             child: const Text('Submit'),
                           ),
@@ -665,7 +681,7 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
                 ),
               ),
               bottomNavigationBar:
-              isSubmitting ? _buildLoadingIndicator() : null,
+                  isSubmitting ? _buildLoadingIndicator() : null,
             );
           }
         });

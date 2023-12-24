@@ -330,27 +330,74 @@ class _InventoryScreenState extends State<InventoryScreen> {
           } else {
             img = medication['medicationImg'];
           }
-          // aPPLIED MY BRAIN HERE-JANA
+
           Widget Imgbuild(BuildContext context) {
             double width = 80.0;
             double height = 80.0;
+            String defaultImage = 'assets/images/default.png';
+
             if (medication['medicationImg'] == '') {
-              width = 64.0;
-              height = 64.0;
-              return Image(image: NetworkImage(img));
+              String img;
+
+              if (type == 'Pills') {
+                img =
+                    'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+              } else if (type == 'Liquid') {
+                img =
+                    'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+              } else {
+                img =
+                    'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+              }
+
+              return FutureBuilder(
+                future: precacheImage(NetworkImage(img), context),
+                builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    width = 64.0;
+                    height = 64.0;
+                    return Image(image: NetworkImage(img));
+                  } else {
+                    return Image.asset(
+                      defaultImage,
+                      width: width,
+                      height: height,
+                      fit: BoxFit.fitWidth,
+                    );
+                  }
+                },
+              );
             } else {
-              width = 80.0;
-              height = 80.0;
-              return Container(
-                width: width,
-                height: height,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    fit: BoxFit.fitWidth,
-                    image: NetworkImage(img),
-                  ),
-                ),
+              String img = medication['medicationImg'];
+              return FutureBuilder(
+                future: precacheImage(NetworkImage(img), context),
+                builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return Container(
+                      width: width,
+                      height: height,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.fitWidth,
+                          image: NetworkImage(img),
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      width: width,
+                      height: height,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.fitWidth,
+                          image: AssetImage(defaultImage),
+                        ),
+                      ),
+                    );
+                  }
+                },
               );
             }
           }
@@ -395,7 +442,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MedicineFormEdit(medicationId: medicationId),
+                                  builder: (context) => MedicineFormEdit(
+                                      medicationId: medicationId),
                                 ),
                               );
                             },

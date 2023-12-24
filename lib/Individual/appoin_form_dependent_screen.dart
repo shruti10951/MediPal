@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:medipal/models/AppointmentModel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 FirebaseFirestore user = FirebaseFirestore.instance;
 
@@ -15,6 +16,7 @@ class AppointmentDependentForm extends StatefulWidget {
 }
 
 class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _doctorNameController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -68,132 +70,175 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
-        child: Card(
-          elevation: 3.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: _doctorNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Doctor\'s Name',
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                GestureDetector(
-                  onTap: () {
-                    _selectDate(context);
-                  },
-                  child: AbsorbPointer(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Date',
-                        prefixIcon: Icon(Icons.calendar_today),
-                      ),
-                      controller: _selectedDate != null
-                          ? TextEditingController(
-                              text: dateFormat.format(_selectedDate!))
-                          : null,
+        child: Form(
+          key: _formKey,
+          child: Card(
+            elevation: 3.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: _doctorNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Doctor\'s Name',
+                      prefixIcon: Icon(Icons.person),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                GestureDetector(
-                  onTap: () {
-                    _selectTime(context);
-                  },
-                  child: AbsorbPointer(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Time',
-                        prefixIcon: Icon(Icons.access_time),
-                      ),
-                      controller: _selectedTime != null
-                          ? TextEditingController(
-                              text: timeFormat.format(DateTime(
-                                DateTime.now().year,
-                                DateTime.now().month,
-                                DateTime.now().day,
-                                _selectedTime!.hour,
-                                _selectedTime!.minute,
-                              )),
-                            )
-                          : null,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _locationController,
-                  decoration: const InputDecoration(
-                    labelText: 'Location',
-                    prefixIcon: Icon(Icons.location_on),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    prefixIcon: Icon(Icons.description),
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 42.0),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      DocumentReference documentReference = FirebaseFirestore
-                          .instance
-                          .collection('appointments')
-                          .doc();
-
-                      DateTime combinedDateTime = DateTime(
-                        _selectedDate!.year,
-                        _selectedDate!.month,
-                        _selectedDate!.day,
-                        _selectedTime!.hour,
-                        _selectedTime!.minute,
-                      );
-
-                      String formattedDateTime =
-                          DateFormat('yyyy-MM-dd HH:mm:ss')
-                              .format(combinedDateTime);
-
-                      AppointmentModel appointmentModel = AppointmentModel(
-                          userId: widget.dependentId,
-                          appointmentId: documentReference.id,
-                          doctorName: _doctorNameController.text,
-                          location: _locationController.text,
-                          status: 'pending',
-                          appointmentTime: formattedDateTime,
-                          description: _descriptionController.text);
-
-                      documentReference
-                          .set(appointmentModel.toMap())
-                          .then((value) => print('done'));
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '*Required';
+                      }
+                      return null;
                     },
-                    style: ElevatedButton.styleFrom(
-                      onPrimary: Colors.white, // Text color
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 38, vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  const SizedBox(height: 16.0),
+                  GestureDetector(
+                    onTap: () {
+                      _selectDate(context);
+                    },
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Date',
+                          prefixIcon: Icon(Icons.calendar_today),
+                        ),
+                        controller: _selectedDate != null
+                            ? TextEditingController(
+                                text: dateFormat.format(_selectedDate!))
+                            : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '*Required';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(fontSize: 16.0),
+                  ),
+                  const SizedBox(height: 16.0),
+                  GestureDetector(
+                    onTap: () {
+                      _selectTime(context);
+                    },
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Time',
+                          prefixIcon: Icon(Icons.access_time),
+                        ),
+                        controller: _selectedTime != null
+                            ? TextEditingController(
+                                text: timeFormat.format(DateTime(
+                                  DateTime.now().year,
+                                  DateTime.now().month,
+                                  DateTime.now().day,
+                                  _selectedTime!.hour,
+                                  _selectedTime!.minute,
+                                )),
+                              )
+                            : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '*Required';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
                   ),
-                )
-              ],
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _locationController,
+                    decoration: const InputDecoration(
+                      labelText: 'Location',
+                      prefixIcon: Icon(Icons.location_on),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '*Required';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      prefixIcon: Icon(Icons.description),
+                    ),
+                    maxLines: 3,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '*Required';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 42.0),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          DocumentReference documentReference =
+                              FirebaseFirestore.instance
+                                  .collection('appointments')
+                                  .doc();
+
+                          DateTime combinedDateTime = DateTime(
+                            _selectedDate!.year,
+                            _selectedDate!.month,
+                            _selectedDate!.day,
+                            _selectedTime!.hour,
+                            _selectedTime!.minute,
+                          );
+
+                          String formattedDateTime =
+                              DateFormat('yyyy-MM-dd HH:mm:ss')
+                                  .format(combinedDateTime);
+
+                          AppointmentModel appointmentModel = AppointmentModel(
+                              userId: widget.dependentId,
+                              appointmentId: documentReference.id,
+                              doctorName: _doctorNameController.text,
+                              location: _locationController.text,
+                              status: 'pending',
+                              appointmentTime: formattedDateTime,
+                              description: _descriptionController.text);
+
+                          documentReference
+                              .set(appointmentModel.toMap())
+                              .then((value) => print('done'));
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: 'Please fill in all required fields.',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        onPrimary: Colors.white, // Text color
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 38, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Submit',
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
