@@ -12,6 +12,7 @@ class AppointmentDependentForm extends StatefulWidget {
   final dependentId;
 
   const AppointmentDependentForm({super.key, required this.dependentId});
+
   @override
   _AppointmentDependentFormState createState() =>
       _AppointmentDependentFormState();
@@ -91,7 +92,9 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
                       prefixIcon: Icon(Icons.person),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.toString().trim().isEmpty) {
                         return '*Required';
                       }
                       return null;
@@ -144,7 +147,9 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
                               )
                             : null,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.toString().trim().isEmpty) {
                             return '*Required';
                           }
                           return null;
@@ -160,7 +165,9 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
                       prefixIcon: Icon(Icons.location_on),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.toString().trim().isEmpty) {
                         return '*Required';
                       }
                       return null;
@@ -175,7 +182,9 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
                     ),
                     maxLines: 3,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.toString().trim().isEmpty) {
                         return '*Required';
                       }
                       return null;

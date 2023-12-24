@@ -37,6 +37,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       if (appointQuerySnapshot.docs.isNotEmpty) {
         appointmentDocumentList = appointQuerySnapshot.docs.toList();
       }
+      appointmentDocumentList.sort((a,b){
+        final DateTime timeA= DateTime.parse(a['appointmentTime']);
+        final DateTime timeB= DateTime.parse(b['appointmentTime']);
+        return timeA.compareTo(timeB);
+      });
+
       return appointmentDocumentList;
     } catch (error) {
       Fluttertoast.showToast(

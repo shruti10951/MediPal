@@ -213,15 +213,6 @@ class AlarmIcon extends StatelessWidget {
         height: 50,
       );
     }
-    // return Padding(
-    //   padding: EdgeInsets.only(top: 0, right: 0),
-    //   child: Row(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-
-    //     ],
-    //   ),
-    // );
   }
 }
 
