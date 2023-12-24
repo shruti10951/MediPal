@@ -167,28 +167,23 @@ class _MedicineFormEditState extends State<MedicineFormEdit> {
   }
 
   Widget _buildLoadingIndicator() {
-    return const Center(
+  return Container(
+    color: Colors.white, 
+    child: const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(
-              Color.fromARGB(255, 71, 78, 84),
-            ),
-          ),
-          SizedBox(height: 16.0),
-          Text(
-            'Loading...',
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              Color.fromARGB(255, 41, 45, 92),
             ),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Future<String> uploadImage(File? selectedImage, String name) async {
     final userId = auth.currentUser!.uid.toString();
