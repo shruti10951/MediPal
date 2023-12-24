@@ -5,8 +5,6 @@ import 'package:medipal/Individual/edit_medicine_form.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../main.dart';
-
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
@@ -56,143 +54,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
   TextEditingController quantityController = TextEditingController();
   TextEditingController typeController = TextEditingController();
   TextEditingController dosageController = TextEditingController();
-
-  // Function to open an edit dialog for a specific item
-  void _openEditDialog(
-      String id, String name, String type, int quantity, int dosage) {
-    nameController.text = name;
-    quantityController.text = quantity.toString();
-    typeController.text = type;
-    dosageController.text = dosage.toString();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Edit Medication'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Medication Name'),
-                  ),
-                  const SizedBox(height: 16),
-                  DropdownButton<String>(
-                    value: type,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        type = newValue!;
-                      });
-                    },
-                    items: <String>['Pills', 'Liquid', 'Injection']
-                        .map((String value) {
-                      return DropdownMenuItem<String>(
-                        key: UniqueKey(),
-                        value: value,
-                        child: Row(
-                          children: [
-                            if (value == 'Pills')
-                              Container(
-                                height: 24, // Specify the height you want
-                                width: 24, // Specify the width you want
-                                child: Image.asset(
-                                    'assets/images/pill_icon.png'), // Replace 'assets/pills.png' with the actual image path
-                              ),
-                            if (value == 'Liquid')
-                              Container(
-                                height: 24, // Specify the height you want
-                                width: 24, // Specify the width you want
-                                child: Image.asset(
-                                    'assets/images/liquid_icon.png'), // Replace 'assets/liquid.png' with the actual image path
-                              ),
-                            if (value == 'Injection')
-                              Container(
-                                height: 24, // Specify the height you want
-                                width: 24, // Specify the width you want
-                                child: Image.asset(
-                                    'assets/images/injection_icon.png'), // Replace 'assets/injection.png' with the actual image path
-                              ),
-                            const SizedBox(width: 8),
-                            Text(value),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: quantityController,
-                    decoration: const InputDecoration(labelText: 'Quantity'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: dosageController,
-                    decoration:
-                        const InputDecoration(labelText: 'Dosage Quantity'),
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      type = typeController.text;
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Close'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    String updatedName = nameController.text;
-                    String updatedType = typeController.text;
-                    int updatedQuantity =
-                        int.tryParse(quantityController.text) ?? 0;
-                    int updatedDosage =
-                        int.tryParse(dosageController.text) ?? 0;
-
-                    Map<String, dynamic> medicine = {
-                      'name': updatedName,
-                      'inventory.quantity': updatedQuantity,
-                      'type': type,
-                      'dosage': updatedDosage,
-                    };
-
-                    firestore
-                        .collection('medications')
-                        .doc(id)
-                        .update(medicine)
-                        .then(
-                          (value) => Fluttertoast.showToast(
-                            msg: 'Data updated',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            backgroundColor:
-                                const Color.fromARGB(206, 2, 191, 34),
-                            textColor: const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        );
-
-                    Navigator.pop(context);
-
-                    // Refresh the page after data is updated
-                    setState(() {});
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
 
   // Function to open a confirmation dialog for deleting a specific item
   void _openDeleteDialog(String id) {
@@ -441,9 +302,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              // Open the edit dialog when the edit button is pressed
-                              // _openEditDialog(
-                              //     medicationId, name, type, quantity, dosage);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

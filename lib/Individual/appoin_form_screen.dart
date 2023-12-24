@@ -87,7 +87,9 @@ class _AppointmentFormState extends State<AppointmentForm> {
                       prefixIcon: Icon(Icons.person),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.toString().trim().isEmpty) {
                         return '*Required';
                       }
                       return null;
@@ -156,7 +158,9 @@ class _AppointmentFormState extends State<AppointmentForm> {
                       prefixIcon: Icon(Icons.location_on),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.toString().trim().isEmpty) {
                         return '*Required';
                       }
                       return null;
@@ -171,7 +175,9 @@ class _AppointmentFormState extends State<AppointmentForm> {
                     ),
                     maxLines: 3,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.toString().trim().isEmpty) {
                         return '*Required';
                       }
                       return null;
