@@ -351,6 +351,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Widget Imgbuild(BuildContext context) {
                 double width = 80.0;
                 double height = 80.0;
+                EdgeInsetsGeometry margins =
+                    const EdgeInsets.only(right: 14, left: 12);
                 String defaultImage = 'assets/images/default.png';
 
                 if (medicine['medicationImg'] == '') {
@@ -374,7 +376,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       if (snapshot.connectionState == ConnectionState.done) {
                         width = 64.0;
                         height = 64.0;
-                        return Image(image: NetworkImage(img));
+                        return Padding(
+                          padding: margins,
+                          child: Image(image: NetworkImage(img)),
+                        );
                       } else {
                         return Image.asset(
                           defaultImage,

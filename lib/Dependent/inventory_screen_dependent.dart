@@ -137,6 +137,8 @@ class _InventoryDependent extends State<InventoryDependent> {
             double width = 80.0;
             double height = 80.0;
             String defaultImage = 'assets/images/default.png';
+            EdgeInsetsGeometry margins =
+                const EdgeInsets.only(right: 14, left: 12);
 
             if (medication['medicationImg'] == '') {
               String img;
@@ -158,7 +160,10 @@ class _InventoryDependent extends State<InventoryDependent> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     width = 64.0;
                     height = 64.0;
-                    return Image(image: NetworkImage(img));
+                    return Padding(
+                      padding: margins,
+                      child: Image(image: NetworkImage(img)),
+                    );
                   } else {
                     return Image.asset(
                       defaultImage,
