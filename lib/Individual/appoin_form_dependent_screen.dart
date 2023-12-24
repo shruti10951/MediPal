@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/Dependent/appoin_details_dependent_screen.dart';
+import 'package:medipal/Dependent/tab_change.dart';
 import 'package:medipal/models/AppointmentModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -213,6 +215,17 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
                           documentReference
                               .set(appointmentModel.toMap())
                               .then((value) => print('done'));
+
+                          Fluttertoast.showToast(
+                            msg: 'Appoinmnet Scheduled successfully!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor:
+                                const Color.fromARGB(255, 48, 48, 48),
+                            textColor: Colors.white,
+                          );
+
+                          Navigator.pop(context);
                         } else {
                           Fluttertoast.showToast(
                             msg: 'Please fill in all required fields.',

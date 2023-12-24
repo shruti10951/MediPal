@@ -493,12 +493,12 @@ class _MedicineFormState extends State<MedicineForm> {
                         isSubmitting = false;
                       });
 
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const BottomNavigationIndividual()),
-                        (Route<dynamic> route) => false,
+                      Fluttertoast.showToast(
+                        msg: 'Medicine added successfully!',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: const Color.fromARGB(255, 48, 48, 48),
+                        textColor: Colors.white,
                       );
 
                       // Handle the form data as needed (e.g., save to Firestore)

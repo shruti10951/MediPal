@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AppointmentModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -211,6 +212,23 @@ class _AppointmentFormState extends State<AppointmentForm> {
                           documentReference
                               .set(appointmentModel.toMap())
                               .then((value) => print('done'));
+
+                          Fluttertoast.showToast(
+                            msg: 'Appoinmnet Scheduled successfully!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor:
+                                const Color.fromARGB(255, 48, 48, 48),
+                            textColor: Colors.white,
+                          );
+
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const BottomNavigationIndividual()),
+                            (Route<dynamic> route) => false,
+                          );
                         } else {
                           Fluttertoast.showToast(
                             msg: 'Please fill in all required fields.',
