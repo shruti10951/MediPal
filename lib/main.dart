@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
         // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
       //  const BottomNavigationDependent(),
       // AddGuardian(),
       //AlarmScreen(),
