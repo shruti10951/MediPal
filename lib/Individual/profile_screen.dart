@@ -7,6 +7,7 @@ import 'package:medipal/Individual/dependent_details_screen.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 import 'package:qr_flutter/qr_flutter.dart'; // Replace with your screen for Dependent details
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -105,7 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
                 navigatorKey.currentState?.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const ChooseScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const ChooseScreen()),
                     (route) => false);
               },
               child: const Text('Logout'),
@@ -151,10 +153,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final user = snapshot.data!;
                 return Column(
                   children: [
-                    _buildInfoRow('Name', user.name, Icons.person_add_alt),
                     _buildInfoRow(
-                        'Phone', user.phoneNo, Icons.phone_android_sharp),
-                    _buildInfoRow('Email', user.email, Icons.mark_email_read),
+                        'Name',EncryptionDecryption.decryptAES(user.name),Icons.person_add_alt),
+                    _buildInfoRow(
+                        'Phone', EncryptionDecryption.decryptAES(user.phoneNo), Icons.phone_android_sharp),
+                    _buildInfoRow(
+                        'Email',EncryptionDecryption.decryptAES(user.email),Icons.mark_email_read),
                     // if (isDependent)
                     Card(
                       margin: const EdgeInsets.symmetric(

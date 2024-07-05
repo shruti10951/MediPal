@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/models/AppointmentModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 class AppointmentForm extends StatefulWidget {
   const AppointmentForm({super.key});
@@ -204,16 +205,22 @@ class _AppointmentFormState extends State<AppointmentForm> {
                           String formattedDateTime =
                               DateFormat('yyyy-MM-dd HH:mm:ss')
                                   .format(combinedDateTime);
+                          String encrypted_doctorName = EncryptionDecryption.encryptAES(
+                                          _doctorNameController.text);
+                          String encryptedLocation =  EncryptionDecryption.encryptAES(
+                                          _locationController.text);
+                          String encryptedDescription = EncryptionDecryption.encryptAES(
+                                          _descriptionController.text);
 
                           AppointmentModel appointmentModel = AppointmentModel(
                               userId: FirebaseAuth.instance.currentUser!.uid
                                   .toString(),
                               appointmentId: documentReference.id,
-                              doctorName: _doctorNameController.text,
-                              location: _locationController.text,
+                              doctorName: encrypted_doctorName,
+                              location: encryptedLocation,
                               status: 'pending',
                               appointmentTime: formattedDateTime,
-                              description: _descriptionController.text);
+                              description: encryptedDescription);
 
                           documentReference
                               .set(appointmentModel.toMap())

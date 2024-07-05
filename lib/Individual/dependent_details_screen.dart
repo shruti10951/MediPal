@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/tab_change.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 class DependentDetailsScreen extends StatefulWidget {
   @override
@@ -134,14 +135,14 @@ class _DependentDetailsScreenState extends State<DependentDetailsScreen> {
             backgroundImage: AssetImage(imageUrl),
           ),
           title: Text(
-            data['name'],
+            EncryptionDecryption.decryptAES(data['name']),
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
           subtitle: Text(
-            data['phoneNo'],
+             EncryptionDecryption.decryptAES(data['phoneNo']),
             style: const TextStyle(
               color: Colors.grey,
             ),

@@ -9,6 +9,7 @@ import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:medipal/credentials/encryption.dart';
 import 'dart:io';
 
 class MedicineForm extends StatefulWidget {
@@ -442,9 +443,8 @@ class _MedicineFormState extends State<MedicineForm> {
                       const SizedBox(height: 16.0),
                       ElevatedButton(
                         onPressed: () async {
-                          if(_formKey.currentState!.validate()){
-
-                            if(!_validateTimings()){
+                          if (_formKey.currentState!.validate()) {
+                            if (!_validateTimings()) {
                               Fluttertoast.showToast(
                                 msg: 'Please select at least one timing.',
                                 toastLength: Toast.LENGTH_SHORT,
@@ -461,7 +461,7 @@ class _MedicineFormState extends State<MedicineForm> {
                             });
 
                             DocumentReference medicationDocumentReference =
-                            medicationCollectionRef.doc();
+                                medicationCollectionRef.doc();
 
                             String imageUrl;
 
@@ -471,9 +471,15 @@ class _MedicineFormState extends State<MedicineForm> {
                             } else {
                               imageUrl = '';
                             }
+                            String encryptedDescription =
+                                await EncryptionDecryption.encryptAES(
+                                    _descriptionController.text);
+                            String encryptedMedName =
+                                await EncryptionDecryption.encryptAES(
+                                    _nameController.text);
                             MedicationModel medication = MedicationModel(
                               medicationId: medicationDocumentReference.id,
-                              name: _nameController.text,
+                              name: encryptedMedName,
                               type: _selectedDosageType.toString(),
                               dosage: int.parse(_dosageController.text),
                               schedule: {
@@ -489,9 +495,9 @@ class _MedicineFormState extends State<MedicineForm> {
                               },
                               inventory: {
                                 'quantity':
-                                int.tryParse(_quantityController.text) ?? 0,
-                                'reorderLevel':
-                                int.tryParse(_reorderLevelController.text) ??
+                                    int.tryParse(_quantityController.text) ?? 0,
+                                'reorderLevel': int.tryParse(
+                                        _reorderLevelController.text) ??
                                     0,
                               },
                               startDate: _startDate != null
@@ -501,19 +507,19 @@ class _MedicineFormState extends State<MedicineForm> {
                                   ? dateFormat.format(_endDate!)
                                   : "",
                               userId: auth.currentUser!.uid.toString(),
-                              description: _descriptionController.text,
+                              description: encryptedDescription,
                               medicationImg: imageUrl,
                             );
 
                             Map<String, dynamic> medicationModel =
-                            medication.toMap();
+                                medication.toMap();
 
                             QuerySnapshot medicineSnapshots =
-                            await FirebaseFirestore.instance
-                                .collection('medications')
-                                .where('name',
-                                isEqualTo: medicationModel['name'])
-                                .get();
+                                await FirebaseFirestore.instance
+                                    .collection('medications')
+                                    .where('name',
+                                        isEqualTo: medicationModel['name'])
+                                    .get();
 
                             if (medicineSnapshots.docs.isNotEmpty) {
                               QueryDocumentSnapshot medicineSnapshot =
@@ -531,9 +537,9 @@ class _MedicineFormState extends State<MedicineForm> {
                             }
 
                             for (var date = _startDate;
-                            date!.isBefore(
-                                _endDate!.add(const Duration(days: 1)));
-                            date = date.add(const Duration(days: 1))) {
+                                date!.isBefore(
+                                    _endDate!.add(const Duration(days: 1)));
+                                date = date.add(const Duration(days: 1))) {
                               for (var key in medication.schedule.keys) {
                                 final value = medication.schedule[key];
                                 if (value != null && value.isNotEmpty) {
@@ -542,23 +548,27 @@ class _MedicineFormState extends State<MedicineForm> {
                                   final hr = int.tryParse(timeParts[0]);
                                   final min = int.tryParse(timeParts[1]);
                                   if (hr != null && min != null) {
-                                    DateTime dateTime = DateTime(
-                                        date.year, date.month, date.day, hr, min);
+                                    DateTime dateTime = DateTime(date.year,
+                                        date.month, date.day, hr, min);
                                     DocumentReference alarmDocumentReference =
-                                    alarmCollectionRef.doc();
-                                    String medicineName = _nameController.text;
+                                        alarmCollectionRef.doc();
+                                    // String medicineName = EncryptionDecryption.decryptAES(_nameController.text);
+                                    String medicineName =
+                                        EncryptionDecryption.decryptAES(
+                                            encryptedMedName);
                                     String message = _dosageController.text;
                                     AlarmModel alarmModel = AlarmModel(
                                         alarmId: alarmDocumentReference.id,
                                         skipReason: '',
-                                        userId: auth.currentUser!.uid.toString(),
+                                        userId:
+                                            auth.currentUser!.uid.toString(),
                                         time: dateTime.toString(),
                                         status: 'pending',
                                         medicationId:
-                                        medicationModel['medicationId']);
+                                            medicationModel['medicationId']);
 
                                     Map<String, dynamic> alarm =
-                                    alarmModel.toMap();
+                                        alarmModel.toMap();
                                     await alarmDocumentReference.set(alarm);
                                   }
                                 }
@@ -571,7 +581,7 @@ class _MedicineFormState extends State<MedicineForm> {
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               backgroundColor:
-                              const Color.fromARGB(255, 48, 48, 48),
+                                  const Color.fromARGB(255, 48, 48, 48),
                               textColor: Colors.white,
                             );
 
@@ -585,10 +595,10 @@ class _MedicineFormState extends State<MedicineForm> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                  const BottomNavigationIndividual()),
-                                  (Route<dynamic> route) => false,
+                                      const BottomNavigationIndividual()),
+                              (Route<dynamic> route) => false,
                             );
-                          }else{
+                          } else {
                             Fluttertoast.showToast(
                               msg: 'Please fill in all required fields.',
                               toastLength: Toast.LENGTH_SHORT,

@@ -8,6 +8,7 @@ import 'package:medipal/models/MedicationModel.dart';
 import 'expandable_tab.dart';
 import 'medicine_form.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -326,7 +327,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               final MedicationModel medicationModel =
                   MedicationModel.fromDocumentSnapshot(medicationDocument);
               final Map<String, dynamic> medicine = medicationModel.toMap();
-              final String name = medicine['name'];
+              final String name =
+                  EncryptionDecryption.decryptAES(medicine['name']);
               final String time = alarm['time'];
               final int quantity = medicine['dosage'];
               final String type = medicine['type'];
@@ -527,10 +529,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow('Name', medicine['name'] ?? 'N/A'),
+                _buildInfoRow('Name',
+                    EncryptionDecryption.decryptAES(medicine['name']) ?? 'N/A'),
                 _buildInfoRow(
                     'Quantity', medicine['dosage']?.toString() ?? 'N/A'),
-                _buildInfoRow('Description', medicine['description'] ?? 'N/A'),
+                // _buildInfoRow('Description', medicine['description'] ?? 'N/A'),
+                // ],
+
+                _buildInfoRow(
+                  'Description',
+                  EncryptionDecryption.decryptAES(
+                      medicine['description'] ?? 'N/A'),
+                ),
               ],
             ),
             actions: <Widget>[

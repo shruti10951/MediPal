@@ -5,7 +5,7 @@ import 'package:medipal/Dependent/add_guardian.dart';
 import 'package:medipal/Dependent/guardian_details_screen.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:medipal/credentials/encryption.dart';
 import '../main.dart';
 import '../user_registration/choose_screen.dart';
 
@@ -153,9 +153,9 @@ class _ProfileScreenDependentState extends State<ProfileScreenDependent> {
                 final user = snapshot.data!;
                 return Column(
                   children: [
-                    _buildInfoRow('Name', user['name'] ?? 'Loading...',
+                    _buildInfoRow('Name', EncryptionDecryption.decryptAES(user['name']) ?? 'Loading...',
                         Icons.person_add_alt),
-                    _buildInfoRow('Phone', user['phoneNo'] ?? 'Loading...',
+                    _buildInfoRow('Phone',EncryptionDecryption.decryptAES(user['phoneNo']) ?? 'Loading...',
                         Icons.phone_android_sharp),
                     Card(
                       margin: const EdgeInsets.symmetric(

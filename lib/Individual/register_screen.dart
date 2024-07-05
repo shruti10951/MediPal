@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -78,7 +79,6 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20.0),
-
                 const Text(
                   "Welcome To MediPal",
                   style: TextStyle(
@@ -136,7 +136,8 @@ class RegisterScreen extends StatelessWidget {
                             msg: 'Registration failed. Please try again.',
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                            backgroundColor:
+                                const Color.fromARGB(255, 240, 91, 91),
                             textColor: const Color.fromARGB(255, 255, 255, 255),
                           );
                         }
@@ -145,7 +146,8 @@ class RegisterScreen extends StatelessWidget {
                           msg: 'Password should be atleast 6 characters long!',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
-                          backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                          backgroundColor:
+                              const Color.fromARGB(255, 240, 91, 91),
                           textColor: const Color.fromARGB(255, 255, 255, 255),
                         );
                       }
@@ -254,6 +256,11 @@ class RegisterScreen extends StatelessWidget {
   }
 
   verify(context, phoneNumber) async {
+    final encryptedName = EncryptionDecryption.encryptAES(nameController.text);
+    final encryptedEmail =
+        EncryptionDecryption.encryptAES(emailController.text);
+    final encryptedPhoneNo = EncryptionDecryption.encryptAES(phoneNumber);
+
     await auth.verifyPhoneNumber(
         phoneNumber: '+91' + phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) {},
@@ -261,9 +268,9 @@ class RegisterScreen extends StatelessWidget {
         codeSent: (String verificationId, int? resendToken) {
           UserModel userModel = UserModel(
               userId: auth.currentUser!.uid,
-              email: emailController.text,
-              phoneNo: phoneNumber,
-              name: nameController.text,
+              email: encryptedEmail,
+              phoneNo: encryptedPhoneNo,
+              name: encryptedName,
               role: 'Individual',
               noOfDependents: 0,
               dependents: []);
