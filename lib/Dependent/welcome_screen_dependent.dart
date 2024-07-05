@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dashboard_screen_dependent.dart';
 import 'package:medipal/user_registration/enter_otp_dependent_screen.dart';
 
+
 class WelcomeScreenDependent extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();

@@ -4,6 +4,8 @@ import 'package:medipal/models/AppointmentModel.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/credentials/encryption.dart';
+
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -90,15 +92,15 @@ class _AppointmentDependentScreenState
             AppointmentModel.fromDocumentSnapshot(appointmentDocumentSnapshot);
         final Map<String, dynamic> appointment = appointmentModel.toMap();
         final appointmentId = appointment['appointmentId'];
-        final name = appointment['doctorName'];
+        final name = EncryptionDecryption.decryptAES(appointment['doctorName']);
         final String appointmentTimeString = appointment['appointmentTime'];
         final DateTime appointmentDateTime =
             DateTime.parse(appointmentTimeString);
 
         final date = DateFormat('d MMM yyyy').format(appointmentDateTime);
         final time = DateFormat.Hm().format(appointmentDateTime);
-        final location = appointment['location'];
-        final description = appointment['description'];
+        final location = EncryptionDecryption.decryptAES(appointment['location']);
+        final description = EncryptionDecryption.decryptAES(appointment['description']);
 
         return Padding(
           padding: const EdgeInsets.all(8.0),

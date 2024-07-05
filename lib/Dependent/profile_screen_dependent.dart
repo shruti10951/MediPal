@@ -9,6 +9,7 @@ import 'package:medipal/credentials/encryption.dart';
 import '../main.dart';
 import '../user_registration/choose_screen.dart';
 
+
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = auth.currentUser?.uid;
