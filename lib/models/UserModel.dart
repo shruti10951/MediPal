@@ -9,7 +9,6 @@ class UserModel {
   final int noOfDependents;
   final List<String> dependents;
 
-
   UserModel({
     required this.userId,
     required this.email,
@@ -33,23 +32,24 @@ class UserModel {
       'dependents': dependents,
     };
   }
-  factory UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
-  Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-  // Check if 'dependents' exists and is a list of strings
-  final dependentsData = data['dependents'];
-  List<String> dependents = [];
-  if (dependentsData is List) {
-    dependents = dependentsData.map((item) => item.toString()).toList();
-  }
 
-  return UserModel(
-    userId: data['userId'],
-    email: data['email'],
-    phoneNo: data['phoneNo'],
-    name: data['name'],
-    role: data['role'],
-    noOfDependents: data['noOfDependents'],
-    dependents: dependents,
-  );
-}
+  factory UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    // Check if 'dependents' exists and is a list of strings
+    final dependentsData = data['dependents'];
+    List<String> dependents = [];
+    if (dependentsData is List) {
+      dependents = dependentsData.map((item) => item.toString()).toList();
+    }
+
+    return UserModel(
+      userId: data['userId'],
+      email: data['email'],
+      phoneNo: data['phoneNo'],
+      name: data['name'],
+      role: data['role'],
+      noOfDependents: data['noOfDependents'],
+      dependents: dependents,
+    );
+  }
 }

@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import '../credentials/twilio_cred.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 class AlarmScreen extends StatefulWidget {
   final String alarmId;
@@ -36,9 +36,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
         future: loadData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error.toString()}');
+            return Center(
+              child: Text('Error: ${snapshot.error.toString()}'),
+            );
           } else {
             return buildUI();
           }
@@ -81,67 +85,93 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   Widget buildUI() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Large Alarm Icon
-          AlarmIcon(),
-          const SizedBox(height: 10),
-          Text(
-            alarmMap['time']
-                    .toString()
-                    .split(' ')
-                    .last
-                    .split(':')
-                    .sublist(0, 2)
-                    .join(':') ??
-                'No time available',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Alarm Icon positioned at top-left
+            // Align(
+            //   alignment: Alignment.topRight,
+            //   child: Padding(
+            //     padding: const EdgeInsets.only(top: 0.0, left: 320.0),
+            AlarmIcon(
+              medicineType: medicationMap['type'] ?? 'Pills',
+              medicinceImg: medicationMap['medicationImg'],
             ),
-          ),
-          const SizedBox(height: 20),
+            //   ),
+            // ),
+            const SizedBox(height: 16),
+            // Displaying alarm time
+            Text(
+              alarmMap['time']
+                      .toString()
+                      .split(' ')
+                      .last
+                      .split(':')
+                      .sublist(0, 2)
+                      .join(':') ??
+                  'No time available',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 20),
 
-          // Medicine Type Icon
-          MedicineTypeIcon(medicineType: medicationMap['type'] ?? 'Pills'),
-          const SizedBox(height: 10),
+            // Medicine Type Icon with specified size
+            Container(
+              // width: 300, // Set width as needed
+              // height: 300, // Set height as needed
+              child: MedicineTypeIcon(
+                medicineType: medicationMap['type'] ?? 'Pills',
+                medicinceImg: medicationMap['medicationImg'],
+              ),
+            ),
+            const SizedBox(height: 10),
 
-          // Medicine Name
-          Text(
-            medicationMap['name'] ?? 'No medication name available',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+            // Medicine Name
+            Text(
+              EncryptionDecryption.decryptAES(medicationMap['name']) ??
+                  'No medication name available',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
-          // Add some space below the Medicine Name
-          const SizedBox(height: 10),
-          // Medicine Description
-          MedicineDescription(
-              description:
-                  medicationMap['description'] ?? 'No description available'),
-          // Add some space below the Medicine Description
-          const SizedBox(height: 10),
-          // Quantity of Medicine
-          Text(
-            'Quantity: ${medicationMap['dosage'] ?? 0}',
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black,
+            // Add some space below the Medicine Name
+            const SizedBox(height: 10),
+
+            // Medicine Description
+            MedicineDescription(
+              description: EncryptionDecryption.decryptAES(
+                      medicationMap['description']) ??
+                  'No description available',
             ),
-          ),
-          const SizedBox(height: 200),
-          // Action Buttons
-          ActionButtons(
+            // Add some space below the Medicine Description
+            const SizedBox(height: 10),
+
+            // Quantity of Medicine
+            Text(
+              'Quantity: ${medicationMap['dosage'] ?? 0}',
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 100),
+
+            // Action Buttons
+            ActionButtons(
               alarmId: widget.alarmId,
               alarmMap: alarmMap,
               medicationMap: medicationMap,
               userId: user.uid,
-              role: role),
-        ],
+              role: role,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -166,41 +196,70 @@ class MedicineDescription extends StatelessWidget {
 }
 
 class AlarmIcon extends StatelessWidget {
+  final String medicineType;
+  final String medicinceImg;
+
   @override
+  AlarmIcon({required this.medicineType, required this.medicinceImg});
+
   Widget build(BuildContext context) {
-    // Replace 'image_path' with the actual path to your image asset.
-    return Image.asset(
-      'assets/images/medipal.png',
-      width: 120,
-      height: 120,
-    );
+    if (medicinceImg == '') {
+      return Image.asset(
+        'assets/images/medipal.png',
+        width: 130,
+        height: 130,
+      );
+    } else {
+      return Image.asset(
+        'assets/images/medipal.png',
+        width: 50,
+        height: 50,
+      );
+    }
   }
 }
 
 class MedicineTypeIcon extends StatelessWidget {
   final String medicineType;
+  final String medicinceImg;
 
-  MedicineTypeIcon({required this.medicineType});
+  MedicineTypeIcon({required this.medicineType, required this.medicinceImg});
 
   @override
   Widget build(BuildContext context) {
     String imagePath;
-    if (medicineType == 'Pills') {
-      imagePath = 'assets/images/pill_icon.png';
-    } else if (medicineType == 'Liquid') {
-      imagePath = 'assets/images/liquid_icon.png';
-    } else if (medicineType == 'Injection') {
-      imagePath = 'assets/images/injection_icon.png';
+    double width, height;
+    if (medicinceImg == '') {
+      width = 64;
+      height = 64;
+      if (medicineType == 'Pills') {
+        imagePath =
+            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+      } else if (medicineType == 'Liquid') {
+        imagePath =
+            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+      } else {
+        imagePath =
+            'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+      }
+      return Image.network(
+        imagePath,
+        width: width, // Adjust the width as needed
+        height: height, // Adjust the height as needed
+      );
     } else {
-      imagePath =
-          'assets/images/default.png'; // Default image for unknown medicine type
+      imagePath = medicinceImg;
+      width = 128;
+      height = 128;
+      return ClipOval(
+        child: Image.network(
+          imagePath,
+          width: width, // Adjust the width as needed
+          height: height, // Adjust the height as needed
+          fit: BoxFit.cover, // Adjust the fit property as needed
+        ),
+      );
     }
-
-    return Image.asset(
-      imagePath,
-      width: 50, // Adjust the width as needed
-      height: 50, // Adjust the height as needed
-    );
   }
 }
 
@@ -232,15 +291,36 @@ class ActionButtons extends StatelessWidget {
           },
           color: Colors.red,
         ),
-        const SizedBox(width: 80), // Add space between icons
+        const SizedBox(width: 60), // Add space between icons
+        CircularButton(
+          icon: Icons.snooze,
+          label: 'Snooze',
+          onPressed: () async {
+            alarmMap['status'] = 'snoozed';
+            await FirebaseFirestore.instance
+                .collection('alarms')
+                .doc(alarmId)
+                .update(alarmMap)
+                .then((value) => Navigator.of(context).pop());
+          },
+          color: Color.fromARGB(255, 244, 174, 54),
+        ),
+        const SizedBox(width: 60),
         CircularButton(
           icon: Icons.check,
           label: 'Take',
           onPressed: () async {
             alarmMap['status'] = 'taken';
-            medicationMap['inventory']['quantity'] = medicationMap['inventory']['quantity'] - medicationMap['dosage'];
-            var quantity= medicationMap['inventory']['quantity'];
-            var name= medicationMap['name'];
+            medicationMap['inventory']['quantity'] = medicationMap['inventory']
+                    ['quantity'] -
+                medicationMap['dosage'];
+
+            if (medicationMap['inventory']['quantity'] <= 0) {
+              medicationMap['inventory']['quantity'] = 0;
+            }
+            var quantity = medicationMap['inventory']['quantity'];
+            var name = EncryptionDecryption.decryptAES(medicationMap['name']);
+
             await FirebaseFirestore.instance
                 .collection('alarms')
                 .doc(alarmId)
@@ -251,40 +331,53 @@ class ActionButtons extends StatelessWidget {
                   .doc(medicationMap['medicationId'])
                   .update(medicationMap)
                   .then((value) async {
-                    if(medicationMap['inventory']['quantity'] <= medicationMap['inventory']['reorderLevel']){
-                      TwilioFlutter twilioFlutter;
-                      final cred = await TwilioCred().readCred();
-                      if(role== 'dependent'){
-                        final guardian =
+                if (medicationMap['inventory']['quantity'] <=
+                    medicationMap['inventory']['reorderLevel']) {
+                  TwilioFlutter twilioFlutter;
+                  final cred = await TwilioCred().readCred();
+                  if (role == 'dependent') {
+                    final guardians =
                         await FirebaseCred().getGuardianData(userId);
-                        twilioFlutter = TwilioFlutter(
-                          accountSid: cred[0],
-                          authToken: cred[1],
-                          twilioNumber: cred[2],
-                        );
 
-                        twilioFlutter.sendSMS(
-                          toNumber: '+91' + guardian['phoneNo'],
-                          messageBody:
-                          "$quantity units of medicine $name remaining of your dependent!",
-                        );
-                      }else{
-                        final userData= await FirebaseFirestore.instance.collection('users').doc(userId).get();
-                        final userMap= userData.data() as Map<String, dynamic>;
-                        twilioFlutter = TwilioFlutter(
-                          accountSid: cred[0],
-                          authToken: cred[1],
-                          twilioNumber: cred[2],
-                        );
+                    final dependent =
+                        await FirebaseCred().getDependentData(userId);
 
-                        twilioFlutter.sendSMS(
-                          toNumber: '+91' + userMap['phoneNo'],
-                          messageBody:
-                          "$quantity units of medicine $name remaining!",
-                        );
-                      }
+                    String dependentName =
+                        EncryptionDecryption.decryptAES(dependent['name']);
 
+                    twilioFlutter = TwilioFlutter(
+                      accountSid: cred[0],
+                      authToken: cred[1],
+                      twilioNumber: cred[2],
+                    );
+
+                    for (Map guardian in guardians) {
+                      twilioFlutter.sendSMS(
+                        toNumber: '+91' +
+                            EncryptionDecryption.decryptAES(['phoneNo']),
+                        messageBody:
+                            "$quantity units of medicine: $name remaining of your dependent: $dependentName!",
+                      );
                     }
+                  } else {
+                    final userData = await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(userId)
+                        .get();
+                    final userMap = userData.data() as Map<String, dynamic>;
+                    twilioFlutter = TwilioFlutter(
+                      accountSid: cred[0],
+                      authToken: cred[1],
+                      twilioNumber: cred[2],
+                    );
+
+                    twilioFlutter.sendSMS(
+                      toNumber: '+91' + userMap['phoneNo'],
+                      messageBody:
+                          "$quantity units of medicine $name remaining!",
+                    );
+                  }
+                }
                 Navigator.of(context).pop();
               });
             });
@@ -296,24 +389,35 @@ class ActionButtons extends StatelessWidget {
   }
 
   void _showCancelDialog(BuildContext context) {
+    GlobalKey<FormState> formKey = GlobalKey<FormState>();
     TextEditingController reasonController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Cancel Medication'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Why are you canceling this medication?'),
-              TextFormField(
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: 'Enter reason here',
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Why are you canceling this medication?'),
+                TextFormField(
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter reason here',
+                  ),
+                  controller: reasonController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a reason';
+                    }
+                    return null;
+                  },
                 ),
-                controller: reasonController,
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -324,40 +428,55 @@ class ActionButtons extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                var reason = reasonController.text;
-                alarmMap['skipReason'] = reason;
-                alarmMap['status'] = 'Skipped';
-                await FirebaseFirestore.instance
-                    .collection('alarms')
-                    .doc(alarmId)
-                    .update(alarmMap)
-                    .then((value) async {
-                  if (role == 'dependent') {
-                    final cred = await TwilioCred().readCred();
-                    final guardian =
-                        await FirebaseCred().getGuardianData(userId);
-                    TwilioFlutter twilioFlutter;
-                    if (guardian != null) {
-                      twilioFlutter = TwilioFlutter(
-                        accountSid: cred[0],
-                        authToken: cred[1],
-                        twilioNumber: cred[2],
-                      );
+                if (formKey.currentState!.validate()) {
+                  String reason = reasonController.text.trim();
+                  alarmMap['skipReason'] = reason;
+                  alarmMap['status'] = 'Skipped';
+                  await FirebaseFirestore.instance
+                      .collection('alarms')
+                      .doc(alarmId)
+                      .update(alarmMap)
+                      .then((value) async {
+                    if (role == 'dependent') {
+                      final cred = await TwilioCred().readCred();
+                      final guardians =
+                          await FirebaseCred().getGuardianData(userId);
+                      TwilioFlutter twilioFlutter;
+                      if (guardians != null) {
+                        twilioFlutter = TwilioFlutter(
+                          accountSid: cred[0],
+                          authToken: cred[1],
+                          twilioNumber: cred[2],
+                        );
 
-                      twilioFlutter.sendSMS(
-                        toNumber: '+91' + guardian['phoneNo'],
-                        messageBody:
-                            "Your dependent did not take the medicine! \nReason: $reason",
-                      );
-                      print('done');
-                    } else {
-                      // Handle the case where guardian is null (e.g., show an error message).
-                      print('Guardian data is not available.');
+                        final dependent =
+                            await FirebaseCred().getDependentData(userId);
+
+                        String dependentName = dependent['name'];
+
+                        for (Map guardian in guardians) {
+                          twilioFlutter.sendSMS(
+                            toNumber: '+91' + guardian['phoneNo'],
+                            messageBody:
+                                "Your dependent $dependentName did not take the medicine! \nReason: $reason",
+                          );
+                        }
+                      } else {
+                        // Handle the case where guardian is null (e.g., show an error message).
+                        Fluttertoast.showToast(
+                          msg: 'Guardian data not available.',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor:
+                              const Color.fromARGB(255, 240, 91, 91),
+                          textColor: const Color.fromARGB(255, 255, 255, 255),
+                        );
+                      }
                     }
-                  }
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                });
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  });
+                }
               },
               child: const Text('Submit'),
             ),

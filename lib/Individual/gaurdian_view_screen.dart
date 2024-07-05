@@ -1,24 +1,25 @@
-import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/Individual/appoin_form_dependent_screen.dart';
 import 'package:medipal/Individual/medicine_form_dependent.dart';
 import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dashboard_screen.dart';
+import 'package:medipal/credentials/encryption.dart';
+import 'expandable_tab.dart';
 
 class GaurdianView extends StatefulWidget {
   final dependentId;
-
-  const GaurdianView({required this.dependentId});
+  GaurdianView({Key? key, required this.dependentId}) : super(key: key);
+  //  const GaurdianView({super.key, required this.dependentId});
 
   @override
   _GaurdianViewState createState() => _GaurdianViewState();
 }
 
 class _GaurdianViewState extends State<GaurdianView> {
-
   List<QueryDocumentSnapshot> filteredAlarms = [];
   // List<QueryDocumentSnapshot> alarmQuerySnapshot = [];
 
@@ -38,10 +39,9 @@ class _GaurdianViewState extends State<GaurdianView> {
     List<QueryDocumentSnapshot> medicationDocumentList = [];
 
     try {
-      final results =
-      await Future.wait([alarmQuery, medicationQuery] as Iterable<Future>);
-      alarmQuerySnapshot = results[0] as QuerySnapshot;
-      final medicationQuerySnapshot = results[1] as QuerySnapshot;
+      final results = await Future.wait([alarmQuery, medicationQuery]);
+      alarmQuerySnapshot = results[0];
+      final medicationQuerySnapshot = results[1];
 
       if (alarmQuerySnapshot.docs.isNotEmpty) {
         alarmDocumentList = alarmQuerySnapshot.docs.toList();
@@ -53,7 +53,13 @@ class _GaurdianViewState extends State<GaurdianView> {
 
       return [alarmDocumentList, medicationDocumentList];
     } catch (error) {
-      print('Error retrieving documents: $error');
+      Fluttertoast.showToast(
+        msg: 'Error retrieving documents',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+        textColor: const Color.fromARGB(255, 255, 255, 255),
+      );
       return null;
     }
   }
@@ -94,6 +100,10 @@ class _GaurdianViewState extends State<GaurdianView> {
           ),
           ActionButton(
             onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.medical_information),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 2),
             icon: const Icon(Icons.pending_actions_rounded),
           ),
         ],
@@ -109,7 +119,19 @@ class _GaurdianViewState extends State<GaurdianView> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MedicineFormDependent(dependentId: widget.dependentId,),
+          builder: (context) => AppointmentDependentForm(
+            dependentId: widget.dependentId,
+          ),
+        ),
+      );
+    } else if (index == 2) {
+      // Open Medicine Form screen here
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MedicineFormDependent(
+            dependentId: widget.dependentId,
+          ),
         ),
       );
     }
@@ -123,11 +145,11 @@ class _GaurdianViewState extends State<GaurdianView> {
       context: context,
       initialDate: currentDate,
       firstDate:
-      currentDate.subtract(const Duration(days: 365)), // One year ago
+          currentDate.subtract(const Duration(days: 365)), // One year ago
       lastDate: currentDate.add(const Duration(days: 365)), // One year from now
     );
 
-    if(selectedDate != null){
+    if (selectedDate != null) {
       _onDateTapped(selectedDate, alarmQuerySnapshot);
     }
   }
@@ -136,9 +158,9 @@ class _GaurdianViewState extends State<GaurdianView> {
       DateTime currentDate, QuerySnapshot<Object?> alarmQuerySnapshot) {
     // print(currentDate);
     final List<QueryDocumentSnapshot> alarmFilteredSnapshot =
-    alarmQuerySnapshot.docs.where((element) {
+        alarmQuerySnapshot.docs.where((element) {
       final Map<String, dynamic>? data =
-      element.data() as Map<String, dynamic>?;
+          element.data() as Map<String, dynamic>?;
       if (data != null) {
         final String? date = data['time']?.toString().split(' ')[0];
         // print(date);
@@ -152,6 +174,14 @@ class _GaurdianViewState extends State<GaurdianView> {
     setState(() {
       filteredAlarms = alarmFilteredSnapshot;
     });
+
+    if (filteredAlarms.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No alarms scheduled for this day.'),
+        ),
+      );
+    }
   }
 
   Widget _buildLoadingIndicator() {
@@ -180,336 +210,303 @@ class _GaurdianViewState extends State<GaurdianView> {
 
   Widget _buildDynamicCards(List<QueryDocumentSnapshot> alarmQuerySnapshot,
       List<QueryDocumentSnapshot> medicineQuerySnapshot) {
-    alarmQuerySnapshot.sort((a, b){
-      final DateTime timeA= DateTime.parse(a['time']);
-      final DateTime timeB= DateTime.parse(b['time']);
+    if (filteredAlarms.isEmpty) {
+      DateTime currentDate = DateTime.now();
+      alarmQuerySnapshot = alarmQuerySnapshot.where((element) {
+        DateTime alarmTime = DateTime.parse(element['time']);
+        return alarmTime.isAfter(currentDate);
+      }).toList();
+    }
+
+    alarmQuerySnapshot.sort((a, b) {
+      final DateTime timeA = DateTime.parse(a['time']);
+      final DateTime timeB = DateTime.parse(b['time']);
       return timeA.compareTo(timeB);
     });
+
     return ListView.builder(
-      itemCount: alarmQuerySnapshot.length,
-      itemBuilder: (BuildContext context, int index) {
-        final QueryDocumentSnapshot alarmDocumentSnapshot =
-        alarmQuerySnapshot[index];
+        itemCount: alarmQuerySnapshot.length,
+        itemBuilder: (BuildContext context, int index) {
+          final QueryDocumentSnapshot alarmDocumentSnapshot =
+              alarmQuerySnapshot[index];
 
-        final AlarmModel alarmModel =
-        AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
-        final Map<String, dynamic> alarm = alarmModel.toMap();
-        final String medicationId = alarm['medicationId'];
+          final AlarmModel alarmModel =
+              AlarmModel.fromDocumentSnapshot(alarmDocumentSnapshot);
+          final Map<String, dynamic> alarm = alarmModel.toMap();
+          final String medicationId = alarm['medicationId'];
 
-        QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
-            .firstWhere((element) => element['medicationId'] == medicationId,
-            orElse: null);
+          QueryDocumentSnapshot medicationDocument = medicineQuerySnapshot
+              .firstWhere((element) => element['medicationId'] == medicationId,
+                  orElse: null);
 
-        if (medicationDocument != null) {
-          final MedicationModel medicationModel =
-          MedicationModel.fromDocumentSnapshot(medicationDocument);
-          final Map<String, dynamic> medicine = medicationModel.toMap();
-          final String name = medicine['name'];
-          final String time = alarm['time'];
-          final int quantity = medicine['dosage'];
-          final String type = medicine['type'];
+          if (medicationDocument != null) {
+            final MedicationModel medicationModel =
+                MedicationModel.fromDocumentSnapshot(medicationDocument);
+            final Map<String, dynamic> medicine = medicationModel.toMap();
+            final String name = medicine['name'];
+            final String time = alarm['time'];
+            final int quantity = medicine['dosage'];
+            final String type = medicine['type'];
 
-          String img;
+            String img;
 
-          if (type == 'Pills') {
-            img = 'assets/images/pill_icon.png';
-          } else if (type == 'Liquid') {
-            img = 'assets/images/liquid_icon.png';
+            if (medicine['medicationImg'] == '') {
+              if (type == 'Pills') {
+                img =
+                    'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+              } else if (type == 'Liquid') {
+                img =
+                    'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+              } else {
+                img =
+                    'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+              }
+            } else {
+              img = medicine['medicationImg'];
+            }
+            Widget Imgbuild(BuildContext context) {
+              double width = 80.0;
+              double height = 80.0;
+              String defaultImage = 'assets/images/default.png';
+              EdgeInsetsGeometry margins =
+                  const EdgeInsets.only(right: 14, left: 12);
+
+              if (medicine['medicationImg'] == '') {
+                String img;
+
+                if (type == 'Pills') {
+                  img =
+                      'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fpill_icon.png?alt=media&token=8967025a-597f-4d82-8b39-d705e2e051b4';
+                } else if (type == 'Liquid') {
+                  img =
+                      'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Fliquid_icon.png?alt=media&token=0541a72d-b74c-439e-8d40-2851bbc421aa';
+                } else {
+                  img =
+                      'https://firebasestorage.googleapis.com/v0/b/medipal-61348.appspot.com/o/medication_icons%2Finjection_icon.png?alt=media&token=95b4de3d-4cc3-41c1-b254-f4552d5d4545';
+                }
+
+                return FutureBuilder(
+                  future: precacheImage(NetworkImage(img), context),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      width = 64.0;
+                      height = 64.0;
+                      return Padding(
+                        padding: margins,
+                        child: Image(image: NetworkImage(img)),
+                      );
+                    } else {
+                      return Image.asset(
+                        defaultImage,
+                        width: width,
+                        height: height,
+                        fit: BoxFit.fitWidth,
+                      );
+                    }
+                  },
+                );
+              } else {
+                String img = medicine['medicationImg'];
+                return FutureBuilder(
+                  future: precacheImage(NetworkImage(img), context),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return Container(
+                        width: width,
+                        height: height,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.fitWidth,
+                            image: NetworkImage(img),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Container(
+                        width: width,
+                        height: height,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.fitWidth,
+                            image: AssetImage(defaultImage),
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                );
+              }
+            }
+
+            DateTime dateTime = DateTime.parse(time);
+
+            // Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
+            String formattedDate = DateFormat('d MMM').format(dateTime);
+
+            // Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
+            String formattedTime = DateFormat.Hm().format(dateTime);
+
+            String dateTimeText = '$formattedDate | $formattedTime';
+
+            String decName = EncryptionDecryption.decryptAES(name);
+
+            return Card(
+              margin: const EdgeInsets.all(8),
+              child: InkWell(
+                onTap: () {
+                  _showAlarmDetailsDialog(
+                      context, alarm, medicineQuerySnapshot);
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        dateTimeText,
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const Divider(height: 1, color: Colors.grey),
+                    ListTile(
+                      leading: Imgbuild(context),
+                      title: Text(
+                        decName,
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text('Quantity: $quantity'),
+                    ),
+                  ],
+                ),
+              ),
+            );
           } else {
-            img = 'assets/images/injection_icon.png';
+            return const Card(
+              margin: EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Medication not found',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
+        });
+  }
 
-          DateTime dateTime = DateTime.parse(time);
+  void _showAlarmDetailsDialog(
+    BuildContext context,
+    Map<String, dynamic> alarm,
+    List<QueryDocumentSnapshot> medicineQuerySnapshot,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final String medicationId = alarm['medicationId'];
+        final medicationDocument = medicineQuerySnapshot.firstWhere(
+          (element) => element['medicationId'] == medicationId,
+        );
 
-          //check this once again for time and date
-          // String formattedTime = DateFormat.Hm().format(dateTime);
-          // DateTime dateTime = DateTime.parse(time);
+        QueryDocumentSnapshot? medicationDocumentSnapshot;
 
-// Format the date portion of the timestamp as "day month" (e.g., "21 Sept")
-          String formattedDate = DateFormat('d MMM').format(dateTime);
+        if (medicationDocument != null &&
+            medicationDocument is QueryDocumentSnapshot) {
+          medicationDocumentSnapshot =
+              medicationDocument as QueryDocumentSnapshot;
+        }
 
-// Format the time portion of the timestamp as "H:mm" (e.g., "9:00")
-          String formattedTime = DateFormat.Hm().format(dateTime);
+        if (medicationDocumentSnapshot != null) {
+          final MedicationModel medicationModel =
+              MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
+          final Map<String, dynamic> medicine = medicationModel.toMap();
 
-          String dateTimeText = '$formattedDate | $formattedTime';
-
-          return Card(
-            margin: const EdgeInsets.all(8),
-            child: Column(
+          return AlertDialog(
+            title: Text(_getFormattedDateTime(alarm['time'])),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    dateTimeText,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Divider(height: 1, color: Colors.grey),
-                ListTile(
-                  leading: Image.asset(img),
-                  title: Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text('Quantity: $quantity'),
+                _buildInfoRow('Name', EncryptionDecryption.decryptAES( medicine['name']) ?? 'N/A'),
+                _buildInfoRow(
+                    'Quantity', medicine['dosage']?.toString() ?? 'N/A'),
+                _buildInfoRow(
+                  'Description',
+                  EncryptionDecryption.decryptAES(
+                      medicine['description'] ?? 'N/A'),
+
+                  // Decrypt the description before displaying it
                 ),
               ],
             ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Close'),
+              ),
+            ],
           );
         } else {
-          return const Card(
-            margin: EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    'Medication not found',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          return AlertDialog(
+            title: Text('Medication not found'),
+            content: const Text('No details available'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Close'),
+              ),
+            ],
           );
         }
       },
     );
   }
-}
 
-class ExpandableFab extends StatefulWidget {
-  const ExpandableFab({
-    Key? key,
-    this.initialOpen,
-    required this.distance,
-    required this.children,
-  });
+  String _getFormattedDateTime(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
 
-  final bool? initialOpen;
-  final double distance;
-  final List<Widget> children;
+    String formattedDate = DateFormat('d MMM yyyy').format(dateTime);
+    String formattedTime = DateFormat.Hm().format(dateTime);
 
-  @override
-  State<ExpandableFab> createState() => _ExpandableFabState();
-}
-
-class _ExpandableFabState extends State<ExpandableFab>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _expandAnimation;
-  bool _open = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _open = widget.initialOpen ?? false;
-    _controller = AnimationController(
-      value: _open ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 250),
-      vsync: this,
-    );
-    _expandAnimation = CurvedAnimation(
-      curve: Curves.fastOutSlowIn,
-      reverseCurve: Curves.easeOutQuad,
-      parent: _controller,
-    );
+    return '$formattedDate | $formattedTime';
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    setState(() {
-      _open = !_open;
-      if (_open) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        clipBehavior: Clip.none,
+  Widget _buildInfoRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTapToCloseFab(),
-          ..._buildExpandingActionButtons(),
-          _buildTapToOpenFab(),
+          Text(
+            '$title: ',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Text(value),
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTapToCloseFab() {
-    return SizedBox(
-      width: 56,
-      height: 56,
-      child: Center(
-        child: Material(
-          shape: const CircleBorder(),
-          clipBehavior: Clip.antiAlias,
-          elevation: 4,
-          child: InkWell(
-            onTap: _toggle,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Icon(
-                Icons.close,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildExpandingActionButtons() {
-    final children = <Widget>[];
-    final count = widget.children.length;
-    final step = 90.0 / (count - 1);
-    for (var i = 0, angleInDegrees = 0.0;
-    i < count;
-    i++, angleInDegrees += step) {
-      children.add(
-        _ExpandingActionButton(
-          directionInDegrees: angleInDegrees,
-          maxDistance: widget.distance,
-          progress: _expandAnimation,
-          child: widget.children[i],
-        ),
-      );
-    }
-    return children;
-  }
-
-  Widget _buildTapToOpenFab() {
-    return IgnorePointer(
-      ignoring: _open,
-      child: AnimatedContainer(
-        transformAlignment: Alignment.center,
-        transform: Matrix4.diagonal3Values(
-          _open ? 0.7 : 1.0,
-          _open ? 0.7 : 1.0,
-          1.0,
-        ),
-        duration: const Duration(milliseconds: 250),
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-        child: AnimatedOpacity(
-          opacity: _open ? 0.0 : 1.0,
-          curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
-          duration: const Duration(milliseconds: 250),
-          child: FloatingActionButton(
-            onPressed: _toggle,
-            child: const Icon(Icons.create),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ExpandingActionButton extends StatelessWidget {
-  const _ExpandingActionButton({
-    required this.directionInDegrees,
-    required this.maxDistance,
-    required this.progress,
-    required this.child,
-  });
-
-  final double directionInDegrees;
-  final double maxDistance;
-  final Animation<double> progress;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: progress,
-      builder: (context, child) {
-        final offset = Offset.fromDirection(
-          directionInDegrees * (math.pi / 180.0),
-          progress.value * maxDistance,
-        );
-        return Positioned(
-          right: 4.0 + offset.dx,
-          bottom: 4.0 + offset.dy,
-          child: Transform.rotate(
-            angle: (1.0 - progress.value) * math.pi / 2,
-            child: child!,
-          ),
-        );
-      },
-      child: FadeTransition(
-        opacity: progress,
-        child: child,
-      ),
-    );
-  }
-}
-
-class ActionButton extends StatelessWidget {
-  const ActionButton({
-    Key? key,
-    this.onPressed,
-    required this.icon,
-  });
-
-  final VoidCallback? onPressed;
-  final Widget icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      color: theme.colorScheme.secondary,
-      elevation: 4,
-      child: IconButton(
-        onPressed: onPressed,
-        icon: icon,
-        color: theme.colorScheme.onSecondary,
-      ),
-    );
-  }
-}
-
-class FakeItem extends StatelessWidget {
-  const FakeItem({
-    Key? key,
-    required this.isBig,
-  });
-
-  final bool isBig;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-      height: isBig ? 128 : 36,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-        color: Colors.grey.shade300,
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,19 +7,24 @@ import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:medipal/credentials/encryption.dart';
 import 'dart:io';
+import 'package:medipal/credentials/encryption.dart';
 
-class MedicineFormDependent extends StatefulWidget {
-  final dependentId;
 
-  MedicineFormDependent({required this.dependentId});
+class DependentMedicineFormEdit extends StatefulWidget {
+  final String medicationId;
+  final String dependentId;
+
+  const DependentMedicineFormEdit(
+      {super.key, required this.medicationId, required this.dependentId});
 
   @override
-  _MedicineFormDependentState createState() => _MedicineFormDependentState();
+  _DependentMedicineFormEditState createState() =>
+      _DependentMedicineFormEditState();
 }
 
-class _MedicineFormDependentState extends State<MedicineFormDependent> {
+class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
@@ -42,8 +46,82 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
       FirebaseFirestore.instance.collection('medications');
   CollectionReference alarmCollectionRef =
       FirebaseFirestore.instance.collection('alarms');
-  FirebaseAuth auth = FirebaseAuth.instance;
-  bool isLoading = false; // Add this to control the loading indicator
+
+  Future<Map<String, dynamic>?> loadData() async {
+    final medicineSnapshots = await medicationCollectionRef
+        .where('medicationId', isEqualTo: widget.medicationId)
+        .get();
+    for (QueryDocumentSnapshot snapshot in medicineSnapshots.docs) {
+      MedicationModel medicationModel =
+          MedicationModel.fromDocumentSnapshot(snapshot);
+      Map<String, dynamic> medication = medicationModel.toMap();
+
+      _nameController.text = EncryptionDecryption.decryptAES(medication['name']);
+      _dosageController.text = medication['dosage'].toString();
+      _quantityController.text = medication['inventory']['quantity'].toString();
+      _reorderLevelController.text =
+          medication['inventory']['reorderLevel'].toString();
+      _descriptionController.text =
+          EncryptionDecryption.decryptAES(medication['description']);
+
+      DateTime startDate = DateTime.parse(medication['startDate']);
+      DateTime endDate = DateTime.parse(medication['endDate']);
+
+      final type = medication['type'];
+
+      TimeOfDay? morning;
+      TimeOfDay? noon;
+      TimeOfDay? evening;
+
+      String morningTimeString = medication['schedule']['morning'];
+      if (morningTimeString.isNotEmpty) {
+        List<String> morningTimeParts = morningTimeString.split(':');
+        int hours = int.parse(morningTimeParts[0]);
+        int minutes = int.parse(morningTimeParts[1]);
+
+        morning = TimeOfDay(hour: hours, minute: minutes);
+      } else {
+        morning = null;
+      }
+
+      String noonTimeString = medication['schedule']['noon'];
+      if (noonTimeString.isNotEmpty) {
+        List<String> noonTimeParts = noonTimeString.split(':');
+        int hours = int.parse(noonTimeParts[0]);
+        int minutes = int.parse(noonTimeParts[1]);
+
+        noon = TimeOfDay(hour: hours, minute: minutes);
+      } else {
+        noon = null;
+      }
+
+      String eveningTimeString = medication['schedule']['morning'];
+      if (eveningTimeString.isNotEmpty) {
+        List<String> eveningTimeParts = eveningTimeString.split(':');
+        int hours = int.parse(eveningTimeParts[0]);
+        int minutes = int.parse(eveningTimeParts[1]);
+
+        evening = TimeOfDay(hour: hours, minute: minutes);
+      } else {
+        evening = null;
+      }
+
+      Map<String, dynamic> data = {
+        'startDate': startDate,
+        'endDate': endDate,
+        'type': type,
+        'medicationImg': medication['medicationImg'],
+        'morning': morning,
+        'noon': noon,
+        'evening': evening
+      };
+
+      return data;
+    }
+    return null;
+  }
+
+  bool isSubmitting = false; // Track the submitting state
 
   //image
   File? _selectedImage; // Variable to store the selected image file
@@ -91,6 +169,45 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
     });
   }
 
+   Widget _buildLoadingIndicator() {
+  return Container(
+    color: Colors.white, 
+    child: const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color.fromARGB(255, 41, 45, 92),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+  Future<String> uploadImage(File? selectedImage, String name) async {
+    final userId = widget.dependentId;
+
+    Reference storageReference =
+        FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
+
+    // Upload the file to Firebase Storage
+    UploadTask uploadTask = storageReference.putFile(selectedImage!);
+
+    // Await the completion of the upload
+    await uploadTask.whenComplete(() => print("Image uploaded"));
+
+    // Get the download URL for the image
+    String downloadURL = await storageReference.getDownloadURL();
+    return downloadURL;
+  }
+
+  bool _validateTimings() {
+    return _morningTime != null || _noonTime != null || _eveningTime != null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat("yyyy-MM-dd");
@@ -98,13 +215,31 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
     // Define the dropdown items for dosage type
     final List<DropdownMenuItem<String>> dosageTypeItems = [
       const DropdownMenuItem(
+        value: 'Liquid',
+        child: Row(
+          children: [
+            ImageIcon(
+              AssetImage('assets/images/liquid_icon.png'),
+              // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color:
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
+            ),
+            SizedBox(width: 8.0),
+            Text('Liquid'),
+          ],
+        ),
+      ),
+      const DropdownMenuItem(
         value: 'Pills',
         child: Row(
           children: [
             ImageIcon(
               AssetImage('assets/images/pill_icon.png'),
-              size: 28,
-              color: Color.fromARGB(255, 0, 0, 0),
+              // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color:
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Pills'),
@@ -117,38 +252,34 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
           children: [
             ImageIcon(
               AssetImage('assets/images/injection_icon.png'),
-              size: 28,
-              color: Color.fromARGB(255, 0, 0, 0),
+              // Replace 'assets/icon.png' with the path to your image
+              size: 28, // Specify the size of the icon
+              color:
+                  Color.fromARGB(255, 0, 0, 0), // Specify the color of the icon
             ),
             SizedBox(width: 8.0),
             Text('Injection'),
           ],
         ),
       ),
-      const DropdownMenuItem(
-        value: 'Liquid',
-        child: Row(
-          children: [
-            ImageIcon(
-              AssetImage('assets/images/liquid_icon.png'),
-              size: 28,
-              color: Color.fromARGB(255, 0, 0, 0),
-            ),
-            SizedBox(width: 8.0),
-            Text('Liquid'),
-          ],
-        ),
-      ),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Medicine Form'),
-      ),
-      body: isLoading
-          ? _buildLoadingIndicator()
-          : SingleChildScrollView(
-              child: Padding(
+    return FutureBuilder(
+        future: loadData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoadingIndicator();
+          } else if (snapshot.hasError) {
+            // Handle the error case
+            return Text('Error: ${snapshot.error}');
+          } else {
+            final data = snapshot.data;
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Medicine Form'),
+              ),
+              body: SingleChildScrollView(
+                child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Form(
                     key: _formKey,
@@ -170,6 +301,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                               ),
                             ),
                             const SizedBox(height: 16.0),
+                            //image
                             Center(
                               child: InkWell(
                                 onTap: () {
@@ -178,25 +310,45 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    _selectedImage != null
-                                        ? Image.file(_selectedImage!)
-                                        : Container(
-                                            width: 100,
-                                            height: 100,
-                                            color: Colors.grey[200],
-                                            child:
-                                                const Icon(Icons.add_a_photo),
-                                          ),
+                                    CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: Colors.grey[200],
+                                      child: _selectedImage != null
+                                          ? ClipOval(
+                                        child: Image.file(
+                                          _selectedImage!,
+                                          fit: BoxFit.cover,
+                                          width: 100,
+                                          height: 100,
+                                        ),
+                                      )
+                                          : (data?['medicationImg'] != ""
+                                          ? ClipOval(
+                                        child: Image.network(
+                                          data?['medicationImg'],
+                                          fit: BoxFit.cover,
+                                          width: 100,
+                                          height: 100,
+                                        ),
+                                      )
+                                          : const Icon(
+                                        Icons.add_a_photo,
+                                        size: 50,
+                                        color: Colors.blue,
+                                      )),
+                                    ),
                                     const SizedBox(
-                                        height:
-                                            8), // Add some space between image and text
+                                      height: 8,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Add some space between image and text
                                     Text(
                                       _selectedImage != null
                                           ? 'Change Image'
                                           : 'Select Image for Your Medicine',
                                       style: const TextStyle(
-                                        color: Colors
-                                            .blue, // You can adjust the color as needed
+                                        color: Colors.blue,
+                                        // You can adjust the color as needed
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -204,6 +356,7 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                                 ),
                               ),
                             ),
+                            //image end
                             const SizedBox(height: 16.0),
                             TextFormField(
                               controller: _nameController,
@@ -236,25 +389,25 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                             ),
                             const SizedBox(height: 16.0),
                             DropdownButtonFormField(
-                              value: _selectedDosageType,
+                              value: _selectedDosageType ?? data?['type'],
                               decoration: const InputDecoration(
                                 labelText: 'Type of Dosage',
                               ),
+                              items: dosageTypeItems,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedDosageType = value as String?;
+                                });
+                              },
                               validator: (value) {
                                 if (value == null ||
-                                    value.isEmpty ||
                                     value.toString().trim().isEmpty) {
                                   return '*Required';
                                 }
                                 return null;
                               },
-                              items: dosageTypeItems,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedDosageType = value;
-                                });
-                              },
                             ),
+
                             const SizedBox(height: 16.0),
                             TextFormField(
                               controller: _dosageController,
@@ -313,14 +466,10 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                             ),
                             DateTimeField(
                               format: dateFormat,
+                              initialValue: _startDate ?? data?['startDate'],
                               decoration: const InputDecoration(
                                 labelText: 'Start Date',
                               ),
-                              onChanged: (value) {
-                                setState(() {
-                                  _startDate = value;
-                                });
-                              },
                               validator: (value) {
                                 if (value == null ||
                                     value.toString().trim().isEmpty) {
@@ -328,26 +477,31 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                                 }
                                 return null;
                               },
+                              onChanged: (value) {
+                                setState(() {
+                                  _startDate = value;
+                                });
+                              },
                               onShowPicker: (context, currentValue) async {
                                 final date = await showDatePicker(
                                   context: context,
-                                  firstDate: DateTime(2000),
-                                  initialDate: currentValue ?? DateTime.now(),
-                                  lastDate: DateTime(2101),
+                                  initialDate: _startDate ??
+                                      data?['startDate'] ??
+                                      DateTime.now(),
+                                  firstDate: _startDate ??
+                                      data?['startDate'] ??
+                                      DateTime.now(),
+                                  lastDate: DateTime(2100),
                                 );
                                 return date;
                               },
                             ),
                             DateTimeField(
                               format: dateFormat,
+                              initialValue: _endDate ?? data?['endDate'],
                               decoration: const InputDecoration(
                                 labelText: 'End Date',
                               ),
-                              onChanged: (value) {
-                                setState(() {
-                                  _endDate = value;
-                                });
-                              },
                               validator: (value) {
                                 if (value == null ||
                                     value.toString().trim().isEmpty) {
@@ -355,16 +509,26 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                                 }
                                 return null;
                               },
+                              onChanged: (value) {
+                                setState(() {
+                                  _endDate = value;
+                                });
+                              },
                               onShowPicker: (context, currentValue) async {
                                 final date = await showDatePicker(
                                   context: context,
-                                  firstDate: DateTime(2000),
-                                  initialDate: currentValue ?? DateTime.now(),
-                                  lastDate: DateTime(2101),
+                                  initialDate: _endDate ??
+                                      data?['endDate'] ??
+                                      DateTime.now(),
+                                  firstDate: _endDate ??
+                                      data?['endDate'] ??
+                                      DateTime.now(),
+                                  lastDate: DateTime(2100),
                                 );
                                 return date;
                               },
                             ),
+
                             const SizedBox(height: 16.0),
                             const Text(
                               'Medication Schedule',
@@ -424,10 +588,9 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                             const SizedBox(height: 16.0),
                             ElevatedButton(
                               onPressed: () async {
-                                // Set isLoading to true before performing async tasks
 
-                                if (_formKey.currentState!.validate()) {
-                                  if (!_validateTimings()) {
+                                if(_formKey.currentState!.validate()){
+                                  if(!_validateTimings()){
                                     Fluttertoast.showToast(
                                       msg: 'Please select at least one timing.',
                                       toastLength: Toast.LENGTH_SHORT,
@@ -437,34 +600,25 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                                     );
                                     return;
                                   }
+                                  // Set the submitting state to true
                                   setState(() {
-                                    isLoading = true;
+                                    isSubmitting = true;
                                   });
-
-                                  DocumentReference
-                                      medicationDocumentReference =
-                                      medicationCollectionRef.doc();
 
                                   String imageUrl;
 
                                   if (_selectedImage != null) {
                                     imageUrl = await uploadImage(
                                         _selectedImage, _nameController.text);
+                                  } else if (data?['medicationImg'] != null) {
+                                    imageUrl = data?['medicationImg'];
                                   } else {
                                     imageUrl = '';
                                   }
-                                  String encryptedDescription =
-                                      await EncryptionDecryption.encryptAES(
-                                          _descriptionController.text);
-                                  String encryptedMedName =
-                                await EncryptionDecryption.encryptAES(
-                                    _nameController.text);
-
                                   MedicationModel medication = MedicationModel(
-                                    medicationId:
-                                        medicationDocumentReference.id,
-                                    name: encryptedMedName,
-                                    type: _selectedDosageType.toString(),
+                                    medicationId: widget.medicationId,
+                                    name: _nameController.text,
+                                    type: _selectedDosageType ?? data?['type'],
                                     dosage: int.parse(_dosageController.text),
                                     schedule: {
                                       'morning': _morningTime != null
@@ -478,100 +632,111 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                                           : '',
                                     },
                                     inventory: {
-                                      'quantity': int.tryParse(
-                                              _quantityController.text) ??
+                                      'quantity':
+                                      int.tryParse(_quantityController.text) ??
                                           0,
                                       'reorderLevel': int.tryParse(
-                                              _reorderLevelController.text) ??
+                                          _reorderLevelController.text) ??
                                           0,
                                     },
                                     startDate: _startDate != null
                                         ? dateFormat.format(_startDate!)
-                                        : "",
+                                        : dateFormat
+                                        .format(data?['startDate'])
+                                        .toString() ??
+                                        "",
                                     endDate: _endDate != null
                                         ? dateFormat.format(_endDate!)
-                                        : "",
+                                        : dateFormat
+                                        .format(data?['endDate'])
+                                        .toString() ??
+                                        "",
                                     userId: widget.dependentId,
-                                    description: encryptedDescription,
+                                    description: _descriptionController.text,
                                     medicationImg: imageUrl,
                                   );
 
                                   Map<String, dynamic> medicationModel =
-                                      medication.toMap();
+                                  medication.toMap();
 
-                                  await medicationDocumentReference
-                                      .set(medicationModel);
+                                  await FirebaseFirestore.instance
+                                      .collection('medications')
+                                      .doc(medicationModel['medicationId'])
+                                      .set(medicationModel)
+                                      .then((value) async {
+                                    //delete existing alarms
+                                    final snapshots = await FirebaseFirestore
+                                        .instance
+                                        .collection('alarms')
+                                        .where('medicationId',
+                                        isEqualTo:
+                                        medicationModel['medicationId'])
+                                        .get();
+                                    for (final doc in snapshots.docs) {
+                                      await doc.reference.delete();
+                                    }
 
-                                  for (var date = _startDate;
-                                      date!.isBefore(_endDate!
-                                          .add(const Duration(days: 1)));
-                                      date =
-                                          date.add(const Duration(days: 1))) {
-                                    for (var key in medication.schedule.keys) {
-                                      final value = medication.schedule[key];
-                                      if (value != null && value.isNotEmpty) {
-                                        final hrMin = value.split(' ');
-                                        final timeParts = hrMin[0].split(':');
-                                        final hr = int.tryParse(timeParts[0]);
-                                        final min = int.tryParse(timeParts[1]);
-                                        if (hr != null && min != null) {
-                                          DateTime dateTime = DateTime(
-                                              date.year,
-                                              date.month,
-                                              date.day,
-                                              hr,
-                                              min);
-                                          DocumentReference
-                                              alarmDocumentReference =
-                                              alarmCollectionRef.doc();
-                                          String medicineName =
-                                              EncryptionDecryption.decryptAES(encryptedMedName);
-                                          String message =
-                                              _dosageController.text;
-                                          AlarmModel alarmModel = AlarmModel(
-                                              alarmId:
-                                                  alarmDocumentReference.id,
-                                              skipReason: '',
-                                              userId: widget.dependentId,
-                                              time: dateTime.toString(),
-                                              status: 'pending',
-                                              medicationId:
-                                                  medicationDocumentReference
-                                                      .id);
+                                    for (var date =
+                                        _startDate ?? data?['startDate'];
+                                    date!.isBefore(_endDate ??
+                                        data?['endDate']!
+                                            .add(const Duration(days: 1)));
+                                    date = date.add(const Duration(days: 1))) {
+                                      for (var key in medication.schedule.keys) {
+                                        final value = medication.schedule[key];
+                                        if (value != null && value.isNotEmpty) {
+                                          final hrMin = value.split(' ');
+                                          final timeParts = hrMin[0].split(':');
+                                          final hr = int.tryParse(timeParts[0]);
+                                          final min = int.tryParse(timeParts[1]);
+                                          if (hr != null && min != null) {
+                                            DateTime dateTime = DateTime(date.year,
+                                                date.month, date.day, hr, min);
 
-                                          Map<String, dynamic> alarm =
-                                              alarmModel.toMap();
-                                          await alarmDocumentReference
-                                              .set(alarm);
+                                            DocumentReference
+                                            alarmDocumentReference =
+                                            alarmCollectionRef.doc();
+
+                                            String medicineName =
+                                                _nameController.text;
+                                            String message = _dosageController.text;
+
+                                            AlarmModel alarmModel = AlarmModel(
+                                                alarmId: alarmDocumentReference.id,
+                                                skipReason: '',
+                                                userId: widget.dependentId,
+                                                time: dateTime.toString(),
+                                                status: 'pending',
+                                                medicationId: medicationModel[
+                                                'medicationId']);
+
+                                            Map<String, dynamic> alarm =
+                                            alarmModel.toMap();
+                                            await alarmDocumentReference.set(alarm);
+                                          }
                                         }
                                       }
                                     }
-                                  }
-
-                                  // Set isLoading back to false
-                                  setState(() {
-                                    isLoading = false;
                                   });
 
                                   // Show the toast message
                                   Fluttertoast.showToast(
-                                    msg: 'Medicine added successfully!',
+                                    msg: 'Medicine Updated successfully!',
                                     toastLength: Toast.LENGTH_SHORT,
                                     gravity: ToastGravity.BOTTOM,
-                                    backgroundColor: Colors.green,
+                                    backgroundColor:
+                                    const Color.fromARGB(255, 48, 48, 48),
                                     textColor: Colors.white,
                                   );
-                                  Navigator.pop(context,
-                                      medication); // Pass data back to the home screen
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Please fill in all required fields.',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    backgroundColor: Colors.red,
-                                    textColor: Colors.white,
-                                  );
+
+                                  // Set the submitting state back to false
+                                  setState(() {
+                                    isSubmitting = false;
+                                  });
+
+                                  Navigator.pop(context);
                                 }
+
                               },
                               child: const Text('Submit'),
                             ),
@@ -579,53 +744,13 @@ class _MedicineFormDependentState extends State<MedicineFormDependent> {
                         ),
                       ),
                     ),
-                  )),
-            ),
-    );
+                  )
+                ),
+              ),
+              bottomNavigationBar:
+                  isSubmitting ? _buildLoadingIndicator() : null,
+            );
+          }
+        });
   }
-
-  Future<String> uploadImage(File? selectedImage, String name) async {
-    final userId = widget.dependentId;
-
-    Reference storageReference =
-        FirebaseStorage.instance.ref().child("medications/$userId/$name.jpg");
-
-    // Upload the file to Firebase Storage
-    UploadTask uploadTask = storageReference.putFile(selectedImage!);
-
-    // Await the completion of the upload
-    await uploadTask.whenComplete(() => print("Image uploaded"));
-
-    // Get the download URL for the image
-    String downloadURL = await storageReference.getDownloadURL();
-    return downloadURL;
-  }
-
-  bool _validateTimings() {
-    return _morningTime != null || _noonTime != null || _eveningTime != null;
-  }
-}
-
-Widget _buildLoadingIndicator() {
-  return const Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(
-            Color.fromARGB(255, 71, 78, 84),
-          ),
-        ),
-        SizedBox(height: 16.0),
-        Text(
-          'Loading...',
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    ),
-  );
 }

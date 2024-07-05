@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medipal/Individual/appoin_details_screen.dart';
 import 'package:medipal/Individual/dashboard_screen.dart';
 import 'package:medipal/Individual/inventory_screen.dart';
 import 'package:medipal/Individual/profile_screen.dart';
@@ -20,7 +21,14 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
     super.dispose();
   }
 
-  // Function to navigate to the Inventory page
+  void _navigateToDashboard() {
+    _pageController.animateToPage(
+      0, // Index of the Dashboard tab
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+  }
+
   void _navigateToInventory() {
     _pageController.animateToPage(
       1, // Index of the Inventory tab
@@ -29,17 +37,17 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
     );
   }
 
-  void _navigateToProfile() {
+  void _navigateToAppDetails() {
     _pageController.animateToPage(
-      2, // Index of the Profile tab
+      2, // Index of the Dashboard tab
       duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
   }
 
-  void _navigateToDashboard() {
+  void _navigateToProfile() {
     _pageController.animateToPage(
-      0, // Index of the Dashboard tab
+      3, // Index of the Profile tab
       duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
@@ -61,13 +69,11 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
         appBar: null, // Set the AppBar to null to hide it
         body: PageView(
           controller: _pageController,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: <Widget>[
-            DashboardScreen(), // Replace with your Dashboard screen widget
-            InventoryScreen(), // Replace with your Inventory screen widget
-            ProfileScreen(), // Replace with your Profile screen widget
-
-            // Add other screens as needed
+          children:  const <Widget>[
+            DashboardScreen(),
+            InventoryScreen(),
+            AppointmentScreen(),
+            ProfileScreen(),
           ],
           onPageChanged: (index) {
             setState(() {
@@ -86,20 +92,23 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
               label: 'Inventory',
             ),
             BottomNavigationBarItem(
+              icon: Icon(Icons.medical_services),
+              label: 'Appoinmnent',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.person_2_rounded),
               label: 'Profile',
             ),
           ],
-         unselectedItemColor: Color.fromARGB(146, 170, 149, 247),
+          unselectedItemColor: const Color.fromARGB(146, 170, 149, 247),
           //unselectedItemColor: Color.fromARGB(255, 154, 17, 17),
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 41,45,92),
+          selectedItemColor: const Color.fromARGB(255, 41, 45, 92),
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
             });
 
-            // Add logic to navigate to specific pages based on index
             switch (index) {
               case 0:
                 _navigateToDashboard();
@@ -108,9 +117,11 @@ class _BottomNavigationState extends State<BottomNavigationIndividual> {
                 _navigateToInventory();
                 break;
               case 2:
+                _navigateToAppDetails();
+                break;
+              case 3:
                 _navigateToProfile();
                 break;
-              // Add other cases for additional tabs
             }
           },
         ),

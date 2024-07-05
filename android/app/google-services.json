@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:507903652085:android:2d9c8751dfa2f1635fd5bc",
+        "mobilesdk_app_id": "1:507903652085:android:230731cf4dcfb4b95fd5bc",
         "android_client_info": {
-          "package_name": "com.example.vit.medipal"
+          "package_name": "com.shrujan.medipal.app"
         }
       },
       "oauth_client": [
@@ -35,7 +35,7 @@
               "client_id": "507903652085-hkno5k9pntm52t710kam6hhostqkods2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.vit.medipal.RunnerTests"
+                "bundle_id": "com.shrujan.medipal.app.RunnerTests"
               }
             }
           ]

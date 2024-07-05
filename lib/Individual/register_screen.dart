@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -10,6 +12,13 @@ class RegisterScreen extends StatelessWidget {
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
+
+  String? _validatePassword() {
+    if (passwordController.text.length < 6) {
+      return 'Password must be atleast 6 characters';
+    }
+    return null;
+  }
 
   final auth = FirebaseAuth.instance;
 
@@ -64,38 +73,28 @@ class RegisterScreen extends StatelessWidget {
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
-                  height: MediaQuery.of(context).size.width * 0.4,
+                  height: MediaQuery.of(context).size.width * 0.3,
                   child: Image.asset(
                     'assets/images/medipal.png',
                   ),
                 ),
+                const SizedBox(height: 20.0),
+
                 const Text(
-                  "MEDIPAL",
+                  "Welcome To MediPal",
                   style: TextStyle(
                     fontSize: 24.0,
                     color: Color.fromARGB(255, 41, 45, 92),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 25),
-                const Text(
-                  "Registration form",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontStyle: FontStyle.italic,
-                    color: Color.fromARGB(255, 41, 45, 92),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                 // const SizedBox(height: 180.0),
-
               ],
             ),
           ),
 
           // Registration Form
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.40,
+            top: MediaQuery.of(context).size.height * 0.37,
             left: MediaQuery.of(context).size.width * 0.05,
             right: MediaQuery.of(context).size.width * 0.05,
             child: SingleChildScrollView(
@@ -110,20 +109,48 @@ class RegisterScreen extends StatelessWidget {
                   _buildNumericInputField(
                       Icons.phone_in_talk, 'Phone Number', phoneController),
                   const SizedBox(height: 16.0),
-                  _buildPasswordField(
-                      Icons.password_outlined, 'Password', passwordController, context),
+                  _buildPasswordField(Icons.password_outlined, 'Password',
+                      passwordController, context),
+                  const SizedBox(height: 10.0),
+
+                  //JANA KRIPYA YAHA DEKHIYE
+                  if (_validatePassword() !=
+                      null) // Conditionally display the error message
+                    Text(
+                      _validatePassword() ?? '',
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   const SizedBox(height: 130.0),
                   ElevatedButton(
                     onPressed: () async {
-                      try {
-                        await auth
-                            .createUserWithEmailAndPassword(
-                                email: emailController.text,
-                                password: passwordController.text)
-                            .then((value) =>
-                                verify(context, phoneController.text));
-                      } catch (e) {
-                        print(e);
+                      var error = _validatePassword(); // Validate the password
+                      if (error == null) {
+                        try {
+                          await auth
+                              .createUserWithEmailAndPassword(
+                                  email: emailController.text,
+                                  password: passwordController.text)
+                              .then((value) =>
+                                  verify(context, phoneController.text));
+                        } catch (e) {
+                          Fluttertoast.showToast(
+                            msg: 'Registration failed. Please try again.',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor:
+                                const Color.fromARGB(255, 240, 91, 91),
+                            textColor: const Color.fromARGB(255, 255, 255, 255),
+                          );
+                        }
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: 'Password should be atleast 6 characters long!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor:
+                              const Color.fromARGB(255, 240, 91, 91),
+                          textColor: const Color.fromARGB(255, 255, 255, 255),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -131,16 +158,14 @@ class RegisterScreen extends StatelessWidget {
                       onPrimary: Colors.white,
                       elevation: 3,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 16),
+                          horizontal: 40, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                     ),
                     child: const Text(
                       'Register',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                      ),
+                      style: TextStyle(fontSize: 20.0),
                     ),
                   ),
                 ],
@@ -199,9 +224,9 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordField(
-      IconData icon, String hintText, TextEditingController controller, BuildContext context) {
-    bool _isPasswordVisible = false;
+  Widget _buildPasswordField(IconData icon, String hintText,
+      TextEditingController controller, BuildContext context) {
+    bool isPasswordVisible = false;
 
     return Container(
       decoration: BoxDecoration(
@@ -212,7 +237,7 @@ class RegisterScreen extends StatelessWidget {
         child: Column(
           children: [
             TextField(
-              obscureText: !_isPasswordVisible,
+              obscureText: !isPasswordVisible,
               style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               decoration: InputDecoration(
                 hintText: hintText,
@@ -232,6 +257,11 @@ class RegisterScreen extends StatelessWidget {
   }
 
   verify(context, phoneNumber) async {
+    final encryptedName = EncryptionDecryption.encryptAES(nameController.text);
+    final encryptedEmail =
+        EncryptionDecryption.encryptAES(emailController.text);
+    final encryptedPhoneNo = EncryptionDecryption.encryptAES(phoneNumber);
+
     await auth.verifyPhoneNumber(
         phoneNumber: '+91' + phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) {},
@@ -239,9 +269,9 @@ class RegisterScreen extends StatelessWidget {
         codeSent: (String verificationId, int? resendToken) {
           UserModel userModel = UserModel(
               userId: auth.currentUser!.uid,
-              email: emailController.text,
-              phoneNo: phoneNumber,
-              name: nameController.text,
+              email: encryptedEmail,
+              phoneNo: encryptedPhoneNo,
+              name: encryptedName,
               role: 'Individual',
               noOfDependents: 0,
               dependents: []);

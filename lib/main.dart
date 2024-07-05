@@ -12,14 +12,19 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:medipal/notification/FirestoreCheck.dart';
 
 import 'Dependent/bottom_navigation_dependent.dart';
-
+import 'package:medipal/credentials/encryption.dart';
 
 Future<void> checkFirestoreTask() async {
   FireStoreCheck check = new FireStoreCheck();
   await check.checkFirestore();
 }
 
-final GlobalKey<NavigatorState> navigatorKey= GlobalKey<NavigatorState>();
+Future<void> checkFirestoreForSnooze() async {
+  FireStoreCheck check = new FireStoreCheck();
+  await check.checkFirestoreForSnooze();
+}
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +39,10 @@ Future main() async {
   const int helloAlarmID = 0;
   await AndroidAlarmManager.periodic(
       const Duration(minutes: 1), helloAlarmID, checkFirestoreTask);
+
+  const int snoozeAlarmID = 1;
+  await AndroidAlarmManager.periodic(
+      const Duration(minutes: 5), snoozeAlarmID, checkFirestoreForSnooze);
 
   TwilioCred().writeCred();
 
@@ -52,25 +61,24 @@ class MyApp extends StatelessWidget {
       title: 'MediPal',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
-          backgroundColor:
-              Color.fromARGB(255, 241, 239, 239), // Set the app bar background color to white
+          backgroundColor: Color.fromARGB(
+              255, 241, 239, 239), // Set the app bar background color to white
           iconTheme:
               IconThemeData(color: Colors.black), // Set the icon color to black
           titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              ), // Set the title text color to black
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ), // Set the title text color to black
           //centerTitle: true, // Center the title within the app bar
           toolbarHeight: 60, // Set the height of the app bar
         ),
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: const Color.fromARGB(255,41,45,92)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 41, 45, 92)),
         // appBarTheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 0, 0)),
         //useMaterial3: true,
       ),
-      home:
-          MyHomePage(),
+      home: const MyHomePage(),
       //  const BottomNavigationDependent(),
       // AddGuardian(),
       //AlarmScreen(),
@@ -113,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var user;
 
     FirebaseCred().getData().then((value) {
-      user= value[0];
+      user = value[0];
       userRole = value[1];
       Timer(const Duration(seconds: 2), () {
         if (user != null) {

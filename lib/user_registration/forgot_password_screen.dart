@@ -2,21 +2,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:medipal/main.dart';
-import 'package:medipal/user_registration/dependent_login.dart';
-import 'package:medipal/user_registration/login_screen.dart';
 
 class ForgetPasswordPage extends StatelessWidget {
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forgot Password'),
-        backgroundColor: Color.fromARGB(255, 223, 238, 255),
+        title: const Text('Forgot Password'),
+        backgroundColor: const Color.fromARGB(255, 223, 238, 255),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -28,17 +26,17 @@ class ForgetPasswordPage extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
                 ),
                 controller: _emailController,
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () async {
                   try {
@@ -71,7 +69,7 @@ class ForgetPasswordPage extends StatelessWidget {
                         30.0), // Adjust the value for the desired roundness
                   ),
                 ),
-                child: Text('Reset Password'),
+                child: const Text('Reset Password'),
               ), 
             ],
           ),
