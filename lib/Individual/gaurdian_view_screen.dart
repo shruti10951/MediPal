@@ -352,6 +352,8 @@ class _GaurdianViewState extends State<GaurdianView> {
 
             String dateTimeText = '$formattedDate | $formattedTime';
 
+            String decName = EncryptionDecryption.decryptAES(name);
+
             return Card(
               margin: const EdgeInsets.all(8),
               child: InkWell(
@@ -376,7 +378,7 @@ class _GaurdianViewState extends State<GaurdianView> {
                     ListTile(
                       leading: Imgbuild(context),
                       title: Text(
-                        name,
+                        decName,
                         style: const TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
@@ -443,7 +445,7 @@ class _GaurdianViewState extends State<GaurdianView> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow('Name', medicine['name'] ?? 'N/A'),
+                _buildInfoRow('Name', EncryptionDecryption.decryptAES( medicine['name']) ?? 'N/A'),
                 _buildInfoRow(
                     'Quantity', medicine['dosage']?.toString() ?? 'N/A'),
                 _buildInfoRow(

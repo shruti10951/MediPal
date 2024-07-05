@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/Dependent/bottom_navigation_dependent.dart';
 import 'package:medipal/models/DependentModel.dart';
+import 'package:medipal/credentials/encryption.dart';
+
 
 class OTPForDependentPage extends StatelessWidget {
   final String verificationId;
@@ -80,8 +82,8 @@ class OTPForDependentPage extends StatelessWidget {
                           if (!userDoc.exists) {
                             DependentModel dependentModel = DependentModel(
                               userId: user!.uid,
-                              name: name,
-                              phoneNo: phoneNo,
+                              name: EncryptionDecryption.encryptAES(name),
+                              phoneNo: EncryptionDecryption.encryptAES(phoneNo),
                               guardians: [],
                               noOfGuardian: 0,
                             );
