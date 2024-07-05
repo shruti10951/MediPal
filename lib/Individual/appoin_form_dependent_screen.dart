@@ -5,6 +5,7 @@ import 'package:medipal/Dependent/appoin_details_dependent_screen.dart';
 import 'package:medipal/Dependent/tab_change.dart';
 import 'package:medipal/models/AppointmentModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 FirebaseFirestore user = FirebaseFirestore.instance;
 
@@ -211,15 +212,24 @@ class _AppointmentDependentFormState extends State<AppointmentDependentForm> {
                           String formattedDateTime =
                               DateFormat('yyyy-MM-dd HH:mm:ss')
                                   .format(combinedDateTime);
+                          
+                          
+                          String encrypted_doctorName = EncryptionDecryption.encryptAES(
+                                          _doctorNameController.text);
+                          String encryptedLocation =  EncryptionDecryption.encryptAES(
+                                          _locationController.text);
+                          String encryptedDescription = EncryptionDecryption.encryptAES(
+                                          _descriptionController.text);
+
 
                           AppointmentModel appointmentModel = AppointmentModel(
                               userId: widget.dependentId,
                               appointmentId: documentReference.id,
-                              doctorName: _doctorNameController.text,
-                              location: _locationController.text,
+                              doctorName: encrypted_doctorName,
+                              location: encryptedLocation,
                               status: 'pending',
                               appointmentTime: formattedDateTime,
-                              description: _descriptionController.text);
+                              description: encryptedDescription);
 
                           documentReference
                               .set(appointmentModel.toMap())

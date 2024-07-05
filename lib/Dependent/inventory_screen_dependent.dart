@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 final userId = FirebaseAuth.instance.currentUser?.uid.toString();
@@ -113,7 +114,7 @@ class _InventoryDependent extends State<InventoryDependent> {
           final MedicationModel medicationModel =
               MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
-          final name = medication['name'];
+          final name = EncryptionDecryption.decryptAES(medication['name']);
           final type = medication['type'];
           final quantity = medication['inventory']['quantity'];
 

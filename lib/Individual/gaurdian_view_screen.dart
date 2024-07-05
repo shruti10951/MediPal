@@ -7,6 +7,7 @@ import 'package:medipal/models/AlarmModel.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dashboard_screen.dart';
+import 'package:medipal/credentials/encryption.dart';
 import 'expandable_tab.dart';
 
 class GaurdianView extends StatefulWidget {
@@ -445,7 +446,13 @@ class _GaurdianViewState extends State<GaurdianView> {
                 _buildInfoRow('Name', medicine['name'] ?? 'N/A'),
                 _buildInfoRow(
                     'Quantity', medicine['dosage']?.toString() ?? 'N/A'),
-                _buildInfoRow('Description', medicine['description'] ?? 'N/A'),
+                _buildInfoRow(
+                  'Description',
+                  EncryptionDecryption.decryptAES(
+                      medicine['description'] ?? 'N/A'),
+
+                  // Decrypt the description before displaying it
+                ),
               ],
             ),
             actions: <Widget>[

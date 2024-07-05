@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:medipal/Individual/edit_medicine_depedent_form.dart';
 import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
+
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -164,7 +166,7 @@ class _InventoryDependentGuardian extends State<InventoryDependentGuardian> {
           final MedicationModel medicationModel =
               MedicationModel.fromDocumentSnapshot(medicationDocumentSnapshot);
           final Map<String, dynamic> medication = medicationModel.toMap();
-          final name = medication['name'];
+          final name = EncryptionDecryption.decryptAES(medication['name']);
           final type = medication['type'];
           final medicationId = medication['medicationId'];
           final dosage = medication['dosage'];

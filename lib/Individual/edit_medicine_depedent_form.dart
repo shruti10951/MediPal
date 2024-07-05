@@ -8,6 +8,8 @@ import 'package:medipal/models/MedicationModel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:medipal/credentials/encryption.dart';
+
 
 class DependentMedicineFormEdit extends StatefulWidget {
   final String medicationId;
@@ -54,12 +56,13 @@ class _DependentMedicineFormEditState extends State<DependentMedicineFormEdit> {
           MedicationModel.fromDocumentSnapshot(snapshot);
       Map<String, dynamic> medication = medicationModel.toMap();
 
-      _nameController.text = medication['name'];
+      _nameController.text = EncryptionDecryption.decryptAES(medication['name']);
       _dosageController.text = medication['dosage'].toString();
       _quantityController.text = medication['inventory']['quantity'].toString();
       _reorderLevelController.text =
           medication['inventory']['reorderLevel'].toString();
-      _descriptionController.text = medication['description'];
+      _descriptionController.text =
+          EncryptionDecryption.decryptAES(medication['description']);
 
       DateTime startDate = DateTime.parse(medication['startDate']);
       DateTime endDate = DateTime.parse(medication['endDate']);

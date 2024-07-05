@@ -1,26 +1,17 @@
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/user_registration/enter_otp_user_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medipal/credentials/encryption.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
-
-  @override
-  _RegisterScreenState createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
+class RegisterScreen extends StatelessWidget {
+  RegisterScreen({super.key});
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
-
-  bool isEmailVerified = false;
 
   String? _validatePassword() {
     if (passwordController.text.length < 6) {
@@ -129,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       _validatePassword() ?? '',
                       style: const TextStyle(color: Colors.red),
                     ),
-                  const SizedBox(height: 50.0),
+                  const SizedBox(height: 130.0),
                   ElevatedButton(
                     onPressed: () async {
                       var error = _validatePassword(); // Validate the password
@@ -139,15 +130,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               .createUserWithEmailAndPassword(
                                   email: emailController.text,
                                   password: passwordController.text)
-                              .then((value){
-                                  verifyEmail(emailController.text);
-                              });
+                              .then((value) =>
+                                  verify(context, phoneController.text));
                         } catch (e) {
                           Fluttertoast.showToast(
                             msg: 'Registration failed. Please try again.',
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
-                            backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                            backgroundColor:
+                                const Color.fromARGB(255, 240, 91, 91),
                             textColor: const Color.fromARGB(255, 255, 255, 255),
                           );
                         }
@@ -156,7 +147,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           msg: 'Password should be atleast 6 characters long!',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
-                          backgroundColor: const Color.fromARGB(255, 240, 91, 91),
+                          backgroundColor:
+                              const Color.fromARGB(255, 240, 91, 91),
                           textColor: const Color.fromARGB(255, 255, 255, 255),
                         );
                       }
@@ -173,26 +165,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     child: const Text(
                       'Register',
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
-                  const SizedBox(height: 30.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      //google logic
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 0, 0, 0),
-                      onPrimary: Colors.white,
-                      elevation: 3,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'Google',
                       style: TextStyle(fontSize: 20.0),
                     ),
                   ),
@@ -284,17 +256,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  verifyPhoneNo(context, phoneNumber) async {
-    if (!isEmailVerified) {
-      Fluttertoast.showToast(
-        msg: 'Please verify your email first!',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: const Color.fromARGB(255, 240, 91, 91),
-        textColor: const Color.fromARGB(255, 255, 255, 255),
-      );
-      return;
-    }
+  verify(context, phoneNumber) async {
+    final encryptedName = EncryptionDecryption.encryptAES(nameController.text);
+    final encryptedEmail =
+        EncryptionDecryption.encryptAES(emailController.text);
+    final encryptedPhoneNo = EncryptionDecryption.encryptAES(phoneNumber);
+
     await auth.verifyPhoneNumber(
         phoneNumber: '+91' + phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) {},
@@ -302,9 +269,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         codeSent: (String verificationId, int? resendToken) {
           UserModel userModel = UserModel(
               userId: auth.currentUser!.uid,
-              email: emailController.text,
-              phoneNo: phoneNumber,
-              name: nameController.text,
+              email: encryptedEmail,
+              phoneNo: encryptedPhoneNo,
+              name: encryptedName,
               role: 'Individual',
               noOfDependents: 0,
               dependents: []);
@@ -315,39 +282,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       verificationId: verificationId, userModel: userModel)));
         },
         codeAutoRetrievalTimeout: (String verificationId) {});
-  }
-
-  void verifyEmail(String text) async{
-    await auth.currentUser?.sendEmailVerification().then((value){
-
-      Fluttertoast.showToast(
-        msg: 'Verification email sent. Please verify your email.',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: const Color.fromARGB(255, 240, 91, 91),
-        textColor: const Color.fromARGB(255, 255, 255, 255),
-      );
-
-      var timer= Timer.periodic(const Duration(seconds: 3), (timer) async {
-        await auth.currentUser?.reload();
-        setState(() {
-          isEmailVerified = auth.currentUser!.emailVerified;
-        });
-        if(isEmailVerified){
-          Fluttertoast.showToast(
-            msg: 'Email verified!',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: const Color.fromARGB(255, 240, 91, 91),
-            textColor: const Color.fromARGB(255, 255, 255, 255),
-          );
-          timer.cancel();
-          verifyPhoneNo(context, phoneController.text);
-        }
-      });
-
-    } 
-        
-    );
   }
 }

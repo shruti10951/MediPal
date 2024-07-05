@@ -4,6 +4,8 @@ import 'package:medipal/models/AppointmentModel.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:medipal/credentials/encryption.dart';
+
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -64,9 +66,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
   void _showEditDialog(String id, String name, String date, String time,
       String location, String description) {
-    doctorNameController.text = name;
-    locationController.text = location;
-    descriptionController.text = description;
+    doctorNameController.text = EncryptionDecryption.decryptAES(name);
+    locationController.text = EncryptionDecryption.decryptAES(location);
+    descriptionController.text = EncryptionDecryption.decryptAES(description);
 
     final inputDateFormat = DateFormat('dd MMM yyyy');
     DateTime inputDate = inputDateFormat.parse(date);
@@ -206,14 +208,23 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     const SizedBox(width: 8.0),
                     ElevatedButton(
                       onPressed: () async {
+                        String encrypted_doctorName =
+                            EncryptionDecryption.encryptAES(
+                                doctorNameController.text);
+                        String encryptedLocation =
+                            EncryptionDecryption.encryptAES(
+                                locationController.text);
+                        String encryptedDescription =
+                            EncryptionDecryption.encryptAES(
+                                descriptionController.text);
                         Map<String, dynamic> appointment = {
-                          'doctorName': doctorNameController.text,
+                          'doctorName': encrypted_doctorName,
                           'appointmentTime': dateController.text +
                               " " +
                               timeController.text +
                               ':00',
-                          'location': locationController.text,
-                          'description': descriptionController.text,
+                          'location': encryptedLocation,
+                          'description': encryptedDescription,
                         };
 
                         await firestore
@@ -337,15 +348,15 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             AppointmentModel.fromDocumentSnapshot(appointmentDocumentSnapshot);
         final Map<String, dynamic> appointment = appointmentModel.toMap();
         final appointmentId = appointment['appointmentId'];
-        final name = appointment['doctorName'];
+        final name = EncryptionDecryption.decryptAES(appointment['doctorName']);
         final String appointmentTimeString = appointment['appointmentTime'];
         final DateTime appointmentDateTime =
             DateTime.parse(appointmentTimeString);
 
         final date = DateFormat('d MMM yyyy').format(appointmentDateTime);
         final time = DateFormat.Hm().format(appointmentDateTime);
-        final location = appointment['location'];
-        final description = appointment['description'];
+        final location = EncryptionDecryption.decryptAES(appointment['location']);
+        final description = EncryptionDecryption.decryptAES(appointment['description']);
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
