@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:medipal/main.dart';
 import 'package:medipal/models/UserModel.dart';
 import 'package:medipal/Individual/dependent_details_screen.dart';
+import 'package:medipal/premium.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 import 'package:qr_flutter/qr_flutter.dart'; // Replace with your screen for Dependent details
 import 'package:fluttertoast/fluttertoast.dart';
@@ -53,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInfoRow(String title, String subtitle, IconData iconData) {
     return Card(
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -105,7 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(); // Close the dialog
                 navigatorKey.currentState?.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const ChooseScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const ChooseScreen()),
                     (route) => false);
               },
               child: const Text('Logout'),
@@ -156,51 +158,91 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         'Phone', user.phoneNo, Icons.phone_android_sharp),
                     _buildInfoRow('Email', user.email, Icons.mark_email_read),
                     // if (isDependent)
-                    Card(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      elevation: 2,
-                      child: InkWell(
-                        onTap: () {
-                          // Navigate to Dependent Details Screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DependentDetailsScreen(),
-                            ),
-                          );
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.group, // Your desired grey icon
-                                color: Color.fromARGB(255, 41, 45,
-                                    92), // Set the icon color to grey
-                              ),
-                              SizedBox(width: 16),
-                              // Add spacing between icon and text
-                              Text(
-                                'Dependent Details',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 41, 45, 92),
+                    Column(
+                      children: [
+                        Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          elevation: 1,
+                          child: InkWell(
+                            onTap: () {
+                              // Navigate to Dependent Details Screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DependentDetailsScreen(),
                                 ),
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.group,
+                                    color: Color.fromARGB(255, 41, 45, 92),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Text(
+                                    'Dependent Details',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 41, 45, 92),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                  ),
+                                ],
                               ),
-                              Spacer(),
-                              // Add a spacer to push the icon to the end
-                              Icon(
-                                Icons.arrow_forward, // Your desired arrow icon
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    )
+                        Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          elevation: 1,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PremiumScreen(),
+                                ),
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.diamond,
+                                    color: Color.fromARGB(255, 41, 45, 92),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Text(
+                                    'Go Premium',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 41, 45, 92),
+                                    ),
+                                  ),
+                                  
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 );
               },

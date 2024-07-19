@@ -6,6 +6,7 @@ import 'package:medipal/Individual/bottom_navigation_individual.dart';
 import 'package:medipal/credentials/firebase_cred.dart';
 import 'package:medipal/credentials/twilio_cred.dart';
 import 'package:medipal/notification/notification_service.dart';
+import 'package:medipal/premium.dart';
 import 'package:medipal/user_registration/choose_screen.dart';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -82,6 +83,9 @@ class MyApp extends StatelessWidget {
       // AddGuardian(),
       //AlarmScreen(),
     );
+    // return MaterialApp(
+    //   home: PremiumScreen(),
+    // );
   }
 }
 
